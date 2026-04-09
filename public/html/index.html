@@ -1,0 +1,1935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>CvSU Job Recommendation System</title>
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/auth.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/responsive.css">
+    
+    <!-- External Libraries -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+</head>
+    
+    <!-- Emergency Fix for Login Form and Sidebar Logo -->
+    <style>
+        /* Force fix for icon overlapping issue */
+        .auth-card {
+            max-width: 450px !important;
+            width: 100% !important;
+            padding: 40px !important;
+            box-sizing: border-box !important;
+        }
+        
+        .form-group {
+            width: 100% !important;
+            margin-bottom: 24px !important;
+            position: relative !important;
+        }
+        
+        .form-label {
+            display: block !important;
+            margin-bottom: 8px !important;
+            font-size: 12px !important;
+            font-weight: 600 !important;
+            color: #495057 !important;
+            text-transform: uppercase !important;
+        }
+        
+        .input-with-icon {
+            position: relative !important;
+            width: 100% !important;
+        }
+        
+        .input-with-icon i {
+            position: absolute !important;
+            left: 16px !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            color: #6c757d !important;
+            font-size: 18px !important;
+            z-index: 2 !important;
+            pointer-events: none !important;
+            width: 20px !important;
+            text-align: center !important;
+        }
+        
+        .input-with-icon input {
+            width: 100% !important;
+            padding: 16px 50px 16px 48px !important;
+            border: 2px solid #dee2e6 !important;
+            border-radius: 14px !important;
+            font-size: 15px !important;
+            font-family: 'Inter', sans-serif !important;
+            color: #212529 !important;
+            background-color: white !important;
+            box-sizing: border-box !important;
+            height: 56px !important;
+            line-height: normal !important;
+        }
+        
+        .input-with-icon input:focus {
+            outline: none !important;
+            border-color: #2E7D32 !important;
+            box-shadow: 0 0 0 4px rgba(46, 125, 50, 0.15) !important;
+        }
+        
+        .input-with-icon input::placeholder {
+            color: #adb5bd !important;
+            font-size: 14px !important;
+        }
+        
+        .toggle-password {
+            position: absolute !important;
+            right: 12px !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            z-index: 3 !important;
+            background: none !important;
+            border: none !important;
+            width: 40px !important;
+            height: 40px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            cursor: pointer !important;
+            color: #6c757d !important;
+            border-radius: 8px !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .toggle-password:hover {
+            color: #2E7D32 !important;
+            background-color: #f8f9fa !important;
+        }
+        
+        .toggle-password i {
+            position: static !important;
+            transform: none !important;
+            font-size: 18px !important;
+        }
+        
+        .btn-login-account {
+            width: 100% !important;
+            padding: 0 16px !important;
+            height: 56px !important;
+            background: #2E7D32 !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 14px !important;
+            font-size: 16px !important;
+            font-weight: 700 !important;
+            cursor: pointer !important;
+            margin: 20px 0 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 1px !important;
+            box-shadow: 0 4px 15px rgba(46, 125, 50, 0.3) !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .btn-login-account:hover {
+            background: #1B5E20 !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 20px rgba(46, 125, 50, 0.4) !important;
+        }
+        
+        .forgot-password {
+            color: #2E7D32 !important;
+            text-decoration: none !important;
+            font-size: 14px !important;
+            font-weight: 600 !important;
+            padding: 8px 16px !important;
+            display: inline-block !important;
+            border-radius: 8px !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .forgot-password:hover {
+            text-decoration: underline !important;
+            color: #1B5E20 !important;
+            background-color: #f8f9fa !important;
+        }
+        
+        .demo-account {
+            display: flex !important;
+            align-items: center !important;
+            gap: 10px !important;
+            font-size: 14px !important;
+            color: #6c757d !important;
+            padding: 6px 0 !important;
+            border-bottom: 1px dashed #dee2e6 !important;
+        }
+        
+        .demo-account:last-child {
+            border-bottom: none !important;
+        }
+        
+        .demo-account strong {
+            min-width: 70px !important;
+            color: #2E7D32 !important;
+            font-weight: 700 !important;
+        }
+        
+        .demo-accounts {
+            background-color: #f8f9fa !important;
+            border-radius: 16px !important;
+            padding: 20px !important;
+            border-left: 4px solid #2E7D32 !important;
+        }
+        
+        .auth-links {
+            text-align: center !important;
+            margin-bottom: 25px !important;
+        }
+        
+        /* Forgot Password Modal Fixes */
+        .forgot-modal .modal-content {
+            max-width: 450px !important;
+            padding: 30px !important;
+        }
+        
+        .forgot-instructions {
+            color: #6c757d !important;
+            font-size: 15px !important;
+            margin-bottom: 25px !important;
+            line-height: 1.6 !important;
+            text-align: center !important;
+        }
+        
+        .modal .form-actions {
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 10px !important;
+            margin-top: 25px !important;
+        }
+        
+        .modal .btn-primary,
+        .modal .btn-secondary {
+            width: 100% !important;
+            padding: 14px !important;
+            border-radius: 12px !important;
+            font-size: 15px !important;
+            font-weight: 600 !important;
+            cursor: pointer !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        .modal .btn-primary {
+            background: #2E7D32 !important;
+            color: white !important;
+            border: none !important;
+        }
+        
+        .modal .btn-secondary {
+            background: white !important;
+            color: #2E7D32 !important;
+            border: 2px solid #2E7D32 !important;
+        }
+        
+        .modal .btn-primary:hover {
+            background: #1B5E20 !important;
+        }
+        
+        .modal .btn-secondary:hover {
+            background: #f8f9fa !important;
+        }
+        
+        /* Sidebar Logo Fixes */
+        .sidebar-header {
+            padding: 20px 16px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15) !important;
+        }
+        
+        .logo-section {
+            display: flex !important;
+            align-items: center !important;
+            gap: 12px !important;
+            flex: 1 !important;
+            min-width: 0 !important;
+        }
+        
+        .school-logo {
+            width: 45px !important;
+            height: 45px !important;
+            flex-shrink: 0 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            background-color: white !important;
+            border-radius: 10px !important;
+            overflow: hidden !important;
+            padding: 6px !important;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2) !important;
+        }
+        
+        .school-logo img {
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: contain !important;
+            display: block !important;
+        }
+        
+        .school-logo.fallback {
+            font-size: 24px !important;
+            font-weight: 700 !important;
+            color: #2E7D32 !important;
+            background-color: white !important;
+        }
+        
+        .logo-text {
+            flex: 1 !important;
+            min-width: 0 !important;
+        }
+        
+        .logo-text h1 {
+            font-size: 16px !important;
+            font-weight: 700 !important;
+            color: white !important;
+            margin-bottom: 2px !important;
+            line-height: 1.2 !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            letter-spacing: 0.5px !important;
+        }
+        
+        .logo-text p {
+            font-size: 10px !important;
+            color: rgba(255, 255, 255, 0.9) !important;
+            line-height: 1.2 !important;
+            white-space: nowrap !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            letter-spacing: 0.3px !important;
+            font-weight: 500 !important;
+        }
+        
+        .sidebar-toggle {
+            display: none !important;
+            background: none !important;
+            border: none !important;
+            color: white !important;
+            font-size: 18px !important;
+            cursor: pointer !important;
+            padding: 8px !important;
+            border-radius: 8px !important;
+            transition: all 0.3s ease !important;
+            flex-shrink: 0 !important;
+        }
+        
+        .sidebar-toggle:hover {
+            background-color: rgba(255, 255, 255, 0.15) !important;
+        }
+        
+        /* Responsive fixes for sidebar logo */
+        @media (max-width: 768px) {
+            .sidebar-header {
+                padding: 16px 12px !important;
+            }
+            
+            .school-logo {
+                width: 40px !important;
+                height: 40px !important;
+                padding: 5px !important;
+            }
+            
+            .logo-text h1 {
+                font-size: 15px !important;
+            }
+            
+            .logo-text p {
+                font-size: 9px !important;
+            }
+            
+            .sidebar-toggle {
+                display: block !important;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .school-logo {
+                width: 38px !important;
+                height: 38px !important;
+                padding: 4px !important;
+            }
+            
+            .logo-text h1 {
+                font-size: 14px !important;
+            }
+            
+            .logo-text p {
+                font-size: 8px !important;
+            }
+        }
+        
+        /* Responsive fixes */
+        @media (max-width: 480px) {
+            .auth-card {
+                padding: 30px 25px !important;
+            }
+            
+            .input-with-icon input {
+                padding: 14px 45px 14px 45px !important;
+                height: 52px !important;
+                font-size: 14px !important;
+            }
+            
+            .btn-login-account {
+                height: 52px !important;
+            }
+            
+            .demo-account {
+                font-size: 13px !important;
+            }
+            
+            .demo-account strong {
+                min-width: 65px !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Auth Container with University Background -->
+    <div id="auth-container" class="auth-container" style="background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('university.png'); background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed;">
+        <!-- Login Card -->
+        <div class="auth-card" id="login-card">
+            <div class="osas-header">
+                <div class="osas-text">
+                    <div class="osas-line-1">CAReERS</div>
+                    <div class="osas-line-2">JOB RECOMMENDATION SYSTEM</div>
+                </div>
+            </div>
+            
+            <div class="login-portal-title">
+                <div class="portal-title-line">LOGIN PORTAL</div>
+            </div>
+            
+            <form id="login-form" class="auth-form">
+                <!-- Username/Email Field -->
+                <div class="form-group">
+                    <label for="login-student-id" class="form-label">USERNAME / EMAIL</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-id-card"></i>
+                        <input type="text" id="login-student-id" placeholder="Enter your username or email" required>
+                    </div>
+                </div>
+                
+                <!-- Password Field -->
+                <div class="form-group">
+                    <label for="login-password" class="form-label">PASSWORD</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="login-password" placeholder="Enter your password" required>
+                        <button type="button" class="toggle-password" id="toggle-password">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Login Button -->
+                <button type="submit" class="btn-login-account">
+                    LOGIN TO DASHBOARD
+                </button>
+                
+                <!-- Forgot Password Link -->
+                <div class="auth-links">
+                    <a href="#" class="forgot-password" id="forgot-password-link">FORGOT PASSWORD?</a>
+                </div>
+                
+                <!-- Demo Accounts Section -->
+                <div class="demo-section">
+                    <div class="demo-header">
+                        <div class="demo-line"></div>
+                        <span class="demo-text">DEMO ACCOUNTS</span>
+                        <div class="demo-line"></div>
+                    </div>
+                    <div class="demo-accounts">
+                        <div class="demo-account">
+                            <strong>Student:</strong> student@cvsu.edu.ph / demo123
+                        </div>
+                        <div class="demo-account">
+                            <strong>Employer:</strong> employer@company.com / demo123
+                        </div>
+                        <div class="demo-account">
+                            <strong>Admin:</strong> admin@cvsu.edu.ph / admin123
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Main Application Container -->
+    <div id="app-container" class="app-container">
+        <div class="app-layout">
+            <!-- Sidebar with Fixed Logo -->
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <div class="logo-section">
+                        <div class="school-logo">
+                            <img src="cvsu.png" alt="CvSU Logo" 
+                                 onerror="this.parentElement.classList.add('fallback'); this.style.display='none'; this.parentElement.innerHTML='C';">
+                        </div>
+                        <div class="logo-text">
+                            <h1>CAReERS</h1>
+                            <p>JOB RECOMMENDATION SYSTEM</p>
+                        </div>
+                    </div>
+                    
+                    <button class="sidebar-toggle" id="sidebar-toggle">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                </div>
+                
+                <nav class="sidebar-nav">
+                    <ul id="sidebar-menu"></ul>
+                </nav>
+                
+                <div class="sidebar-footer">
+                    <div class="user-info">
+                        <div class="user-avatar">
+                            <span id="sidebar-avatar-initials">U</span>
+                        </div>
+                        <div class="user-details">
+                            <span class="user-name" id="sidebar-user-name">User</span>
+                            <span class="user-role" id="sidebar-user-role">Role</span>
+                        </div>
+                    </div>
+                    <button class="logout-btn" id="sidebar-logout-btn" title="Logout">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <div class="main-content">
+                <!-- Mobile Header -->
+                <header class="mobile-header">
+                    <div class="container">
+                        <div class="mobile-header-content">
+                            <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+                                <i class="fas fa-bars"></i>
+                            </button>
+                            <div class="mobile-logo">
+                                <h1>CAReERS</h1>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+
+                <!-- Main Content -->
+                <main class="app-main">
+                    <div class="container">
+                        <!-- Student Dashboard -->
+                        <div id="student-dashboard" class="dashboard-section">
+                            <div class="dashboard-header">
+                                <h2>Student Dashboard</h2>
+                                <p class="dashboard-subtitle">Welcome back! Track your job applications and recommendations.</p>
+                            </div>
+                            
+                            <div class="profile-completion-card" id="profile-completion-card">
+                                <div class="completion-header">
+                                    <h3>Profile Completion</h3>
+                                    <span class="completion-percentage" id="completion-percentage">0%</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill" id="profile-progress" style="width: 0%;"></div>
+                                </div>
+                                <p class="completion-hint">Complete your profile to unlock personalized job recommendations</p>
+                                <a href="#student-profile" class="btn-primary btn-sm complete-profile-btn">Complete Profile</a>
+                            </div>
+                            
+                            <div class="stats-grid">
+                                <div class="stat-card">
+                                    <div class="stat-icon"><i class="fas fa-briefcase"></i></div>
+                                    <div class="stat-content">
+                                        <h3 class="stat-number" id="available-jobs-count">0</h3>
+                                        <p class="stat-label">Available Jobs</p>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon"><i class="fas fa-paper-plane"></i></div>
+                                    <div class="stat-content">
+                                        <h3 class="stat-number" id="applications-count">0</h3>
+                                        <p class="stat-label">Applications</p>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon"><i class="fas fa-star"></i></div>
+                                    <div class="stat-content">
+                                        <h3 class="stat-number" id="avg-match">0%</h3>
+                                        <p class="stat-label">Avg Match Score</p>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon"><i class="fas fa-bullhorn"></i></div>
+                                    <div class="stat-content">
+                                        <h3 class="stat-number" id="announcements-count">0</h3>
+                                        <p class="stat-label">Announcements</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div id="job-recommendations-section" style="display: none;">
+                                <div class="section-header">
+                                    <h3>Top Recommended Jobs</h3>
+                                    <p>Based on your profile and skills</p>
+                                </div>
+                                <div class="jobs-horizontal-scroll" id="recommended-jobs-scroll"></div>
+                            </div>
+                            
+                            <div class="section-header">
+                                <h3>Quick Access</h3>
+                            </div>
+                            
+                            <div class="actions-grid">
+                                <a href="#student-profile" class="action-card">
+                                    <div class="action-icon"><i class="fas fa-user-circle"></i></div>
+                                    <div class="action-content">
+                                        <h4>My Profile</h4>
+                                        <p>Update your information and skills</p>
+                                    </div>
+                                    <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
+                                </a>
+                                <a href="#job-recommendations" class="action-card" id="recommendations-action-link">
+                                    <div class="action-icon"><i class="fas fa-magic"></i></div>
+                                    <div class="action-content">
+                                        <h4>Job Recommendations</h4>
+                                        <p>Get personalized job matches</p>
+                                        <span class="badge locked" id="recommendations-badge">Locked</span>
+                                    </div>
+                                    <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
+                                </a>
+                                <a href="#announcements" class="action-card">
+                                    <div class="action-icon"><i class="fas fa-bullhorn"></i></div>
+                                    <div class="action-content">
+                                        <h4>Announcements</h4>
+                                        <p>View latest updates and events</p>
+                                    </div>
+                                    <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
+                                </a>
+                                <a href="#my-applications" class="action-card">
+                                    <div class="action-icon"><i class="fas fa-file-alt"></i></div>
+                                    <div class="action-content">
+                                        <h4>My Applications</h4>
+                                        <p>Track your job applications</p>
+                                    </div>
+                                    <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Student Profile -->
+                        <div id="student-profile" class="dashboard-section" style="display: none;">
+                            <div class="dashboard-header">
+                                <h2>My Profile</h2>
+                                <p class="dashboard-subtitle">Update your information for better job matches</p>
+                            </div>
+                            
+                            <div class="profile-form-container">
+                                <!-- Personal Information - 2 columns with better balance -->
+                                <div class="form-section">
+                                    <h3 class="form-section-title"><i class="fas fa-user"></i> Personal Information</h3>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="profile-name">Full Name</label>
+                                            <input type="text" id="profile-name" placeholder="Enter your full name">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="profile-email">Email Address</label>
+                                            <input type="email" id="profile-email" readonly>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="profile-student-id">Student ID</label>
+                                            <input type="text" id="profile-student-id" placeholder="e.g., 2024-00001" readonly>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="profile-contact">Contact Number</label>
+                                            <input type="tel" id="profile-contact" placeholder="e.g., 09123456789">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Education - 2 columns with better balance -->
+                                <div class="form-section">
+                                    <h3 class="form-section-title"><i class="fas fa-graduation-cap"></i> Education</h3>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="profile-degree">Degree Program</label>
+                                            <select id="profile-degree">
+                                                <option value="">Select degree program</option>
+                                                <option value="BS Computer Science">BS Computer Science</option>
+                                                <option value="BS Information Technology">BS Information Technology</option>
+                                                <option value="BS Information Systems">BS Information Systems</option>
+                                                <option value="BS Computer Engineering">BS Computer Engineering</option>
+                                                <option value="BS Electronics Engineering">BS Electronics Engineering</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="profile-year-level">Year Level</label>
+                                            <select id="profile-year-level">
+                                                <option value="">Select year level</option>
+                                                <option value="1st Year">1st Year</option>
+                                                <option value="2nd Year">2nd Year</option>
+                                                <option value="3rd Year">3rd Year</option>
+                                                <option value="4th Year">4th Year</option>
+                                                <option value="5th Year">5th Year</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="profile-gwa">GWA (1.0 - 5.0)</label>
+                                            <input type="number" id="profile-gwa" step="0.01" min="1.0" max="5.0" placeholder="e.g., 1.75">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="profile-section">Section</label>
+                                            <input type="text" id="profile-section" placeholder="e.g., BSCS 4A">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Skills - Full width with better layout -->
+                                <div class="form-section">
+                                    <h3 class="form-section-title"><i class="fas fa-tools"></i> Skills & Expertise</h3>
+                                    <div class="form-group">
+                                        <label for="profile-skills">Technical Skills (comma separated)</label>
+                                        <textarea id="profile-skills" rows="3" placeholder="e.g., Python, JavaScript, React, SQL, Data Analysis, UI/UX Design"></textarea>
+                                        <p class="text-muted mt-2">Add relevant skills to improve job matching</p>
+                                    </div>
+                                </div>
+                                
+                                <!-- Certifications - Full width with improved layout -->
+                                <div class="form-section">
+                                    <h3 class="form-section-title"><i class="fas fa-certificate"></i> Certifications</h3>
+                                    <div class="certifications-list" id="certifications-list">
+                                        <p class="text-muted">No certifications added yet.</p>
+                                    </div>
+                                    <button type="button" class="btn-secondary btn-sm" id="add-certification" style="margin-top: 12px;">
+                                        <i class="fas fa-plus"></i> Add Certification
+                                    </button>
+                                </div>
+                                
+                                <!-- Form Actions -->
+                                <div class="form-actions">
+                                    <button type="button" class="btn-primary" id="save-profile">Save Profile</button>
+                                    <button type="button" class="btn-secondary" id="cancel-profile">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Job Recommendations -->
+                        <div id="job-recommendations" class="dashboard-section" style="display: none;">
+                            <div class="dashboard-header">
+                                <h2>Job Recommendations</h2>
+                                <p class="dashboard-subtitle">Personalized job matches based on your profile</p>
+                            </div>
+                            
+                            <div class="profile-completion-warning" id="profile-warning" style="display: none;">
+                                <div class="warning-content">
+                                    <i class="fas fa-lock"></i>
+                                    <div>
+                                        <h3>Profile Incomplete</h3>
+                                        <p>Complete your profile to unlock job recommendations</p>
+                                        <a href="#student-profile" class="btn-primary btn-sm">Complete Profile Now</a>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="filters-container" id="job-filters" style="display: grid;">
+                                <div class="filter-group">
+                                    <label for="filter-industry">Industry</label>
+                                    <select id="filter-industry">
+                                        <option value="">All Industries</option>
+                                        <option value="it">IT & Software</option>
+                                        <option value="finance">Finance</option>
+                                        <option value="healthcare">Healthcare</option>
+                                        <option value="education">Education</option>
+                                        <option value="engineering">Engineering</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="filter-job-type">Job Type</label>
+                                    <select id="filter-job-type">
+                                        <option value="">All Types</option>
+                                        <option value="fulltime">Full-time</option>
+                                        <option value="parttime">Part-time</option>
+                                        <option value="internship">Internship</option>
+                                        <option value="contract">Contract</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="filter-location">Location</label>
+                                    <input type="text" id="filter-location" placeholder="Enter location">
+                                </div>
+                                <div class="filter-group">
+                                    <label for="filter-match">Min Match Score</label>
+                                    <select id="filter-match">
+                                        <option value="0">All Scores</option>
+                                        <option value="70">70%+</option>
+                                        <option value="80">80%+</option>
+                                        <option value="90">90%+</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div class="jobs-grid" id="jobs-grid"></div>
+                        </div>
+
+                        <!-- My Applications -->
+                        <div id="my-applications" class="dashboard-section" style="display: none;">
+                            <div class="dashboard-header">
+                                <h2>My Applications</h2>
+                                <p class="dashboard-subtitle">Track your job applications</p>
+                            </div>
+                            
+                            <div class="applications-list" id="applications-list">
+                                <p class="text-muted">No applications yet. Browse jobs and apply!</p>
+                            </div>
+                        </div>
+
+                        <!-- Announcements (Student View) -->
+                        <div id="announcements" class="dashboard-section" style="display: none;">
+                            <div class="dashboard-header">
+                                <h2>Announcements</h2>
+                                <p class="dashboard-subtitle">Stay updated with career events and opportunities</p>
+                            </div>
+                            
+                            <div class="announcements-grid" id="student-announcements-grid"></div>
+                        </div>
+
+                        <!-- Employer Dashboard -->
+                        <div id="employer-dashboard" class="dashboard-section" style="display: none;">
+                            <div class="dashboard-header">
+                                <h2>Employer Dashboard</h2>
+                                <p class="dashboard-subtitle">Manage your job postings and applicants</p>
+                            </div>
+                            
+                            <div class="stats-grid">
+                                <div class="stat-card">
+                                    <div class="stat-icon employer"><i class="fas fa-briefcase"></i></div>
+                                    <div class="stat-content">
+                                        <h3 class="stat-number" id="employer-active-jobs">0</h3>
+                                        <p class="stat-label">Active Job Posts</p>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon employer"><i class="fas fa-users"></i></div>
+                                    <div class="stat-content">
+                                        <h3 class="stat-number" id="employer-total-applicants">0</h3>
+                                        <p class="stat-label">Total Applicants</p>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon employer"><i class="fas fa-chart-line"></i></div>
+                                    <div class="stat-content">
+                                        <h3 class="stat-number" id="employer-avg-match">0%</h3>
+                                        <p class="stat-label">Avg Match Score</p>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon employer"><i class="fas fa-eye"></i></div>
+                                    <div class="stat-content">
+                                        <h3 class="stat-number" id="employer-views">0</h3>
+                                        <p class="stat-label">Profile Views</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="section-header with-action">
+                                <h3>Recent Job Posts</h3>
+                                <button class="btn-primary" id="create-job-btn">
+                                    <i class="fas fa-plus"></i> Create Job Post
+                                </button>
+                            </div>
+                            
+                            <div class="jobs-list" id="employer-jobs-list"></div>
+                            
+                            <div class="section-header">
+                                <h3>Top Matching Applicants</h3>
+                            </div>
+                            
+                            <div class="applicants-horizontal-scroll" id="top-applicants-scroll"></div>
+                        </div>
+
+                        <!-- Create Job Posting -->
+                        <div id="create-job" class="dashboard-section" style="display: none;">
+                            <div class="dashboard-header">
+                                <h2>Create Job Posting</h2>
+                                <p class="dashboard-subtitle">Post a new job opportunity for students</p>
+                            </div>
+                            
+                            <div class="job-form-container">
+                                <!-- Job Details - 2 columns optimized -->
+                                <div class="form-section">
+                                    <h3 class="form-section-title"><i class="fas fa-info-circle"></i> Job Details</h3>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="job-title">Job Title *</label>
+                                            <input type="text" id="job-title" placeholder="e.g., Junior Software Developer">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="job-industry">Industry *</label>
+                                            <select id="job-industry">
+                                                <option value="">Select industry</option>
+                                                <option value="it">IT & Software</option>
+                                                <option value="finance">Finance & Banking</option>
+                                                <option value="healthcare">Healthcare</option>
+                                                <option value="education">Education</option>
+                                                <option value="engineering">Engineering</option>
+                                                <option value="retail">Retail & Sales</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="job-type">Employment Type *</label>
+                                            <select id="job-type">
+                                                <option value="">Select type</option>
+                                                <option value="fulltime">Full-time</option>
+                                                <option value="parttime">Part-time</option>
+                                                <option value="internship">Internship (OJT)</option>
+                                                <option value="contract">Contractual</option>
+                                                <option value="freelance">Freelance</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="job-location">Location *</label>
+                                            <input type="text" id="job-location" placeholder="e.g., Makati City, Metro Manila">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="job-salary-min">Salary Range (Min)</label>
+                                            <input type="number" id="job-salary-min" placeholder="e.g., 25000">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="job-salary-max">Salary Range (Max)</label>
+                                            <input type="number" id="job-salary-max" placeholder="e.g., 35000">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="job-description">Job Description *</label>
+                                        <textarea id="job-description" rows="4" placeholder="Describe the role, responsibilities, and expectations..."></textarea>
+                                    </div>
+                                </div>
+                                
+                                <!-- Requirements - 2 columns optimized -->
+                                <div class="form-section">
+                                    <h3 class="form-section-title"><i class="fas fa-clipboard-list"></i> Requirements</h3>
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="job-education">Minimum Education *</label>
+                                            <select id="job-education">
+                                                <option value="">Select education level</option>
+                                                <option value="bachelor">Bachelor's Degree</option>
+                                                <option value="master">Master's Degree</option>
+                                                <option value="associate">Associate Degree</option>
+                                                <option value="highschool">High School Diploma</option>
+                                                <option value="vocational">Vocational/Tech</option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="job-experience">Years of Experience</label>
+                                            <input type="number" id="job-experience" min="0" placeholder="e.g., 2 (optional)">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="job-gwa">Preferred GWA (Optional)</label>
+                                            <input type="number" id="job-gwa" step="0.01" min="1.0" max="5.0" placeholder="e.g., 2.0">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="job-skills">Required Skills *</label>
+                                            <input type="text" id="job-skills" placeholder="e.g., Python, JavaScript, React, SQL">
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="job-benefits">Benefits (Optional)</label>
+                                        <textarea id="job-benefits" rows="2" placeholder="e.g., HMO, 13th month pay, Hybrid setup"></textarea>
+                                    </div>
+                                </div>
+                                
+                                <!-- Form Actions -->
+                                <div class="form-actions">
+                                    <button type="button" class="btn-primary" id="submit-job">Submit for Approval</button>
+                                    <button type="button" class="btn-secondary" id="cancel-job">Cancel</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Ranked Applicants -->
+                        <div id="ranked-applicants" class="dashboard-section" style="display: none;">
+                            <div class="dashboard-header">
+                                <h2>Ranked Applicants</h2>
+                                <p class="dashboard-subtitle">View and compare applicants for your job posts</p>
+                            </div>
+                            
+                            <div class="job-selector">
+                                <div class="form-row" style="grid-template-columns: 1fr auto; align-items: end;">
+                                    <div class="form-group" style="margin-bottom: 0;">
+                                        <label for="select-job">Select Job Post:</label>
+                                        <select id="select-job" style="max-width: 100%;">
+                                            <option value="">-- Choose a job post --</option>
+                                        </select>
+                                    </div>
+                                    <button class="btn-primary btn-sm" id="refresh-applicants" style="height: 42px;">
+                                        <i class="fas fa-sync-alt"></i> Refresh
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Skills Comparison - Collapsible/Visible when job selected -->
+                            <div class="skills-comparison" id="skills-comparison" style="display: none;">
+                                <div class="section-header with-action" style="margin-bottom: 16px;">
+                                    <h3>Skills Comparison</h3>
+                                    <span class="badge info">Required vs. Applicant Skills</span>
+                                </div>
+                                <div style="overflow-x: auto;">
+                                    <table class="comparison-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Skill</th>
+                                                <th>Status</th>
+                                                <th colspan="4">Applicants</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="skills-table-body"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            
+                            <!-- Applicants Table -->
+                            <div class="applicants-table-container">
+                                <div class="section-header with-action" style="margin-bottom: 16px; padding: 0 16px;">
+                                    <h3>Applicants Ranking</h3>
+                                    <div>
+                                        <span class="text-muted mr-2">Sort by:</span>
+                                        <select id="sort-applicants" style="padding: 6px 10px; border-radius: 8px; border: 1px solid #dee2e6;">
+                                            <option value="match">Match Score</option>
+                                            <option value="gwa">GWA</option>
+                                            <option value="name">Name</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <table class="applicants-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Rank</th>
+                                            <th>Applicant</th>
+                                            <th>Degree</th>
+                                            <th>GWA</th>
+                                            <th>Skills Match</th>
+                                            <th>Match Score</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="applicants-table-body">
+                                        <tr>
+                                            <td colspan="7" class="text-center text-muted">Select a job to view applicants</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Admin Dashboard -->
+                        <div id="admin-dashboard" class="dashboard-section" style="display: none;">
+                            <div class="dashboard-header">
+                                <h2>Admin Dashboard</h2>
+                                <p class="dashboard-subtitle">System administration and monitoring</p>
+                            </div>
+                            
+                            <div class="stats-grid">
+                                <div class="stat-card">
+                                    <div class="stat-icon admin"><i class="fas fa-user-graduate"></i></div>
+                                    <div class="stat-content">
+                                        <h3 class="stat-number" id="total-students">0</h3>
+                                        <p class="stat-label">Total Students</p>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon admin"><i class="fas fa-building"></i></div>
+                                    <div class="stat-content">
+                                        <h3 class="stat-number" id="total-employers">0</h3>
+                                        <p class="stat-label">Total Employers</p>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon admin"><i class="fas fa-briefcase"></i></div>
+                                    <div class="stat-content">
+                                        <h3 class="stat-number" id="total-jobs">0</h3>
+                                        <p class="stat-label">Job Posts</p>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon admin"><i class="fas fa-file-alt"></i></div>
+                                    <div class="stat-content">
+                                        <h3 class="stat-number" id="total-applications">0</h3>
+                                        <p class="stat-label">Applications</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="actions-grid">
+                                <a href="#user-management" class="action-card">
+                                    <div class="action-icon"><i class="fas fa-users-cog"></i></div>
+                                    <div class="action-content">
+                                        <h4>User Management</h4>
+                                        <p>Manage all user accounts</p>
+                                    </div>
+                                    <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
+                                </a>
+                                <a href="#job-management" class="action-card">
+                                    <div class="action-icon"><i class="fas fa-clipboard-check"></i></div>
+                                    <div class="action-content">
+                                        <h4>Job Management</h4>
+                                        <p>Approve and manage job posts</p>
+                                    </div>
+                                    <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
+                                </a>
+                                <a href="#data-monitoring" class="action-card">
+                                    <div class="action-icon"><i class="fas fa-chart-pie"></i></div>
+                                    <div class="action-content">
+                                        <h4>Data Monitoring</h4>
+                                        <p>Track system metrics</p>
+                                    </div>
+                                    <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
+                                </a>
+                                <a href="#reports-announcements" class="action-card">
+                                    <div class="action-icon"><i class="fas fa-bullhorn"></i></div>
+                                    <div class="action-content">
+                                        <h4>Reports & Announcements</h4>
+                                        <p>Generate reports and manage announcements</p>
+                                    </div>
+                                    <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
+                                </a>
+                            </div>
+                            
+                            <div class="section-header">
+                                <h3>Recent Activity</h3>
+                            </div>
+                            
+                            <div class="activity-feed" id="activity-feed"></div>
+                        </div>
+
+                        <!-- User Management -->
+                        <div id="user-management" class="dashboard-section" style="display: none;">
+                            <div class="dashboard-header with-action">
+                                <div>
+                                    <h2>User Management</h2>
+                                    <p class="dashboard-subtitle">Manage all user accounts in the system</p>
+                                </div>
+                                <div class="action-buttons">
+                                    <button class="btn-primary" id="add-employer-btn">
+                                        <i class="fas fa-plus"></i> Add Employer
+                                    </button>
+                                    <button class="btn-secondary btn-sm" id="export-users">
+                                        <i class="fas fa-download"></i> Export
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- Filters -->
+                            <div class="filters-container" style="grid-template-columns: repeat(3, 1fr) auto; margin-bottom: 20px;">
+                                <div class="filter-group">
+                                    <label for="user-role-filter">Role</label>
+                                    <select id="user-role-filter">
+                                        <option value="">All Roles</option>
+                                        <option value="student">Students</option>
+                                        <option value="employer">Employers</option>
+                                        <option value="admin">Admins</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="user-status-filter">Status</label>
+                                    <select id="user-status-filter">
+                                        <option value="">All Status</option>
+                                        <option value="active">Active</option>
+                                        <option value="pending">Pending</option>
+                                        <option value="inactive">Inactive</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <label for="user-search">Search</label>
+                                    <input type="text" id="user-search" placeholder="Name or email...">
+                                </div>
+                                <button class="btn-primary btn-sm" id="apply-user-filters" style="align-self: flex-end;">Apply</button>
+                            </div>
+                            
+                            <!-- Users Table -->
+                            <div class="users-table-container">
+                                <table class="users-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Role</th>
+                                            <th>Status</th>
+                                            <th>Profile</th>
+                                            <th>Last Active</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="users-table-body"></tbody>
+                                </table>
+                            </div>
+                            
+                            <!-- Pagination -->
+                            <div class="pagination" style="display: flex; justify-content: flex-end; margin-top: 20px; gap: 8px;">
+                                <button class="btn-secondary btn-sm" disabled>&laquo; Prev</button>
+                                <span style="padding: 8px 12px;">Page 1 of 3</span>
+                                <button class="btn-secondary btn-sm">Next &raquo;</button>
+                            </div>
+                        </div>
+
+                        <!-- Job Management -->
+                        <div id="job-management" class="dashboard-section" style="display: none;">
+                            <div class="dashboard-header with-action">
+                                <div>
+                                    <h2>Job Post Management</h2>
+                                    <p class="dashboard-subtitle">Approve, review, and manage job posts</p>
+                                </div>
+                                <div>
+                                    <span class="status-badge pending" id="pending-jobs-count">5 pending</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Filter Bar -->
+                            <div class="job-filter-bar" style="display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 16px;">
+                                <div class="filter-group search-input">
+                                    <i class="fas fa-search"></i>
+                                    <input type="text" id="job-search-admin" placeholder="Search by job title or company...">
+                                </div>
+                                <div class="filter-group">
+                                    <select id="job-status-filter">
+                                        <option value="">All Status</option>
+                                        <option value="pending">Pending</option>
+                                        <option value="approved">Approved</option>
+                                        <option value="rejected">Rejected</option>
+                                    </select>
+                                </div>
+                                <div class="filter-group">
+                                    <select id="job-industry-filter">
+                                        <option value="">All Industries</option>
+                                        <option value="it">IT & Software</option>
+                                        <option value="finance">Finance</option>
+                                        <option value="healthcare">Healthcare</option>
+                                    </select>
+                                </div>
+                                <button class="btn-primary btn-sm" id="refresh-job-list">
+                                    <i class="fas fa-sync-alt"></i> Refresh
+                                </button>
+                            </div>
+                            
+                            <!-- Stats Summary -->
+                            <div class="stats-summary">
+                                <div class="stat-summary-card">
+                                    <div class="stat-summary-label">Total Jobs</div>
+                                    <div class="stat-summary-value" id="total-jobs-count">0</div>
+                                </div>
+                                <div class="stat-summary-card">
+                                    <div class="stat-summary-label">Pending</div>
+                                    <div class="stat-summary-value" style="color: #b45b0a;" id="pending-jobs-count2">0</div>
+                                </div>
+                                <div class="stat-summary-card">
+                                    <div class="stat-summary-label">Approved</div>
+                                    <div class="stat-summary-value" style="color: #28a745;" id="approved-jobs-count">0</div>
+                                </div>
+                                <div class="stat-summary-card">
+                                    <div class="stat-summary-label">Rejected</div>
+                                    <div class="stat-summary-value" style="color: #dc3545;" id="rejected-jobs-count">0</div>
+                                </div>
+                            </div>
+                            
+                            <!-- Job Cards Container -->
+                            <div class="job-cards-container" id="admin-job-cards"></div>
+                        </div>
+
+                        <!-- Data Monitoring -->
+                        <div id="data-monitoring" class="dashboard-section" style="display: none;">
+                            <div class="dashboard-header">
+                                <h2>Data Monitoring</h2>
+                                <p class="dashboard-subtitle">Track system data completeness and metrics</p>
+                            </div>
+                            
+                            <!-- Key Metrics Cards -->
+                            <div class="stats-summary">
+                                <div class="stat-summary-card">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(46,125,50,0.1); display: flex; align-items: center; justify-content: center; color: #2E7D32; font-size: 20px;">
+                                            <i class="fas fa-users"></i>
+                                        </div>
+                                        <div>
+                                            <div class="stat-summary-label">Total Students</div>
+                                            <div class="stat-summary-value" id="total-students-monitor">0</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="stat-summary-card">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(255,107,53,0.1); display: flex; align-items: center; justify-content: center; color: #FF6B35; font-size: 20px;">
+                                            <i class="fas fa-building"></i>
+                                        </div>
+                                        <div>
+                                            <div class="stat-summary-label">Employers</div>
+                                            <div class="stat-summary-value" id="total-employers-monitor">0</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="stat-summary-card">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(0,51,102,0.1); display: flex; align-items: center; justify-content: center; color: #003366; font-size: 20px;">
+                                            <i class="fas fa-briefcase"></i>
+                                        </div>
+                                        <div>
+                                            <div class="stat-summary-label">Active Jobs</div>
+                                            <div class="stat-summary-value" id="active-jobs-monitor">0</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="stat-summary-card">
+                                    <div style="display: flex; align-items: center; gap: 12px;">
+                                        <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(23,162,184,0.1); display: flex; align-items: center; justify-content: center; color: #17a2b8; font-size: 20px;">
+                                            <i class="fas fa-file-alt"></i>
+                                        </div>
+                                        <div>
+                                            <div class="stat-summary-label">Applications</div>
+                                            <div class="stat-summary-value" id="total-applications-monitor">0</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Main Monitoring Layout - 2 columns -->
+                            <div class="monitoring-split-layout">
+                                <!-- Left Column - Profile Completeness -->
+                                <div class="monitoring-card">
+                                    <div class="card-header">
+                                        <h3><i class="fas fa-chart-pie"></i> Profile Completeness</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="big-stat">
+                                            <span id="incomplete-profiles-count">0</span>
+                                            <span class="stat-label">students with incomplete profiles</span>
+                                        </div>
+                                        
+                                        <div style="margin: 20px 0;">
+                                            <div class="average-completion">
+                                                <span>Average Completion Rate</span>
+                                                <span class="percentage" id="avg-completion-percentage">0%</span>
+                                            </div>
+                                            <div class="progress-bar large">
+                                                <div class="progress-fill" id="avg-completion-progress" style="width: 0%;"></div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 20px;">
+                                            <div style="background: #f8f9fa; padding: 16px; border-radius: 12px; text-align: center;">
+                                                <div style="font-size: 28px; font-weight: 700; color: #28a745;" id="complete-profiles-count">0</div>
+                                                <div style="font-size: 12px; color: #64748b;">Complete Profiles</div>
+                                            </div>
+                                            <div style="background: #f8f9fa; padding: 16px; border-radius: 12px; text-align: center;">
+                                                <div style="font-size: 28px; font-weight: 700; color: #dc3545;" id="incomplete-profiles-count2">0</div>
+                                                <div style="font-size: 12px; color: #64748b;">Incomplete</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Right Column - Data Gaps -->
+                                <div class="monitoring-card">
+                                    <div class="card-header">
+                                        <h3><i class="fas fa-exclamation-triangle"></i> Data Gaps Analysis</h3>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="gap-item">
+                                            <div class="gap-stat">
+                                                <span id="missing-skills-count">0</span>
+                                                <span class="gap-label">students missing skills</span>
+                                            </div>
+                                            <div class="progress-bar" style="margin-top: 8px;">
+                                                <div class="progress-fill" id="missing-skills-progress" style="width: 0%; background: #ffc107;"></div>
+                                            </div>
+                                        </div>
+                                        <div class="gap-item">
+                                            <div class="gap-stat">
+                                                <span id="missing-gwa-count">0</span>
+                                                <span class="gap-label">students missing GWA</span>
+                                            </div>
+                                            <div class="progress-bar" style="margin-top: 8px;">
+                                                <div class="progress-fill" id="missing-gwa-progress" style="width: 0%; background: #ffc107;"></div>
+                                            </div>
+                                        </div>
+                                        <div class="gap-item">
+                                            <div class="gap-stat">
+                                                <span id="missing-degree-count">0</span>
+                                                <span class="gap-label">students missing degree</span>
+                                            </div>
+                                            <div class="progress-bar" style="margin-top: 8px;">
+                                                <div class="progress-fill" id="missing-degree-progress" style="width: 0%; background: #ffc107;"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Student Profiles Table -->
+                            <div class="student-data-table-container">
+                                <div class="section-header with-action" style="margin-bottom: 16px;">
+                                    <h3>Student Profiles Overview</h3>
+                                    <div>
+                                        <input type="text" id="student-search" placeholder="Search student..." style="padding: 8px 12px; border: 1px solid #dee2e6; border-radius: 8px; font-size: 13px;">
+                                    </div>
+                                </div>
+                                <table class="student-data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Student Name</th>
+                                            <th>Completion</th>
+                                            <th>Skills</th>
+                                            <th>GWA</th>
+                                            <th>Degree</th>
+                                            <th>Last Updated</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="student-data-table-body"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Reports & Announcements -->
+                        <div id="reports-announcements" class="dashboard-section" style="display: none;">
+                            <div class="dashboard-header">
+                                <h2>Reports & Announcements</h2>
+                                <p class="dashboard-subtitle">Generate system reports and manage campus announcements</p>
+                            </div>
+                            
+                            <!-- Quick Stats Row -->
+                            <div class="stats-grid" style="margin-bottom: 28px; grid-template-columns: repeat(3, 1fr);">
+                                <div class="stat-card">
+                                    <div class="stat-icon" style="background: linear-gradient(135deg, #2E7D32, #4CAF50);">
+                                        <i class="fas fa-bullhorn"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <h3 class="stat-number" id="total-announcements">0</h3>
+                                        <p class="stat-label">Total Announcements</p>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon" style="background: linear-gradient(135deg, #FF6B35, #ff8c42);">
+                                        <i class="fas fa-calendar-alt"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <h3 class="stat-number" id="upcoming-events">0</h3>
+                                        <p class="stat-label">Upcoming Events</p>
+                                    </div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-icon" style="background: linear-gradient(135deg, #003366, #0056b3);">
+                                        <i class="fas fa-file-pdf"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <h3 class="stat-number" id="reports-generated">12</h3>
+                                        <p class="stat-label">Reports Generated</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Tab Navigation -->
+                            <div style="display: flex; gap: 10px; margin-bottom: 24px; border-bottom: 2px solid #e9ecef; padding-bottom: 2px; flex-wrap: wrap;">
+                                <button class="tab-btn active" data-tab="reports-tab" style="padding: 12px 24px; background: none; border: none; border-bottom: 3px solid #2E7D32; font-weight: 600; color: #2E7D32; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
+                                    <i class="fas fa-chart-bar"></i>Generate Reports
+                                </button>
+                                <button class="tab-btn" data-tab="announcements-tab" style="padding: 12px 24px; background: none; border: none; border-bottom: 3px solid transparent; font-weight: 500; color: #64748b; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
+                                    <i class="fas fa-bullhorn"></i>Manage Announcements
+                                </button>
+                                <button class="tab-btn" data-tab="templates-tab" style="padding: 12px 24px; background: none; border: none; border-bottom: 3px solid transparent; font-weight: 500; color: #64748b; cursor: pointer; display: inline-flex; align-items: center; gap: 8px;">
+                                    <i class="fas fa-file-alt"></i>Templates
+                                </button>
+                            </div>
+                            
+                            <!-- Reports Tab Content -->
+                            <div id="reports-tab" class="tab-content active">
+                                <!-- Report Categories -->
+                                <div style="margin-bottom: 28px;">
+                                    <h3 style="font-size: 18px; font-weight: 600; color: #1e293b; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                                        <i class="fas fa-chart-pie" style="color: #2E7D32;"></i>
+                                        Quick Report Generation
+                                    </h3>
+                                    
+                                    <div class="reports-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                                        <!-- Placement Report Card -->
+                                        <div class="report-card" style="background: white; border-radius: 20px; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); display: flex; gap: 20px; align-items: flex-start; border: 1px solid rgba(0,0,0,0.03); transition: all 0.3s ease;">
+                                            <div style="width: 60px; height: 60px; border-radius: 16px; background: linear-gradient(135deg, #2E7D32, #4CAF50); display: flex; align-items: center; justify-content: center; color: white; font-size: 28px;">
+                                                <i class="fas fa-briefcase"></i>
+                                            </div>
+                                            <div style="flex: 1;">
+                                                <h4 style="font-size: 18px; font-weight: 600; color: #1e293b; margin-bottom: 4px;">Placement Report</h4>
+                                                <p style="font-size: 14px; color: #64748b; margin-bottom: 16px;">Monthly placement statistics, graduate outcomes, and hiring trends</p>
+                                                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                                    <button class="btn-primary btn-sm generate-report" data-report="placement-pdf" style="padding: 8px 16px; background: #2E7D32; color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                                                        <i class="fas fa-file-pdf"></i> PDF
+                                                    </button>
+                                                    <button class="btn-secondary btn-sm generate-report" data-report="placement-excel" style="padding: 8px 16px; background: white; color: #2E7D32; border: 2px solid #2E7D32; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                                                        <i class="fas fa-file-excel"></i> Excel
+                                                    </button>
+                                                    <button class="btn-secondary btn-sm generate-report" data-report="placement-csv" style="padding: 8px 16px; background: white; color: #64748b; border: 1px solid #dee2e6; border-radius: 8px; font-size: 13px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                                                        <i class="fas fa-file-csv"></i> CSV
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Analytics Report Card -->
+                                        <div class="report-card" style="background: white; border-radius: 20px; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); display: flex; gap: 20px; align-items: flex-start; border: 1px solid rgba(0,0,0,0.03);">
+                                            <div style="width: 60px; height: 60px; border-radius: 16px; background: linear-gradient(135deg, #FF6B35, #ff8c42); display: flex; align-items: center; justify-content: center; color: white; font-size: 28px;">
+                                                <i class="fas fa-chart-line"></i>
+                                            </div>
+                                            <div style="flex: 1;">
+                                                <h4 style="font-size: 18px; font-weight: 600; color: #1e293b; margin-bottom: 4px;">Analytics Report</h4>
+                                                <p style="font-size: 14px; color: #64748b; margin-bottom: 16px;">System usage metrics, user engagement, and platform analytics</p>
+                                                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                                    <button class="btn-primary btn-sm generate-report" data-report="analytics-pdf" style="padding: 8px 16px; background: #2E7D32; color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                                                        <i class="fas fa-file-pdf"></i> PDF
+                                                    </button>
+                                                    <button class="btn-secondary btn-sm generate-report" data-report="analytics-excel" style="padding: 8px 16px; background: white; color: #2E7D32; border: 2px solid #2E7D32; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                                                        <i class="fas fa-file-excel"></i> Excel
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- User Activity Report Card -->
+                                        <div class="report-card" style="background: white; border-radius: 20px; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); display: flex; gap: 20px; align-items: flex-start; border: 1px solid rgba(0,0,0,0.03);">
+                                            <div style="width: 60px; height: 60px; border-radius: 16px; background: linear-gradient(135deg, #003366, #0056b3); display: flex; align-items: center; justify-content: center; color: white; font-size: 28px;">
+                                                <i class="fas fa-users"></i>
+                                            </div>
+                                            <div style="flex: 1;">
+                                                <h4 style="font-size: 18px; font-weight: 600; color: #1e293b; margin-bottom: 4px;">User Activity Report</h4>
+                                                <p style="font-size: 14px; color: #64748b; margin-bottom: 16px;">Login history, registrations, and user activity logs</p>
+                                                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                                    <button class="btn-primary btn-sm generate-report" data-report="users-pdf" style="padding: 8px 16px; background: #2E7D32; color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                                                        <i class="fas fa-file-pdf"></i> PDF
+                                                    </button>
+                                                    <button class="btn-secondary btn-sm generate-report" data-report="users-excel" style="padding: 8px 16px; background: white; color: #2E7D32; border: 2px solid #2E7D32; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                                                        <i class="fas fa-file-excel"></i> Excel
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Job Posting Report Card -->
+                                        <div class="report-card" style="background: white; border-radius: 20px; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); display: flex; gap: 20px; align-items: flex-start; border: 1px solid rgba(0,0,0,0.03);">
+                                            <div style="width: 60px; height: 60px; border-radius: 16px; background: linear-gradient(135deg, #7B1FA2, #9C27B0); display: flex; align-items: center; justify-content: center; color: white; font-size: 28px;">
+                                                <i class="fas fa-briefcase"></i>
+                                            </div>
+                                            <div style="flex: 1;">
+                                                <h4 style="font-size: 18px; font-weight: 600; color: #1e293b; margin-bottom: 4px;">Job Posting Report</h4>
+                                                <p style="font-size: 14px; color: #64748b; margin-bottom: 16px;">Job posts by industry, status, and application statistics</p>
+                                                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                                                    <button class="btn-primary btn-sm generate-report" data-report="jobs-pdf" style="padding: 8px 16px; background: #2E7D32; color: white; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                                                        <i class="fas fa-file-pdf"></i> PDF
+                                                    </button>
+                                                    <button class="btn-secondary btn-sm generate-report" data-report="jobs-excel" style="padding: 8px 16px; background: white; color: #2E7D32; border: 2px solid #2E7D32; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;">
+                                                        <i class="fas fa-file-excel"></i> Excel
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Scheduled Reports Section -->
+                                <div style="margin-top: 32px;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 16px;">
+                                        <h3 style="font-size: 18px; font-weight: 600; color: #1e293b; display: flex; align-items: center; gap: 8px;">
+                                            <i class="fas fa-clock" style="color: #2E7D32;"></i>
+                                            Scheduled Reports
+                                        </h3>
+                                        <button class="btn-secondary btn-sm" id="schedule-report-btn">
+                                            <i class="fas fa-plus"></i> Schedule New
+                                        </button>
+                                    </div>
+                                    
+                                    <div style="background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+                                        <table style="width: 100%; border-collapse: collapse;">
+                                            <thead style="background: #f8f9fa;">
+                                                <tr>
+                                                    <th style="padding: 14px 16px; text-align: left; font-size: 13px; font-weight: 600; color: #475569; text-transform: uppercase;">Report Name</th>
+                                                    <th style="padding: 14px 16px; text-align: left; font-size: 13px; font-weight: 600; color: #475569; text-transform: uppercase;">Frequency</th>
+                                                    <th style="padding: 14px 16px; text-align: left; font-size: 13px; font-weight: 600; color: #475569; text-transform: uppercase;">Next Run</th>
+                                                    <th style="padding: 14px 16px; text-align: left; font-size: 13px; font-weight: 600; color: #475569; text-transform: uppercase;">Format</th>
+                                                    <th style="padding: 14px 16px; text-align: left; font-size: 13px; font-weight: 600; color: #475569; text-transform: uppercase;">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td style="padding: 14px 16px; border-bottom: 1px solid #e9ecef; font-weight: 500;">Monthly Placement Report</td>
+                                                    <td style="padding: 14px 16px; border-bottom: 1px solid #e9ecef;">Monthly</td>
+                                                    <td style="padding: 14px 16px; border-bottom: 1px solid #e9ecef;">Apr 1, 2024</td>
+                                                    <td style="padding: 14px 16px; border-bottom: 1px solid #e9ecef;"><span style="background: rgba(46,125,50,0.1); color: #2E7D32; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;">PDF</span></td>
+                                                    <td style="padding: 14px 16px; border-bottom: 1px solid #e9ecef;">
+                                                        <button class="btn-secondary btn-sm" style="padding: 4px 8px;"><i class="fas fa-edit"></i></button>
+                                                        <button class="btn-danger btn-sm" style="padding: 4px 8px;"><i class="fas fa-trash"></i></button>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="padding: 14px 16px; border-bottom: 1px solid #e9ecef; font-weight: 500;">Weekly Analytics Summary</td>
+                                                    <td style="padding: 14px 16px; border-bottom: 1px solid #e9ecef;">Weekly</td>
+                                                    <td style="padding: 14px 16px; border-bottom: 1px solid #e9ecef;">Mar 25, 2024</td>
+                                                    <td style="padding: 14px 16px; border-bottom: 1px solid #e9ecef;"><span style="background: rgba(255,107,53,0.1); color: #FF6B35; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;">Excel</span></td>
+                                                    <td style="padding: 14px 16px; border-bottom: 1px solid #e9ecef;">
+                                                        <button class="btn-secondary btn-sm" style="padding: 4px 8px;"><i class="fas fa-edit"></i></button>
+                                                        <button class="btn-danger btn-sm" style="padding: 4px 8px;"><i class="fas fa-trash"></i></button>
+                                                    </td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Announcements Tab Content -->
+                            <div id="announcements-tab" class="tab-content" style="display: none;">
+                                <!-- Announcement Management Header -->
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px;">
+                                    <div>
+                                        <h3 style="font-size: 18px; font-weight: 600; color: #1e293b; margin-bottom: 4px;">Announcement Management</h3>
+                                        <p style="font-size: 14px; color: #64748b;">Create and manage system-wide announcements</p>
+                                    </div>
+                                    <button class="btn-primary" id="create-announcement-btn" style="display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px;">
+                                        <i class="fas fa-plus-circle"></i> Create New Announcement
+                                    </button>
+                                </div>
+                                
+                                <!-- Announcement Filters -->
+                                <div style="display: flex; gap: 16px; margin-bottom: 24px; flex-wrap: wrap; background: white; padding: 20px; border-radius: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
+                                    <div style="flex: 2; min-width: 250px;">
+                                        <label style="display: block; font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Search</label>
+                                        <div style="position: relative;">
+                                            <i class="fas fa-search" style="position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #94a3b8;"></i>
+                                            <input type="text" id="announcement-search" placeholder="Search by title or content..." style="width: 100%; padding: 10px 12px 10px 36px; border: 1px solid #dee2e6; border-radius: 10px; font-size: 14px;">
+                                        </div>
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <label style="display: block; font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Type</label>
+                                        <select id="announcement-type-filter" style="width: 100%; padding: 10px 12px; border: 1px solid #dee2e6; border-radius: 10px; font-size: 14px;">
+                                            <option value="">All Types</option>
+                                            <option value="event">Event</option>
+                                            <option value="news">News</option>
+                                            <option value="deadline">Deadline</option>
+                                            <option value="general">General</option>
+                                        </select>
+                                    </div>
+                                    <div style="flex: 1;">
+                                        <label style="display: block; font-size: 12px; font-weight: 600; color: #475569; margin-bottom: 6px; text-transform: uppercase;">Status</label>
+                                        <select id="announcement-status-filter" style="width: 100%; padding: 10px 12px; border: 1px solid #dee2e6; border-radius: 10px; font-size: 14px;">
+                                            <option value="">All Status</option>
+                                            <option value="published">Published</option>
+                                            <option value="draft">Draft</option>
+                                        </select>
+                                    </div>
+                                    <div style="display: flex; align-items: flex-end;">
+                                        <button class="btn-primary btn-sm" id="apply-announcement-filters" style="height: 42px; padding: 0 24px;">
+                                            <i class="fas fa-filter"></i> Apply
+                                        </button>
+                                    </div>
+                                </div>
+                                
+                                <!-- Announcements Stats -->
+                                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;">
+                                    <div style="background: white; padding: 16px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 12px;">
+                                        <div style="width: 44px; height: 44px; border-radius: 10px; background: rgba(46,125,50,0.1); display: flex; align-items: center; justify-content: center; color: #2E7D32; font-size: 20px;">
+                                            <i class="fas fa-check-circle"></i>
+                                        </div>
+                                        <div>
+                                            <div style="font-size: 20px; font-weight: 600; color: #1e293b;" id="published-count">8</div>
+                                            <div style="font-size: 12px; color: #64748b;">Published</div>
+                                        </div>
+                                    </div>
+                                    <div style="background: white; padding: 16px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 12px;">
+                                        <div style="width: 44px; height: 44px; border-radius: 10px; background: rgba(255,193,7,0.1); display: flex; align-items: center; justify-content: center; color: #b45b0a; font-size: 20px;">
+                                            <i class="fas fa-clock"></i>
+                                        </div>
+                                        <div>
+                                            <div style="font-size: 20px; font-weight: 600; color: #1e293b;" id="draft-count">3</div>
+                                            <div style="font-size: 12px; color: #64748b;">Drafts</div>
+                                        </div>
+                                    </div>
+                                    <div style="background: white; padding: 16px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.04); display: flex; align-items: center; gap: 12px;">
+                                        <div style="width: 44px; height: 44px; border-radius: 10px; background: rgba(23,162,184,0.1); display: flex; align-items: center; justify-content: center; color: #17a2b8; font-size: 20px;">
+                                            <i class="fas fa-calendar-alt"></i>
+                                        </div>
+                                        <div>
+                                            <div style="font-size: 20px; font-weight: 600; color: #1e293b;" id="upcoming-count">5</div>
+                                            <div style="font-size: 12px; color: #64748b;">Upcoming</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Announcements List -->
+                                <div class="announcements-list" id="admin-announcements-list" style="display: flex; flex-direction: column; gap: 16px;"></div>
+                            </div>
+                            
+                            <!-- Templates Tab Content -->
+                            <div id="templates-tab" class="tab-content" style="display: none;">
+                                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+                                    <!-- Template Card 1 -->
+                                    <div style="background: white; border-radius: 20px; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.03); transition: all 0.3s ease;">
+                                        <div style="width: 50px; height: 50px; border-radius: 12px; background: rgba(46,125,50,0.1); display: flex; align-items: center; justify-content: center; color: #2E7D32; font-size: 24px; margin-bottom: 16px;">
+                                            <i class="fas fa-graduation-cap"></i>
+                                        </div>
+                                        <h4 style="font-size: 18px; font-weight: 600; color: #1e293b; margin-bottom: 8px;">Placement Report Template</h4>
+                                        <p style="font-size: 14px; color: #64748b; margin-bottom: 20px; line-height: 1.5;">Standard template for monthly placement statistics with graduate outcomes</p>
+                                        <div style="display: flex; gap: 10px;">
+                                            <button class="btn-primary btn-sm" style="flex: 1;">Use Template</button>
+                                            <button class="btn-secondary btn-sm" style="padding: 8px 12px;"><i class="fas fa-download"></i></button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Template Card 2 -->
+                                    <div style="background: white; border-radius: 20px; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.03);">
+                                        <div style="width: 50px; height: 50px; border-radius: 12px; background: rgba(255,107,53,0.1); display: flex; align-items: center; justify-content: center; color: #FF6B35; font-size: 24px; margin-bottom: 16px;">
+                                            <i class="fas fa-chart-line"></i>
+                                        </div>
+                                        <h4 style="font-size: 18px; font-weight: 600; color: #1e293b; margin-bottom: 8px;">Analytics Dashboard</h4>
+                                        <p style="font-size: 14px; color: #64748b; margin-bottom: 20px; line-height: 1.5;">Interactive dashboard template with key system metrics and trends</p>
+                                        <div style="display: flex; gap: 10px;">
+                                            <button class="btn-primary btn-sm" style="flex: 1;">Use Template</button>
+                                            <button class="btn-secondary btn-sm" style="padding: 8px 12px;"><i class="fas fa-download"></i></button>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Template Card 3 -->
+                                    <div style="background: white; border-radius: 20px; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.03);">
+                                        <div style="width: 50px; height: 50px; border-radius: 12px; background: rgba(0,51,102,0.1); display: flex; align-items: center; justify-content: center; color: #003366; font-size: 24px; margin-bottom: 16px;">
+                                            <i class="fas fa-bullhorn"></i>
+                                        </div>
+                                        <h4 style="font-size: 18px; font-weight: 600; color: #1e293b; margin-bottom: 8px;">Announcement Template</h4>
+                                        <p style="font-size: 14px; color: #64748b; margin-bottom: 20px; line-height: 1.5;">Pre-formatted templates for events, deadlines, and general announcements</p>
+                                        <div style="display: flex; gap: 10px;">
+                                            <button class="btn-primary btn-sm" style="flex: 1;">Use Template</button>
+                                            <button class="btn-secondary btn-sm" style="padding: 8px 12px;"><i class="fas fa-download"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+
+    <!-- QR Code Modal -->
+    <div class="modal" id="qr-modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Event QR Code</h3>
+                <button class="close-modal" id="close-qr-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="qr-code-container" id="qr-code"></div>
+                <p class="qr-instructions" id="qr-event-name"></p>
+                <div class="qr-actions">
+                    <button class="btn-primary btn-sm" id="download-qr">
+                        <i class="fas fa-download"></i> Download
+                    </button>
+                    <button class="btn-secondary btn-sm" id="print-qr">
+                        <i class="fas fa-print"></i> Print
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Modal -->
+    <div class="modal" id="user-modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modal-title">Manage User</h3>
+                <button class="close-modal" id="close-user-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="user-form">
+                    <input type="hidden" id="modal-user-id">
+                    <input type="hidden" id="modal-user-role">
+                    
+                    <div id="student-fields" style="display: none;">
+                        <div class="form-group">
+                            <label for="modal-student-id">Student ID</label>
+                            <input type="text" id="modal-student-id">
+                        </div>
+                        <div class="form-group">
+                            <label for="modal-student-name">Full Name</label>
+                            <input type="text" id="modal-student-name">
+                        </div>
+                        <div class="form-group">
+                            <label for="modal-student-email">Email</label>
+                            <input type="email" id="modal-student-email">
+                        </div>
+                        <div class="form-group">
+                            <label for="modal-student-degree">Degree Program</label>
+                            <select id="modal-student-degree">
+                                <option value="">Select degree</option>
+                                <option value="BS Computer Science">BS Computer Science</option>
+                                <option value="BS Information Technology">BS Information Technology</option>
+                                <option value="BS Information Systems">BS Information Systems</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="modal-student-gwa">GWA</label>
+                            <input type="number" id="modal-student-gwa" step="0.01" min="1.0" max="5.0">
+                        </div>
+                        <div class="form-group">
+                            <label for="modal-student-skills">Skills</label>
+                            <textarea id="modal-student-skills" rows="3"></textarea>
+                        </div>
+                    </div>
+                    
+                    <div id="employer-fields" style="display: none;">
+                        <div class="form-group">
+                            <label for="modal-employer-name">Company Name</label>
+                            <input type="text" id="modal-employer-name">
+                        </div>
+                        <div class="form-group">
+                            <label for="modal-employer-email">Email</label>
+                            <input type="email" id="modal-employer-email">
+                        </div>
+                        <div class="form-group">
+                            <label for="modal-employer-password">Password</label>
+                            <input type="text" id="modal-employer-password">
+                        </div>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="button" class="btn-primary" id="save-user">Save</button>
+                        <button type="button" class="btn-danger" id="delete-user" style="display: none;">Delete</button>
+                        <button type="button" class="btn-secondary" id="cancel-user">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Announcement Modal -->
+    <div class="modal" id="announcement-modal" style="display: none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="announcement-modal-title">Create Announcement</h3>
+                <button class="close-modal" id="close-announcement-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="announcement-form">
+                    <input type="hidden" id="announcement-id">
+                    <div class="form-group">
+                        <label for="announcement-title">Title</label>
+                        <input type="text" id="announcement-title" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="announcement-content">Content</label>
+                        <textarea id="announcement-content" rows="4" required></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="announcement-type">Type</label>
+                            <select id="announcement-type">
+                                <option value="event">Event</option>
+                                <option value="news">News</option>
+                                <option value="deadline">Deadline</option>
+                                <option value="general">General</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="announcement-date">Date</label>
+                            <input type="date" id="announcement-date">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="announcement-publish" checked>
+                            Publish immediately
+                        </label>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Save</button>
+                        <button type="button" class="btn-secondary" id="cancel-announcement">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Forgot Password Modal -->
+    <div class="modal" id="forgot-password-modal" style="display: none;">
+        <div class="modal-content forgot-modal">
+            <div class="modal-header">
+                <h3>Reset Password</h3>
+                <button class="close-modal" id="close-forgot-modal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p class="forgot-instructions">Enter your email address and we'll send you instructions to reset your password.</p>
+                <form id="forgot-password-form">
+                    <div class="form-group">
+                        <label for="forgot-email" class="form-label">EMAIL ADDRESS</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="forgot-email" placeholder="Enter your email" required>
+                        </div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">Send Reset Link</button>
+                        <button type="button" class="btn-secondary" id="cancel-forgot">Cancel</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <div class="toast-content">
+            <i class="fas fa-check-circle" id="toast-icon"></i>
+            <span id="toast-message">Operation completed successfully!</span>
+        </div>
+    </div>
+
+    <!-- JavaScript Modules -->
+    <script src="js/utils.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/ui.js"></script>
+    <script src="js/student.js"></script>
+    <script src="js/employer.js"></script>
+    <script src="js/admin.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

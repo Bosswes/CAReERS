@@ -1,0 +1,355 @@
+/* ========== RESPONSIVE DESIGN ========== */
+
+/* Large Devices (Desktops) */
+@media (min-width: 1200px) {
+    .container {
+        max-width: 1140px;
+    }
+}
+
+/* Medium Devices (Tablets Landscape) */
+@media (max-width: 1024px) {
+    .jobs-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .announcements-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .reports-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .monitoring-split-layout {
+        grid-template-columns: 1fr;
+    }
+    
+    .filters-container,
+    .job-filter-bar {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Small Devices (Tablets Portrait) */
+@media (max-width: 768px) {
+    .container {
+        padding: 0 16px;
+    }
+    
+    /* Mobile Sidebar */
+    .sidebar {
+        transform: translateX(-100%);
+        position: fixed;
+        z-index: 1000;
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+        width: 280px;
+    }
+    
+    .sidebar.active {
+        transform: translateX(0);
+    }
+    
+    .sidebar-toggle {
+        display: block;
+    }
+    
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+    }
+    
+    .mobile-header {
+        display: block;
+    }
+    
+    .mobile-menu-toggle {
+        display: block;
+    }
+    
+    .sidebar-header .sidebar-toggle {
+        display: none;
+    }
+    
+    /* Grid adjustments */
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+    
+    .actions-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+    
+    .jobs-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .filters-container,
+    .job-filter-bar {
+        grid-template-columns: 1fr;
+        padding: 16px;
+        gap: 12px;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+    
+    .job-approval-card {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .job-status {
+        margin-top: 12px;
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .section-header.with-action {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .announcement-item {
+        flex-direction: column;
+    }
+    
+    .announcement-actions {
+        margin-top: 12px;
+        width: 100%;
+        justify-content: flex-start;
+    }
+    
+    /* Modal adjustments */
+    .modal-content {
+        max-width: 90%;
+        margin: 20px;
+    }
+    
+    /* Dashboard header */
+    .dashboard-header h2 {
+        font-size: 22px;
+    }
+    
+    .dashboard-header.with-action {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    /* Profile form */
+    .profile-form-container {
+        padding: 20px;
+    }
+    
+    .job-form-container {
+        padding: 20px;
+    }
+    
+    /* Job filter bar */
+    .job-filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .job-filter-bar .filter-group {
+        min-width: 100%;
+    }
+    
+    /* Tables */
+    .applicants-table th,
+    .applicants-table td,
+    .users-table th,
+    .users-table td {
+        padding: 12px 10px;
+        font-size: 12px;
+    }
+}
+
+/* Extra Small Devices (Phones) */
+@media (max-width: 480px) {
+    .container {
+        padding: 0 12px;
+    }
+    
+    .auth-card {
+        padding: 24px 16px;
+    }
+    
+    .stats-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .actions-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .dashboard-header h2 {
+        font-size: 20px;
+    }
+    
+    .dashboard-subtitle {
+        font-size: 13px;
+    }
+    
+    .stat-card {
+        padding: 16px;
+    }
+    
+    .stat-icon {
+        width: 48px;
+        height: 48px;
+        font-size: 20px;
+    }
+    
+    .stat-number {
+        font-size: 22px;
+    }
+    
+    .action-card {
+        padding: 14px;
+    }
+    
+    .action-icon {
+        width: 44px;
+        height: 44px;
+        font-size: 18px;
+    }
+    
+    .btn-primary,
+    .btn-secondary,
+    .btn-danger {
+        width: 100%;
+        padding: 12px 16px;
+        font-size: 14px;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .profile-form-container {
+        padding: 16px;
+    }
+    
+    .job-form-container {
+        padding: 16px;
+    }
+    
+    .form-section-title {
+        font-size: 16px;
+        margin-bottom: 16px;
+    }
+    
+    .modal-header {
+        padding: 16px 20px;
+    }
+    
+    .modal-header h3 {
+        font-size: 16px;
+    }
+    
+    .modal-body {
+        padding: 20px;
+    }
+    
+    .qr-actions {
+        flex-direction: column;
+    }
+    
+    .table-actions {
+        flex-direction: column;
+    }
+    
+    .table-actions .btn-sm {
+        width: 100%;
+    }
+    
+    .job-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+    
+    .job-actions .btn-sm {
+        width: 100%;
+    }
+    
+    .demo-account {
+        font-size: 12px;
+    }
+    
+    .demo-account strong {
+        min-width: 60px;
+    }
+    
+    .job-card {
+        padding: 16px;
+    }
+    
+    .job-title h4 {
+        font-size: 15px;
+    }
+    
+    .applicant-card {
+        min-width: 180px;
+        padding: 14px;
+    }
+    
+    .activity-item {
+        padding: 12px 0;
+    }
+    
+    .activity-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 14px;
+    }
+}
+
+/* Print Styles */
+@media print {
+    .sidebar,
+    .mobile-header,
+    .btn-primary,
+    .btn-secondary,
+    .btn-danger,
+    .job-actions,
+    .announcement-actions,
+    .table-actions,
+    .action-card,
+    .qr-button {
+        display: none !important;
+    }
+    
+    .main-content {
+        margin-left: 0;
+        width: 100%;
+    }
+    
+    body {
+        background: white;
+        font-size: 12px;
+    }
+    
+    .container {
+        max-width: 100%;
+        padding: 0;
+    }
+    
+    .dashboard-section {
+        display: block !important;
+    }
+    
+    .stat-card,
+    .job-card,
+    .applicant-card,
+    .profile-form-container {
+        break-inside: avoid;
+        box-shadow: none;
+        border: 1px solid #ddd;
+    }
+}
