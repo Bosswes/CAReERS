@@ -1,2 +1,5 @@
-[phases.setup] 
-nixPkgs = ["php82", "php82Extensions.pdo", "php82Extensions.mbstring", "composer"] 
+[phases.setup]
+nixPkgs = ["php82", "php82Extensions.pdo", "php82Extensions.mbstring", "composer"]
+
+[start]
+cmd = "php artisan serve --host=0.0.0.0 --port=$PORT"
