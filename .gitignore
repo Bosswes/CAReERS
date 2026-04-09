@@ -17,3 +17,6 @@ yarn-error.log
 /.fleet
 /.idea
 /.vscode
+node_modules/ 
+.env 
+vendor/ 
