@@ -243,7 +243,17 @@ const Student = (function() {
                 document.getElementById('profile-warning').style.display = 'none';
                 container.innerHTML = '';
                 
-                response.recommendations.forEach(job => {
+                // Filter out internship jobs — sila nasa OJT Offerings na
+                const nonInternshipJobs = response.recommendations.filter(
+                    job => job.job_type !== 'internship'
+                );
+                
+                if (nonInternshipJobs.length === 0) {
+                    container.innerHTML = '<p class="text-muted">No job recommendations yet. Complete your profile to get matches.</p>';
+                    return;
+                }
+                
+                nonInternshipJobs.forEach(job => {
                     const card = createJobCard(job);
                     container.appendChild(card);
                 });
