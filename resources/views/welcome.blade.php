@@ -1162,12 +1162,6 @@
                                             <small style="color:#64748b; font-size:12px;">Total number of hours required for completion</small>
                                         </div>
                                     </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="job-location">Location *</label>
-                                            <input type="text" id="job-location" placeholder="e.g., Makati City, Metro Manila">
-                                        </div>
-                                    </div>
                                     
                                     <div class="form-row">
                                         <div class="form-group">
