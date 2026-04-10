@@ -934,7 +934,7 @@
                             </div>
                             
                             <div class="actions-grid">
-                                <a href="#user-management" class="action-card">
+                                <a href="#user-management" class="action-card" onclick="navigateTo('user-management')">
                                     <div class="action-icon"><i class="fas fa-users-cog"></i></div>
                                     <div class="action-content">
                                         <h4>User Management</h4>
@@ -942,7 +942,7 @@
                                     </div>
                                     <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
                                 </a>
-                                <a href="#job-management" class="action-card">
+                                <a href="#job-management" class="action-card" onclick="navigateTo('job-management')">
                                     <div class="action-icon"><i class="fas fa-clipboard-check"></i></div>
                                     <div class="action-content">
                                         <h4>Job Management</h4>
@@ -950,7 +950,7 @@
                                     </div>
                                     <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
                                 </a>
-                                <a href="#data-monitoring" class="action-card">
+                                <a href="#data-monitoring" class="action-card" onclick="navigateTo('data-monitoring')">
                                     <div class="action-icon"><i class="fas fa-chart-pie"></i></div>
                                     <div class="action-content">
                                         <h4>Data Monitoring</h4>
@@ -958,7 +958,7 @@
                                     </div>
                                     <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
                                 </a>
-                                <a href="#reports-announcements" class="action-card">
+                                <a href="#reports-announcements" class="action-card" onclick="navigateTo('reports-announcements')">
                                     <div class="action-icon"><i class="fas fa-bullhorn"></i></div>
                                     <div class="action-content">
                                         <h4>Reports & Announcements</h4>
@@ -966,7 +966,7 @@
                                     </div>
                                     <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
                                 </a>
-                                <a href="#applications-management" class="action-card">
+                                <a href="#applications-management" class="action-card" onclick="navigateTo('applications-management')">
                                     <div class="action-icon"><i class="fas fa-file-alt"></i></div>
                                     <div class="action-content">
                                         <h4>Applications</h4>
@@ -1139,13 +1139,29 @@
                                     <div class="form-row">
                                         <div class="form-group">
                                             <label for="job-type">Employment Type *</label>
-                                            <select id="job-type">
+                                            <select id="job-type" onchange="toggleOjtHours(this.value)">
                                                 <option value="">Select type</option>
                                                 <option value="full-time">Full-time</option>
                                                 <option value="part-time">Part-time</option>
                                                 <option value="internship">Internship (OJT)</option>
                                                 <option value="contract">Contractual</option>
+                                                <option value="freelance">Freelance</option>
                                             </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="job-location">Location *</label>
+                                            <input type="text" id="job-location" placeholder="e.g., Makati City, Metro Manila">
+                                        </div>
+                                    </div>
+
+                                    <!-- OJT Required Hours Field -->
+                                    <div class="form-row" id="ojt-hours-row" style="display: none;">
+                                        <div class="form-group">
+                                            <label for="job-ojt-hours">Required OJT Hours *</label>
+                                            <input type="number" id="job-ojt-hours" min="1" placeholder="e.g., 300, 486, 600">
+                                            <small style="color:#64748b; font-size:12px;">Total number of hours required for completion</small>
+                                        </div>
+                                    </div>
                                         </div>
                                         <div class="form-group">
                                             <label for="job-location">Location *</label>
@@ -2003,6 +2019,30 @@
     document.addEventListener('DOMContentLoaded', function() {
         if (typeof Data !== 'undefined') Data.initialize();
     });
+
+    function navigateTo(sectionId) {
+        document.querySelectorAll('.dashboard-section').forEach(s => s.style.display = 'none');
+        const target = document.getElementById(sectionId);
+        if (target) {
+            target.style.display = 'block';
+            target.scrollIntoView({ behavior: 'smooth' });
+        }
+        document.querySelectorAll('#sidebar-menu a').forEach(a => {
+            a.parentElement.classList.remove('active');
+            if (a.getAttribute('href') === '#' + sectionId) {
+                a.parentElement.classList.add('active');
+            }
+        });
+    }
+
+    function toggleOjtHours(type) {
+        const ojtRow = document.getElementById('ojt-hours-row');
+        if (ojtRow) {
+            ojtRow.style.display = (type === 'internship') ? 'grid' : 'none';
+            const hoursInput = document.getElementById('job-ojt-hours');
+            if (hoursInput) hoursInput.required = (type === 'internship');
+        }
+    }
     </script>
 
     
