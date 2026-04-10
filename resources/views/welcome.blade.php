@@ -698,7 +698,7 @@
                             </div>
                             
                             <div class="actions-grid">
-                                <a href="#student-profile" class="action-card">
+                                <a href="#student-profile" class="action-card" onclick="event.preventDefault(); navigateTo('student-profile')">
                                     <div class="action-icon"><i class="fas fa-user-circle"></i></div>
                                     <div class="action-content">
                                         <h4>My Profile</h4>
@@ -706,7 +706,7 @@
                                     </div>
                                     <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
                                 </a>
-                                <a href="#job-recommendations" class="action-card" id="recommendations-action-link">
+                                <a href="#job-recommendations" class="action-card" id="recommendations-action-link" onclick="event.preventDefault(); navigateTo('job-recommendations')">
                                     <div class="action-icon"><i class="fas fa-magic"></i></div>
                                     <div class="action-content">
                                         <h4>Job Recommendations</h4>
@@ -715,7 +715,7 @@
                                     </div>
                                     <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
                                 </a>
-                                <a href="#announcements" class="action-card">
+                                <a href="#announcements" class="action-card" onclick="event.preventDefault(); navigateTo('announcements')">
                                     <div class="action-icon"><i class="fas fa-bullhorn"></i></div>
                                     <div class="action-content">
                                         <h4>Announcements</h4>
@@ -723,7 +723,7 @@
                                     </div>
                                     <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
                                 </a>
-                                <a href="#ojt-offerings" class="action-card">
+                                <a href="#ojt-offerings" class="action-card" onclick="event.preventDefault(); navigateTo('ojt-offerings')">
                                     <div class="action-icon"><i class="fas fa-graduation-cap"></i></div>
                                     <div class="action-content">
                                         <h4>OJT Offerings</h4>

@@ -478,13 +478,43 @@ const Student = (function() {
         container.innerHTML = '<div class="loading">Loading OJT offerings...</div>';
         
         try {
-            const response = await API.getStudentOjtOfferings();
-            
-            if (response.success && response.offerings && response.offerings.length > 0) {
-                container.innerHTML = '';
-                response.offerings.forEach(ojt => {
-                    const card = document.createElement('div');
-                    card.className = 'job-card';
+            // Load both: dedicated OJT offerings + internship jobs from recommendations
+            const [ojtResponse, recoResponse] = await Promise.all([
+                API.getStudentOjtOfferings(),
+                API.getStudentRecommendations()
+            ]);
+
+            const allCards = [];
+
+            // Dedicated OJT offerings (existing)
+            if (ojtResponse.success && ojtResponse.offerings && ojtResponse.offerings.length > 0) {
+                ojtResponse.offerings.forEach(ojt => {
+                    allCards.push({ type: 'ojt', data: ojt });
+                });
+            }
+
+            // Internship jobs from recommendations
+            if (recoResponse.success && recoResponse.recommendations) {
+                recoResponse.recommendations
+                    .filter(job => job.job_type === 'internship')
+                    .forEach(job => {
+                        allCards.push({ type: 'job', data: job });
+                    });
+            }
+
+            container.innerHTML = '';
+
+            if (allCards.length === 0) {
+                container.innerHTML = '<p class="text-muted">No OJT offerings available at the moment.</p>';
+                return;
+            }
+
+            allCards.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'job-card';
+
+                if (item.type === 'ojt') {
+                    const ojt = item.data;
                     card.innerHTML = `
                         <div class="job-header">
                             <div>
@@ -499,11 +529,35 @@ const Student = (function() {
                         </div>
                         <div class="job-description">${Utils.truncateText(ojt.description || 'No description', 100)}</div>
                     `;
-                    container.appendChild(card);
-                });
-            } else {
-                container.innerHTML = '<p class="text-muted">No OJT offerings available at the moment.</p>';
-            }
+                } else {
+                    const job = item.data;
+                    card.innerHTML = `
+                        <div class="job-header">
+                            <div>
+                                <div class="job-title">${Utils.truncateText(job.title, 40)}</div>
+                                <div class="job-company">${job.employer_name || 'Company'}</div>
+                            </div>
+                            <span class="match-score high">${job.match_score}%</span>
+                        </div>
+                        <div class="job-details">
+                            <span><i class="fas fa-map-marker-alt"></i> ${job.location || 'N/A'}</span>
+                            <span><i class="fas fa-clock"></i> ${job.ojt_hours ? job.ojt_hours + ' hours' : 'Internship'}</span>
+                        </div>
+                        <div class="job-description">${Utils.truncateText(job.description || 'No description', 100)}</div>
+                        <div style="margin-top:12px;">
+                            <button class="btn-apply" data-job-id="${job.job_id}" style="background:#2E7D32;color:white;border:none;padding:8px 18px;border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;width:100%;">
+                                <i class="fas fa-paper-plane"></i> View Details & Apply
+                            </button>
+                        </div>
+                    `;
+                    card.addEventListener('click', () => showJobModal(job));
+                    const btn = card.querySelector('.btn-apply');
+                    if (btn) btn.addEventListener('click', (e) => { e.stopPropagation(); showJobModal(job); });
+                }
+
+                container.appendChild(card);
+            });
+
         } catch (error) {
             console.error('Error loading OJT offerings:', error);
             container.innerHTML = '<p class="text-muted">Error loading OJT offerings</p>';
