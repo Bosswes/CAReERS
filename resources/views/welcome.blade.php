@@ -2036,6 +2036,11 @@
             const hoursInput = document.getElementById('job-ojt-hours');
             if (hoursInput) hoursInput.required = (type === 'internship');
         }
+        // Kung student ang naka-login at pumili ng internship, redirect sa OJT Offerings
+        const user = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+        if (type === 'internship' && user.role === 'student') {
+            navigateTo('ojt-offerings');
+        }
     }
     </script>
 

@@ -1209,12 +1209,6 @@
                                             <small style="color:#64748b; font-size:12px;">Total number of hours required for completion</small>
                                         </div>
                                     </div>
-                                        </div>
-                                        <div class="form-group">
-                                            <label for="job-location">Location *</label>
-                                            <input type="text" id="job-location" placeholder="e.g., Makati City, Metro Manila">
-                                        </div>
-                                    </div>
                                     
                                     <div class="form-row">
                                         <div class="form-group">
@@ -2584,6 +2578,11 @@
             ojtRow.style.display = (type === 'internship') ? 'grid' : 'none';
             const hoursInput = document.getElementById('job-ojt-hours');
             if (hoursInput) hoursInput.required = (type === 'internship');
+        }
+        // Kung student ang naka-login at pumili ng internship, redirect sa OJT Offerings
+        const user = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+        if (type === 'internship' && user.role === 'student') {
+            navigateTo('ojt-offerings');
         }
     }
     </script>
