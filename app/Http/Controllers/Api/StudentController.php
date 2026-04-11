@@ -383,7 +383,8 @@ $courseKeywords = []; // no longer used for primary filter
                     }
                 );
             } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error('Email failed: ' . $e->getMessage());
+                \Illuminate\Support\Facades\Log::error('Email failed: ' . $e->getMessage() . ' | ' . $e->getTraceAsString());
+return response()->json(['success' => true, 'message' => 'Application submitted! Email error: ' . $e->getMessage()]);
             }
         }
 
