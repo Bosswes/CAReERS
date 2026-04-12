@@ -505,7 +505,7 @@
 </head>
 <body>
     <!-- Auth Container with University Background -->
-    <div id="auth-container" class="auth-container">
+    <div id="auth-container" class="auth-container" style="display:none;"
         <!-- Login Card -->
         <div class="auth-card" id="login-card">
             <div class="osas-header">

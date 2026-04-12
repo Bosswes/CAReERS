@@ -163,8 +163,7 @@
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    document.querySelector('.login-container').style.display = 'none';
-                    document.body.style.background = '#fff';
+                    alert(data.message || 'Login successful!');
                     window.location.href = data.redirect || '/admin/dashboard';
                 } else {
                     alert(data.message || 'Login failed. Please try again.');

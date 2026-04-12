@@ -697,7 +697,7 @@
 </head>
 <body>
     <!-- Auth Container with University Background -->
-<div id="auth-container" class="auth-container" style="background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/images/university.png'); background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed;">
+<div id="auth-container" class="auth-container" style="display:none;"style="background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('/images/university.png'); background-size: cover; background-position: center; background-repeat: no-repeat; background-attachment: fixed;">
         <!-- Login Card -->
         <div class="auth-card" id="login-card">
             <div class="osas-header">
