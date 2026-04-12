@@ -212,10 +212,10 @@ FULL PATH: resources/views/auth/login.blade.php
             })
             .then(response => response.json())
             .then(data => {
-                if (data.success) {
-                    alert(data.message || 'Login successful!');
-                    window.location.href = data.redirect || '/student/dashboard';
-                } else {
+            if (data.success) {
+                    document.querySelector('.login-container').style.display = 'none';
+                    document.body.style.background = '#fff';
+                    window.location.href = data.redirect || '/student/dashboard';                } else {
                     alert(data.message || 'Login failed. Please try again.');
                     submitBtn.disabled = false;
                     submitBtn.innerHTML = originalHTML;
