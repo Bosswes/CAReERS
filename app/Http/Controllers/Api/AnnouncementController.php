@@ -127,7 +127,7 @@ class AnnouncementController extends Controller
         }
 
         // Get student_number from student_info using session user_id
-        $student = DB::table('student_info')->where('user_id', session('user_id'))->first();
+        $student = DB::table('student_info')->where('student_number', session('student_number'))->first();
         if (!$student) {
             return response()->json(['success' => false, 'message' => 'Student record not found.']);
         }
