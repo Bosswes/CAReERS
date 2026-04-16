@@ -571,15 +571,36 @@ const Student = (function() {
     async function loadAnnouncements() {
         const container = document.getElementById('student-announcements-grid');
         if (!container) return;
-        
+
         container.innerHTML = '<div class="loading">Loading announcements...</div>';
-        
+
         try {
             const response = await API.getStudentAnnouncements();
-            
+
             if (response.success && response.announcements && response.announcements.length > 0) {
                 container.innerHTML = '';
+
+                // Check registration status for all events from DB
+                const registrationMap = {};
+                const studentNumberMap = {};
+                await Promise.all(
+                    response.announcements
+                        .filter(ann => ann.announcement_type === 'event')
+                        .map(async ann => {
+                            try {
+                                const status = await API.getMyEventRegistration(ann.announcement_id);
+                                registrationMap[ann.announcement_id] = status.registered;
+                                if (status.student_number) {
+                                    studentNumberMap[ann.announcement_id] = status.student_number;
+                                }
+                            } catch (e) {
+                                registrationMap[ann.announcement_id] = false;
+                            }
+                        })
+                );
+
                 response.announcements.forEach(ann => {
+                    const isRegistered = registrationMap[ann.announcement_id] || false;
                     const card = document.createElement('div');
                     card.className = 'student-announcement-card';
                     card.innerHTML = `
@@ -593,47 +614,88 @@ const Student = (function() {
                         <div class="announcement-body">${ann.content}</div>
                         ${ann.announcement_type === 'event' ? `
                             <div class="announcement-footer" style="margin-top:12px;">
-                                ${ann.form_link ? `
-                                    <a href="${ann.form_link}" target="_blank" class="btn-primary btn-sm register-event-link" data-id="${ann.announcement_id}" style="text-decoration:none; padding:8px 14px; border-radius:6px; background:#16a34a; color:white; display:inline-block;">
-                                        <i class="fas fa-external-link-alt"></i> Register for this Event
-                                    </a>
-                                    <button class="btn-secondary btn-sm show-my-qr" data-event="${ann.title}" data-id="${ann.announcement_id}" style="margin-left:8px; padding:8px 14px; border-radius:6px; ${localStorage.getItem('registered_' + ann.announcement_id) ? '' : 'display:none;'}">
-                                    </button>
-                                    <p style="font-size:12px; color:#888; margin-top:6px;">📌 Register first, then click "Get My QR Code" to get your attendance QR.</p>
-                                ` : '<p style="font-size:13px; color:#888;">Registration link not available yet.</p>'}
+                                <button class="btn-primary btn-sm register-event-link"
+                                    data-id="${ann.announcement_id}"
+                                    data-title="${ann.title}"
+                                    style="padding:8px 14px; border-radius:6px; background:#16a34a; color:white; border:none; cursor:pointer; ${isRegistered ? 'display:none;' : ''}">
+                                    <i class="fas fa-user-plus"></i> Register for this Event
+                                </button>
+                                <button class="btn-secondary btn-sm show-my-qr"
+                                    data-event="${ann.title}"
+                                    data-id="${ann.announcement_id}"
+                                    style="margin-left:8px; padding:8px 14px; border-radius:6px; ${isRegistered ? '' : 'display:none;'}">
+                                    <i class="fas fa-qrcode"></i> Get My QR Code
+                                </button>
+                                <p style="font-size:12px; color:#888; margin-top:6px;">📌 Register first, then click "Get My QR Code" to get your attendance QR.</p>
                             </div>
                         ` : ''}
                     `;
                     container.appendChild(card);
                 });
-                
-                container.querySelectorAll('.register-event-link').forEach(link => {
-                    link.addEventListener('click', function() {
+
+                container.querySelectorAll('.register-event-link').forEach(btn => {
+                    btn.addEventListener('click', async function() {
                         const eventId = this.dataset.id;
-                        localStorage.setItem('registered_' + eventId, 'true');
-                        // Show the QR button for this event
-                        const qrBtn = container.querySelector(`.show-my-qr[data-id="${eventId}"]`);
-                        if (qrBtn) qrBtn.style.display = 'inline-block';
+                        const registerBtn = this;
+                        registerBtn.disabled = true;
+                        registerBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Registering...';
+
+                        try {
+                            const data = await API.registerForEvent(eventId);
+                            if (!data.success) {
+                                Utils.showToast(data.message || 'Already registered or error occurred.', 'warning');
+                                registerBtn.disabled = false;
+                                registerBtn.innerHTML = '<i class="fas fa-user-plus"></i> Register for this Event';
+                                return;
+                            }
+
+                            // Store student number for QR
+                            if (data.student_number) {
+                                studentNumberMap[eventId] = data.student_number;
+                            }
+
+                            registerBtn.style.display = 'none';
+                            const qrBtn = container.querySelector(`.show-my-qr[data-id="${eventId}"]`);
+                            if (qrBtn) qrBtn.style.display = 'inline-block';
+                            Utils.showToast('Registered successfully! You can now get your QR code.', 'success');
+                        } catch(e) {
+                            Utils.showToast('Registration failed. Please try again.', 'error');
+                            registerBtn.disabled = false;
+                            registerBtn.innerHTML = '<i class="fas fa-user-plus"></i> Register for this Event';
+                        }
                     });
                 });
 
                 container.querySelectorAll('.show-my-qr').forEach(btn => {
-                    btn.addEventListener('click', function() {
-                        const user = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
-                        const studentNumber = user.student_number || user.id || '';
+                    btn.addEventListener('click', async function() {
+                        const eventId = this.dataset.id;
                         const eventName = this.dataset.event;
+
+                        // Get student number: from map, or fetch from API
+                        let studentNumber = studentNumberMap[eventId];
+                        if (!studentNumber) {
+                            try {
+                                const status = await API.getMyEventRegistration(eventId);
+                                studentNumber = status.student_number;
+                            } catch(e) {}
+                        }
+                        if (!studentNumber) {
+                            // Fallback to sessionStorage
+                            const user = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+                            studentNumber = user.student_number || user.id || '';
+                        }
                         if (!studentNumber) {
                             Utils.showToast('Student number not found. Please re-login.', 'error');
                             return;
                         }
-                        // Show QR modal with student number as the QR data
+
                         const modal = document.getElementById('qr-modal');
-                        const container = document.getElementById('qr-code');
+                        const qrContainer = document.getElementById('qr-code');
                         const eventEl = document.getElementById('qr-event-name');
-                        if (!modal || !container) return;
-                        container.innerHTML = '';
+                        if (!modal || !qrContainer) return;
+                        qrContainer.innerHTML = '';
                         if (typeof QRCode !== 'undefined') {
-                            new QRCode(container, {
+                            new QRCode(qrContainer, {
                                 text: studentNumber,
                                 width: 250,
                                 height: 250,
@@ -648,6 +710,7 @@ const Student = (function() {
                         }
                     });
                 });
+
             } else {
                 container.innerHTML = '<p class="text-muted">No announcements available.</p>';
             }

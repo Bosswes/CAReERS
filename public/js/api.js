@@ -163,6 +163,12 @@ const API = (function() {
         },
         async getEventAttendance(eventId) {
             return request(`/admin/attendance/${eventId}`);
+        },
+        async registerForEvent(eventId) {
+            return request(`/announcements/${eventId}/register`, { method: 'POST' });
+        },
+        async getMyEventRegistration(eventId) {
+            return request(`/announcements/${eventId}/registration-status`);
         }
     };
 })();

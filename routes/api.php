@@ -43,6 +43,8 @@ Route::middleware(['auth.session'])->group(function () {
         Route::get('/', [AnnouncementController::class, 'index']);
         Route::get('/{id}', [AnnouncementController::class, 'show']);
         Route::get('/{id}/qr', [AnnouncementController::class, 'getEventQR']);
+        Route::post('/{id}/register', [AnnouncementController::class, 'registerStudent']);
+        Route::get('/{id}/registration-status', [AnnouncementController::class, 'registrationStatus']);
     });
     
     // Admin routes
