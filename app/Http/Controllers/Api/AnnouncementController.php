@@ -109,62 +109,7 @@ class AnnouncementController extends Controller
         return response()->json(['success' => true, 'message' => 'Announcement deleted successfully']);
     }
     
-    public function registerStudent(Request $request, $id)
-    {
-        if (!session('user_logged_in') || session('user_role') !== 'student') {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
-
-        $studentNumber = session('student_number'); // adjust kung iba ang session key mo
-
-        $announcement = DB::table('announcements')->where('announcement_id', $id)->first();
-        if (!$announcement) {
-            return response()->json(['success' => false, 'message' => 'Event not found'], 404);
-        }
-
-        // Check if registration is open
-        if (isset($announcement->registration_status) && $announcement->registration_status === 'closed') {
-            return response()->json(['success' => false, 'message' => 'Registration is closed for this event.']);
-        }
-
-        // Check if already registered
-        $exists = DB::table('event_attendance')
-            ->where('event_id', $id)
-            ->where('student_number', $studentNumber)
-            ->exists();
-
-        if ($exists) {
-            return response()->json(['success' => false, 'message' => 'You are already registered for this event.']);
-        }
-
-        $now = now()->timezone('Asia/Manila');
-
-        DB::table('event_attendance')->insert([
-            'event_id'        => $id,
-            'student_number'  => $studentNumber,
-            'attendance_time' => $now,
-            'created_at'      => $now,
-            'updated_at'      => $now,
-        ]);
-
-        return response()->json(['success' => true, 'message' => 'Successfully registered for this event!']);
-    }
-
-    public function registrationStatus(Request $request, $id)
-    {
-        if (!session('user_logged_in') || session('user_role') !== 'student') {
-            return response()->json(['registered' => false]);
-        }
-
-        $studentNumber = session('student_number');
-
-        $registered = DB::table('event_attendance')
-            ->where('event_id', $id)
-            ->where('student_number', $studentNumber)
-            ->exists();
-
-        return response()->json(['registered' => $registered]);
-    }
+    
 
     public function registerStudent(Request $request, $id)
     {
