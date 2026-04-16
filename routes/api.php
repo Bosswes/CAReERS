@@ -45,6 +45,7 @@ Route::middleware(['auth.session'])->group(function () {
         Route::get('/{id}/qr', [AnnouncementController::class, 'getEventQR']);
         Route::post('/{id}/register', [AnnouncementController::class, 'registerStudent']);
         Route::get('/{id}/registration-status', [AnnouncementController::class, 'registrationStatus']);
+Route::get('/{id}/registrants', [AnnouncementController::class, 'getRegistrants']);
     });
     
     // Admin routes
@@ -86,6 +87,8 @@ Route::middleware(['auth.session'])->group(function () {
         Route::put('/announcements/{id}', [AnnouncementController::class, 'update']);
         Route::delete('/announcements/{id}', [AnnouncementController::class, 'destroy']);
         Route::post('/announcements/{id}/publish', [AnnouncementController::class, 'publish']);
+Route::get('/announcements/{id}/registrants', [AnnouncementController::class, 'getRegistrants']);
+Route::post('/announcements/{id}/scan', [AnnouncementController::class, 'scanQR']);
         
         // Applications
         Route::get('/applications', [AdminController::class, 'getApplications']);

@@ -108,8 +108,6 @@ class AnnouncementController extends Controller
         
         return response()->json(['success' => true, 'message' => 'Announcement deleted successfully']);
     }
-    
-    
 
     public function registerStudent(Request $request, $id)
     {
@@ -126,7 +124,6 @@ class AnnouncementController extends Controller
             return response()->json(['success' => false, 'message' => 'Registration is closed for this event.']);
         }
 
-        // Get student_number from student_info using session user_id
         $student = DB::table('student_info')->where('student_number', session('user_id'))->first();
         if (!$student) {
             return response()->json(['success' => false, 'message' => 'Student record not found.']);
@@ -134,7 +131,8 @@ class AnnouncementController extends Controller
 
         $studentNumber = $student->student_number;
 
-        $exists = DB::table('event_attendance')
+        // Check in event_registrants (NOT event_attendance)
+        $exists = DB::table('event_registrants')
             ->where('event_id', $id)
             ->where('student_number', $studentNumber)
             ->exists();
@@ -144,16 +142,23 @@ class AnnouncementController extends Controller
         }
 
         $now = now()->timezone('Asia/Manila');
+        $qrCode = 'EVT-' . $id . '-' . $studentNumber . '-' . time();
 
-        DB::table('event_attendance')->insert([
-            'event_id'        => $id,
-            'student_number'  => $studentNumber,
-            'attendance_time' => $now,
-            'created_at'      => $now,
-            'updated_at'      => $now,
+        // Insert to event_registrants only — attendance is recorded via QR scan
+        DB::table('event_registrants')->insert([
+            'event_id'       => $id,
+            'student_number' => $studentNumber,
+            'qr_code'        => $qrCode,
+            'created_at'     => $now,
+            'updated_at'     => $now,
         ]);
 
-        return response()->json(['success' => true, 'message' => 'Successfully registered!', 'student_number' => $studentNumber]);
+        return response()->json([
+            'success'        => true,
+            'message'        => 'Successfully registered! Show your QR code to the admin during the event.',
+            'student_number' => $studentNumber,
+            'qr_code'        => $qrCode,
+        ]);
     }
 
     public function registrationStatus(Request $request, $id)
@@ -167,12 +172,99 @@ class AnnouncementController extends Controller
             return response()->json(['registered' => false]);
         }
 
-        $registered = DB::table('event_attendance')
+        // Check registration (event_registrants)
+        $registration = DB::table('event_registrants')
+            ->where('event_id', $id)
+            ->where('student_number', $student->student_number)
+            ->first();
+
+        // Check attendance (event_attendance) — only set after QR scan
+        $attended = DB::table('event_attendance')
             ->where('event_id', $id)
             ->where('student_number', $student->student_number)
             ->exists();
 
-        return response()->json(['registered' => $registered, 'student_number' => $student->student_number]);
+        return response()->json([
+            'registered'     => !is_null($registration),
+            'attended'       => $attended,
+            'qr_code'        => $registration->qr_code ?? null,
+            'student_number' => $student->student_number,
+        ]);
+    }
+
+    public function getRegistrants(Request $request, $id)
+    {
+        if (!session('user_logged_in')) {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $registrants = DB::table('event_registrants as r')
+            ->join('student_info as s', 'r.student_number', '=', 's.student_number')
+            ->where('r.event_id', $id)
+            ->select('r.*', 's.first_name', 's.last_name', 's.cvsu_email')
+            ->get();
+
+        $attendedNumbers = DB::table('event_attendance')
+            ->where('event_id', $id)
+            ->pluck('student_number')
+            ->toArray();
+
+        return response()->json([
+            'success'          => true,
+            'registrant_count' => $registrants->count(),
+            'attendance_count' => count($attendedNumbers),
+            'registrants'      => $registrants,
+            'attended'         => $attendedNumbers,
+        ]);
+    }
+
+    public function scanQR(Request $request, $id)
+    {
+        if (!session('user_logged_in') || session('user_role') !== 'admin') {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+
+        $qrCode = $request->qr_code;
+
+        $registrant = DB::table('event_registrants')
+            ->where('event_id', $id)
+            ->where('qr_code', $qrCode)
+            ->first();
+
+        if (!$registrant) {
+            return response()->json(['success' => false, 'message' => 'Invalid QR code or not registered for this event.']);
+        }
+
+        $alreadyAttended = DB::table('event_attendance')
+            ->where('event_id', $id)
+            ->where('student_number', $registrant->student_number)
+            ->exists();
+
+        if ($alreadyAttended) {
+            return response()->json(['success' => false, 'message' => 'Student already marked as attended.']);
+        }
+
+        $now = now()->timezone('Asia/Manila');
+
+        DB::table('event_attendance')->insert([
+            'event_id'        => $id,
+            'student_number'  => $registrant->student_number,
+            'qr_code'         => $qrCode,
+            'attendance_time' => $now,
+            'created_at'      => $now,
+            'updated_at'      => $now,
+        ]);
+
+        $student = DB::table('student_info')
+            ->where('student_number', $registrant->student_number)
+            ->first();
+
+        return response()->json([
+            'success'        => true,
+            'message'        => 'Attendance recorded successfully!',
+            'student_number' => $registrant->student_number,
+            'student_name'   => $student ? $student->first_name . ' ' . $student->last_name : null,
+        ]);
     }
 
     public function publish(Request $request, $id)
