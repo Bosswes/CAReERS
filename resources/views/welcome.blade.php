@@ -1537,13 +1537,28 @@
                                     </div>
                                 </div>
 
-                                <!-- Registrants per Program/Section -->
-                                <div style="background:white; border-radius:12px; padding:20px; box-shadow:0 2px 8px rgba(0,0,0,0.06); margin-bottom: 24px;">
-                                    <h4 style="margin-bottom:16px; color:#1a4731;"><i class="fas fa-users"></i> Registrants per Program / Section</h4>
-                                    <div style="margin-bottom:12px;">
-                                        <select id="activities-event-filter" style="padding:8px 12px; border:1px solid #ddd; border-radius:8px; font-size:13px; min-width:200px;">
-                                            <option value="">-- Select Event --</option>
-                                        </select>
+                                <!-- Registrants per Program/Section (hidden until View is clicked) -->
+                                <div id="registrants-section" style="display:none; background:white; border-radius:12px; padding:20px; box-shadow:0 2px 8px rgba(0,0,0,0.06); margin-bottom: 24px;">
+                                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                                        <h4 style="margin:0; color:#1a4731;"><i class="fas fa-users"></i> Registrants per Program / Section</h4>
+                                        <span id="registrants-event-title" style="font-size:13px; color:#555; font-style:italic;"></span>
+                                    </div>
+                                    <!-- Filters: Program dropdown + Section text input -->
+                                    <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:16px; align-items:center;">
+                                        <div>
+                                            <label style="font-size:12px; color:#555; font-weight:600; display:block; margin-bottom:4px;">Program</label>
+                                            <select id="filter-program" style="padding:8px 12px; border:1px solid #ddd; border-radius:8px; font-size:13px; min-width:180px;">
+                                                <option value="">-- All Programs --</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label style="font-size:12px; color:#555; font-weight:600; display:block; margin-bottom:4px;">Section</label>
+                                            <input type="text" id="filter-section" placeholder="e.g. 4A" style="padding:8px 12px; border:1px solid #ddd; border-radius:8px; font-size:13px; min-width:150px;">
+                                        </div>
+                                        <div style="align-self:flex-end;">
+                                            <button onclick="applyRegistrantsFilter()" class="btn-primary btn-sm"><i class="fas fa-filter"></i> Filter</button>
+                                            <button onclick="clearRegistrantsFilter()" class="btn-sm" style="margin-left:6px; padding:8px 12px; background:#f1f5f9; border:1px solid #ddd; border-radius:8px; cursor:pointer; font-size:13px;">Clear</button>
+                                        </div>
                                     </div>
                                     <div style="overflow-x:auto;">
                                         <table style="width:100%; border-collapse:collapse; font-size:13px;">
@@ -1558,14 +1573,14 @@
                                                 </tr>
                                             </thead>
                                             <tbody id="activities-registrants-body">
-                                                <tr><td colspan="6" style="text-align:center; padding:20px; color:#94a3b8;">Select an event to view registrants.</td></tr>
+                                                <tr><td colspan="6" style="text-align:center; padding:20px; color:#94a3b8;">Loading...</td></tr>
                                             </tbody>
                                         </table>
                                     </div>
                                 </div>
 
-                                <!-- Attendance -->
-                                <div style="background:white; border-radius:12px; padding:20px; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+                                <!-- Attendance Summary (hidden until View is clicked) -->
+                                <div id="attendance-summary-section" style="display:none; background:white; border-radius:12px; padding:20px; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
                                     <h4 style="margin-bottom:16px; color:#1a4731;"><i class="fas fa-clipboard-check"></i> Attendance Summary</h4>
                                     <div id="activities-attendance-summary" style="color:#94a3b8; font-size:13px;">Select an event above to view attendance.</div>
                                 </div>
@@ -2114,11 +2129,11 @@
             });
         });
 
-        // Event filter change
-        const eventFilter = document.getElementById('activities-event-filter');
-        if (eventFilter) {
-            eventFilter.addEventListener('change', function() {
-                loadRegistrantsForEvent(this.value);
+        // Section filter - live search on keyup
+        const sectionFilter = document.getElementById('filter-section');
+        if (sectionFilter) {
+            sectionFilter.addEventListener('keyup', function() {
+                applyRegistrantsFilter();
             });
         }
     });
@@ -2128,13 +2143,6 @@
             const res = await fetch('/api/announcements');
             const data = await res.json();
             const events = (data.announcements || []).filter(a => a.announcement_type === 'event' || a.announcement_type === 'seminar' || true);
-
-            // Populate event filter dropdown
-            const filter = document.getElementById('activities-event-filter');
-            if (filter) {
-                filter.innerHTML = '<option value="">-- Select Event --</option>' +
-                    events.map(e => `<option value="${e.announcement_id}">${e.title}</option>`).join('');
-            }
 
             // Load attendance stats per event
             let totalRegistrants = 0, totalAttended = 0;
@@ -2167,7 +2175,7 @@
                     <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${registrants}</td>
                     <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${attended}</td>
                     <td style="padding:10px;border-bottom:1px solid #f0f0f0;">
-                        <button class="btn-primary btn-sm" onclick="loadRegistrantsForEvent(${ev.announcement_id}); document.getElementById('activities-event-filter').value=${ev.announcement_id}; document.getElementById('activities-event-filter').scrollIntoView({behavior:'smooth'});">
+                        <button class="btn-primary btn-sm" onclick="viewEventRegistrants(${ev.announcement_id}, '${ev.title.replace(/'/g, "\\'")}')">
                             <i class="fas fa-eye"></i> View
                         </button>
                     </td>
@@ -2187,6 +2195,32 @@
         }
     }
 
+    // Store raw registrants for filtering
+    let _currentRegistrants = [];
+
+    async function viewEventRegistrants(eventId, eventTitle) {
+        // Show the registrants and attendance sections
+        const regSection = document.getElementById('registrants-section');
+        const attSection = document.getElementById('attendance-summary-section');
+        if (regSection) regSection.style.display = 'block';
+        if (attSection) attSection.style.display = 'block';
+
+        // Set event title label
+        const titleEl = document.getElementById('registrants-event-title');
+        if (titleEl) titleEl.textContent = eventTitle || '';
+
+        // Clear filters
+        const programFilter = document.getElementById('filter-program');
+        const sectionFilter = document.getElementById('filter-section');
+        if (programFilter) programFilter.value = '';
+        if (sectionFilter) sectionFilter.value = '';
+
+        // Scroll to registrants section
+        if (regSection) regSection.scrollIntoView({ behavior: 'smooth' });
+
+        await loadRegistrantsForEvent(eventId);
+    }
+
     async function loadRegistrantsForEvent(eventId) {
         if (!eventId) return;
         const tbody = document.getElementById('activities-registrants-body');
@@ -2198,26 +2232,20 @@
             const data = await res.json();
             const registrants = data.registrants_list || [];
 
-            if (tbody) {
-                if (registrants.length === 0) {
-                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:#94a3b8;">No registrants yet.</td></tr>';
-                } else {
-                    tbody.innerHTML = registrants.map(r => `<tr>
-                        <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${r.name || '-'}</td>
-                        <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${r.student_number || '-'}</td>
-                        <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${r.program || '-'}</td>
-                        <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${r.section || '-'}</td>
-                        <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${r.registered_at ? new Date(r.registered_at).toLocaleDateString('en-PH') : '-'}</td>
-                        <td style="padding:10px;border-bottom:1px solid #f0f0f0;">
-                            <span style="padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:${r.attended ? '#d1fae5' : '#fee2e2'};color:${r.attended ? '#065f46' : '#991b1b'};">
-                                ${r.attended ? 'Present' : 'Absent'}
-                            </span>
-                        </td>
-                    </tr>`).join('');
-                }
+            // Store raw data for filtering
+            _currentRegistrants = registrants;
+
+            // Populate Program dropdown with unique programs from data
+            const programFilter = document.getElementById('filter-program');
+            if (programFilter) {
+                const programs = [...new Set(registrants.map(r => r.program).filter(Boolean))].sort();
+                programFilter.innerHTML = '<option value="">-- All Programs --</option>' +
+                    programs.map(p => `<option value="${p}">${p}</option>`).join('');
             }
 
-            // Attendance summary
+            renderRegistrantsTable(registrants);
+
+            // Attendance summary (based on full list, not filtered)
             const attended = registrants.filter(r => r.attended).length;
             if (summary) {
                 summary.innerHTML = `
@@ -2239,6 +2267,44 @@
         } catch(e) {
             if (tbody) tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:#ef4444;">Error loading data.</td></tr>';
         }
+    }
+
+    function renderRegistrantsTable(registrants) {
+        const tbody = document.getElementById('activities-registrants-body');
+        if (!tbody) return;
+        if (registrants.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:#94a3b8;">No registrants found.</td></tr>';
+        } else {
+            tbody.innerHTML = registrants.map(r => `<tr>
+                <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${r.name || '-'}</td>
+                <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${r.student_number || '-'}</td>
+                <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${r.program || '-'}</td>
+                <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${r.section || '-'}</td>
+                <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${r.registered_at ? new Date(r.registered_at).toLocaleDateString('en-PH') : '-'}</td>
+                <td style="padding:10px;border-bottom:1px solid #f0f0f0;">
+                    <span style="padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:${r.attended ? '#d1fae5' : '#fee2e2'};color:${r.attended ? '#065f46' : '#991b1b'};">
+                        ${r.attended ? 'Present' : 'Absent'}
+                    </span>
+                </td>
+            </tr>`).join('');
+        }
+    }
+
+    function applyRegistrantsFilter() {
+        const program = (document.getElementById('filter-program')?.value || '').trim().toLowerCase();
+        const section = (document.getElementById('filter-section')?.value || '').trim().toLowerCase();
+        let filtered = _currentRegistrants;
+        if (program) filtered = filtered.filter(r => (r.program || '').toLowerCase() === program);
+        if (section) filtered = filtered.filter(r => (r.section || '').toLowerCase().includes(section));
+        renderRegistrantsTable(filtered);
+    }
+
+    function clearRegistrantsFilter() {
+        const programFilter = document.getElementById('filter-program');
+        const sectionFilter = document.getElementById('filter-section');
+        if (programFilter) programFilter.value = '';
+        if (sectionFilter) sectionFilter.value = '';
+        renderRegistrantsTable(_currentRegistrants);
     }
 
     function navigateTo(sectionId) {
