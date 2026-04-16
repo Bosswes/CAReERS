@@ -20,3 +20,4 @@ return new class extends Migration
         $table->unique(['event_id', 'student_number']);
     });
 }
+}
