@@ -1818,6 +1818,9 @@
                                 <button class="tab-btn" data-tab="templates-tab">
                                     <i class="fas fa-file-alt"></i> Templates
                                 </button>
+                                <button class="tab-btn" data-tab="activities-tab">
+                                    <i class="fas fa-calendar-check"></i> Activities
+                                </button>
                             </div>
                             
                             <!-- Reports Tab Content -->
@@ -1996,6 +1999,85 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- ========== ACTIVITIES TAB ========== -->
+                            <div id="activities-tab" class="tab-content" style="display: none;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                                    <h3>Activities & Events</h3>
+                                </div>
+
+                                <!-- Stats -->
+                                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;">
+                                    <div class="stat-summary-card">
+                                        <div class="stat-summary-label">Total Events</div>
+                                        <div class="stat-summary-value" id="act-total-events">0</div>
+                                    </div>
+                                    <div class="stat-summary-card">
+                                        <div class="stat-summary-label">Total Registrants</div>
+                                        <div class="stat-summary-value" id="act-total-registrants">0</div>
+                                    </div>
+                                    <div class="stat-summary-card">
+                                        <div class="stat-summary-label">Total Attendance</div>
+                                        <div class="stat-summary-value" id="act-total-attendance">0</div>
+                                    </div>
+                                </div>
+
+                                <!-- List of Events -->
+                                <div style="background:white; border-radius:12px; padding:20px; box-shadow:0 2px 8px rgba(0,0,0,0.06); margin-bottom: 24px;">
+                                    <h4 style="margin-bottom:16px; color:#1a4731;"><i class="fas fa-list"></i> List of Events / Seminars</h4>
+                                    <div style="overflow-x:auto;">
+                                        <table style="width:100%; border-collapse:collapse; font-size:13px;" id="activities-events-table">
+                                            <thead>
+                                                <tr style="background:#f0fdf4; color:#1a4731;">
+                                                    <th style="padding:10px; text-align:left; border-bottom:2px solid #d1fae5;">Event Title</th>
+                                                    <th style="padding:10px; text-align:left; border-bottom:2px solid #d1fae5;">Date</th>
+                                                    <th style="padding:10px; text-align:left; border-bottom:2px solid #d1fae5;">Location</th>
+                                                    <th style="padding:10px; text-align:left; border-bottom:2px solid #d1fae5;">Registrants</th>
+                                                    <th style="padding:10px; text-align:left; border-bottom:2px solid #d1fae5;">Attended</th>
+                                                    <th style="padding:10px; text-align:left; border-bottom:2px solid #d1fae5;">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="activities-events-body">
+                                                <tr><td colspan="6" style="text-align:center; padding:20px; color:#94a3b8;">Loading events...</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <!-- Registrants per Program/Section -->
+                                <div style="background:white; border-radius:12px; padding:20px; box-shadow:0 2px 8px rgba(0,0,0,0.06); margin-bottom: 24px;">
+                                    <h4 style="margin-bottom:16px; color:#1a4731;"><i class="fas fa-users"></i> Registrants per Program / Section</h4>
+                                    <div style="margin-bottom:12px;">
+                                        <select id="activities-event-filter" style="padding:8px 12px; border:1px solid #ddd; border-radius:8px; font-size:13px; min-width:200px;">
+                                            <option value="">-- Select Event --</option>
+                                        </select>
+                                    </div>
+                                    <div style="overflow-x:auto;">
+                                        <table style="width:100%; border-collapse:collapse; font-size:13px;">
+                                            <thead>
+                                                <tr style="background:#f0fdf4; color:#1a4731;">
+                                                    <th style="padding:10px; text-align:left; border-bottom:2px solid #d1fae5;">Student Name</th>
+                                                    <th style="padding:10px; text-align:left; border-bottom:2px solid #d1fae5;">Student No.</th>
+                                                    <th style="padding:10px; text-align:left; border-bottom:2px solid #d1fae5;">Program</th>
+                                                    <th style="padding:10px; text-align:left; border-bottom:2px solid #d1fae5;">Section</th>
+                                                    <th style="padding:10px; text-align:left; border-bottom:2px solid #d1fae5;">Registered</th>
+                                                    <th style="padding:10px; text-align:left; border-bottom:2px solid #d1fae5;">Attendance</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="activities-registrants-body">
+                                                <tr><td colspan="6" style="text-align:center; padding:20px; color:#94a3b8;">Select an event to view registrants.</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                <!-- Attendance -->
+                                <div style="background:white; border-radius:12px; padding:20px; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+                                    <h4 style="margin-bottom:16px; color:#1a4731;"><i class="fas fa-clipboard-check"></i> Attendance Summary</h4>
+                                    <div id="activities-attendance-summary" style="color:#94a3b8; font-size:13px;">Select an event above to view attendance.</div>
+                                </div>
+                            </div>
+                        </div>
                         </div>
                     </div>
                 </main>
@@ -2151,6 +2233,20 @@
                         <label for="announcement-location">Location (Optional)</label>
                         <input type="text" id="announcement-location">
                     </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="announcement-end-date">End Date (Optional)</label>
+                            <input type="date" id="announcement-end-date">
+                        </div>
+                        <div class="form-group">
+                            <label for="announcement-registration-status">Registration Status</label>
+                            <select id="announcement-registration-status">
+                                <option value="open">Open</option>
+                                <option value="closed">Closed</option>
+                            </select>
+                        </div>
+                    </div>
+                    <input type="hidden" id="announcement-form-link" value="">
                     <div class="form-group">
                         <label>
                             <input type="checkbox" id="announcement-publish" checked>
@@ -2556,6 +2652,149 @@
     document.addEventListener('DOMContentLoaded', function() {
         if (typeof Data !== 'undefined') Data.initialize();
     });
+
+    // ===== ACTIVITIES TAB LOGIC =====
+    document.addEventListener('DOMContentLoaded', function() {
+        // Tab switching (extend existing tab logic)
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const tab = this.dataset.tab;
+                document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                document.querySelectorAll('.tab-content').forEach(c => { c.style.display = 'none'; c.classList.remove('active'); });
+                this.classList.add('active');
+                const content = document.getElementById(tab);
+                if (content) { content.style.display = 'block'; content.classList.add('active'); }
+                if (tab === 'activities-tab') loadActivitiesData();
+            });
+        });
+
+        // Event filter change
+        const eventFilter = document.getElementById('activities-event-filter');
+        if (eventFilter) {
+            eventFilter.addEventListener('change', function() {
+                loadRegistrantsForEvent(this.value);
+            });
+        }
+    });
+
+    async function loadActivitiesData() {
+        try {
+            const res = await fetch('/api/announcements');
+            const data = await res.json();
+            const events = (data.announcements || []).filter(a => a.announcement_type === 'event' || a.announcement_type === 'seminar' || true);
+
+            // Populate event filter dropdown
+            const filter = document.getElementById('activities-event-filter');
+            if (filter) {
+                filter.innerHTML = '<option value="">-- Select Event --</option>' +
+                    events.map(e => `<option value="${e.announcement_id}">${e.title}</option>`).join('');
+            }
+
+            // Load attendance stats per event
+            let totalRegistrants = 0, totalAttended = 0;
+            const tbody = document.getElementById('activities-events-body');
+            if (!tbody) return;
+
+            if (events.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:#94a3b8;">No events found.</td></tr>';
+                return;
+            }
+
+            // Fetch attendance per event
+            const rows = await Promise.all(events.map(async (ev) => {
+                let registrants = 0, attended = 0;
+                try {
+                    const attRes = await fetch(`/api/attendance/${ev.announcement_id}`);
+                    if (attRes.ok) {
+                        const attData = await attRes.json();
+                        registrants = attData.registrants || 0;
+                        attended = attData.attended || 0;
+                    }
+                } catch(e) {}
+                totalRegistrants += registrants;
+                totalAttended += attended;
+                const date = ev.start_date ? new Date(ev.start_date).toLocaleDateString('en-PH', {year:'numeric',month:'short',day:'numeric'}) : '-';
+                return `<tr>
+                    <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${ev.title}</td>
+                    <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${date}</td>
+                    <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${ev.location || '-'}</td>
+                    <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${registrants}</td>
+                    <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${attended}</td>
+                    <td style="padding:10px;border-bottom:1px solid #f0f0f0;">
+                        <button class="btn-primary btn-sm" onclick="registerForEvent(${ann.announcement_id})">
+    <i class="fas fa-user-plus"></i> Register
+</button>
+                        </button>
+                    </td>
+                </tr>`;
+            }));
+
+            tbody.innerHTML = rows.join('');
+            const totalEventsEl = document.getElementById('act-total-events');
+            if (totalEventsEl) totalEventsEl.textContent = events.length;
+            const totalRegEl = document.getElementById('act-total-registrants');
+            if (totalRegEl) totalRegEl.textContent = totalRegistrants;
+            const totalAttEl = document.getElementById('act-total-attendance');
+            if (totalAttEl) totalAttEl.textContent = totalAttended;
+
+        } catch(e) {
+            console.error('Activities load error:', e);
+        }
+    }
+
+    async function loadRegistrantsForEvent(eventId) {
+        if (!eventId) return;
+        const tbody = document.getElementById('activities-registrants-body');
+        const summary = document.getElementById('activities-attendance-summary');
+        if (tbody) tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:#94a3b8;">Loading...</td></tr>';
+
+        try {
+            const res = await fetch(`/api/attendance/${eventId}`);
+            const data = await res.json();
+            const registrants = data.registrants_list || [];
+
+            if (tbody) {
+                if (registrants.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:#94a3b8;">No registrants yet.</td></tr>';
+                } else {
+                    tbody.innerHTML = registrants.map(r => `<tr>
+                        <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${r.name || '-'}</td>
+                        <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${r.student_number || '-'}</td>
+                        <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${r.program || '-'}</td>
+                        <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${r.section || '-'}</td>
+                        <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${r.registered_at ? new Date(r.registered_at).toLocaleDateString('en-PH') : '-'}</td>
+                        <td style="padding:10px;border-bottom:1px solid #f0f0f0;">
+                            <span style="padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:${r.attended ? '#d1fae5' : '#fee2e2'};color:${r.attended ? '#065f46' : '#991b1b'};">
+                                ${r.attended ? 'Present' : 'Absent'}
+                            </span>
+                        </td>
+                    </tr>`).join('');
+                }
+            }
+
+            // Attendance summary
+            const attended = registrants.filter(r => r.attended).length;
+            if (summary) {
+                summary.innerHTML = `
+                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+                        <div style="background:#f0fdf4;padding:16px;border-radius:10px;text-align:center;">
+                            <div style="font-size:24px;font-weight:700;color:#2E7D32;">${registrants.length}</div>
+                            <div style="font-size:12px;color:#555;">Total Registered</div>
+                        </div>
+                        <div style="background:#f0fdf4;padding:16px;border-radius:10px;text-align:center;">
+                            <div style="font-size:24px;font-weight:700;color:#2E7D32;">${attended}</div>
+                            <div style="font-size:12px;color:#555;">Attended</div>
+                        </div>
+                        <div style="background:#fff7ed;padding:16px;border-radius:10px;text-align:center;">
+                            <div style="font-size:24px;font-weight:700;color:#ea580c;">${registrants.length - attended}</div>
+                            <div style="font-size:12px;color:#555;">Absent</div>
+                        </div>
+                    </div>`;
+            }
+        } catch(e) {
+            if (tbody) tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:#ef4444;">Error loading data.</td></tr>';
+        }
+    }
 
     function navigateTo(sectionId) {
         document.querySelectorAll('.dashboard-section').forEach(s => s.style.display = 'none');

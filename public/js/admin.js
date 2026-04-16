@@ -636,7 +636,7 @@ const Admin = (function() {
                             </div>
                             <p class="text-muted" style="margin-top:4px;">${Utils.formatDateShort(ann.start_date)}${ann.end_date ? ' → ' + Utils.formatDateShort(ann.end_date) : ''}${ann.location ? ' · ' + ann.location : ''}</p>
                             <p>${Utils.truncateText(ann.content, 150)}</p>
-                            ${ann.form_link ? `<p><a href="${ann.form_link}" target="_blank" style="color:#16a34a;font-size:13px;"><i class="fas fa-external-link-alt"></i> Google Form Link</a></p>` : ''}
+                            
                         </div>
                         <div style="display:flex; flex-direction:column; gap:6px; min-width:120px;">
                             ${ann.announcement_type === 'event' ? `
@@ -744,7 +744,7 @@ const Admin = (function() {
                     document.getElementById('announcement-type').value = ann.announcement_type;
                     document.getElementById('announcement-date').value = ann.start_date;
                     document.getElementById('announcement-location').value = ann.location || '';
-                    ddocument.getElementById('announcement-form-link').value = ann.form_link || '';
+                    document.getElementById('announcement-form-link').value = ann.form_link || '';
                     document.getElementById('announcement-registration-status').value = ann.registration_status || 'open';
                     document.getElementById('announcement-end-date').value = ann.end_date || '';
                     document.getElementById('announcement-publish').checked = ann.is_published;
