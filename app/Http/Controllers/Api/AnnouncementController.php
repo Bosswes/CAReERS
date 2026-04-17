@@ -198,11 +198,20 @@ class AnnouncementController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
-        $registrants = DB::table('event_registrants as r')
+        $query = DB::table('event_registrants as r')
             ->join('student_info as s', 'r.student_number', '=', 's.student_number')
             ->where('r.event_id', $id)
-            ->select('r.*', 's.first_name', 's.last_name', 's.cvsu_email')
-            ->get();
+            ->select('r.*', 's.first_name', 's.last_name', 's.cvsu_email', 's.program', 's.course', 's.section');
+
+        if ($request->filled('program')) {
+            $query->where('s.course', $request->program);
+        }
+
+        if ($request->filled('section')) {
+            $query->where('s.section', 'like', '%' . $request->section . '%');
+        }
+
+        $registrants = $query->get();
 
         $attendedNumbers = DB::table('event_attendance')
             ->where('event_id', $id)
