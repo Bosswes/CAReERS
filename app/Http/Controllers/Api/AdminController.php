@@ -645,46 +645,44 @@ public function getJobApplicants($jobId)
             'applicants' => $applicants,
             'total'      => $applicants->count()
         ]);
-    } catch (\Exception $e) {
+} catch (\Exception $e) {
         Log::error('getJobApplicants error: ' . $e->getMessage());
         return response()->json(['success' => false, 'message' => 'Error fetching applicants'], 500);
     }
-    public function getEventRegistrantsWithAttendance($eventId)
-    {
-        if (!session('user_logged_in')) {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
+}
 
-        $registrants = DB::table('event_registrations')
-            ->join('student_info', 'event_registrations.student_number', '=', 'student_info.student_number')
-            ->where('event_registrations.event_id', $eventId)
-            ->select(
-                'student_info.student_number',
-                'student_info.first_name',
-                'student_info.last_name',
-                'student_info.course',
-                'student_info.year_level',
-                'student_info.section',
-                'event_registrations.created_at'
-            )
-            ->orderBy('student_info.last_name')
-            ->get();
-
-        $attended = DB::table('event_attendance')
-            ->where('event_id', $eventId)
-            ->pluck('student_number')
-            ->toArray();
-
-        $registrantCount = $registrants->count();
-        $attendanceCount = count($attended);
-
-        return response()->json([
-            'success'           => true,
-            'registrants'       => $registrants,
-            'attended'          => $attended,
-            'registrant_count'  => $registrantCount,
-            'attendance_count'  => $attendanceCount
-        ]);
+public function getEventRegistrantsWithAttendance($eventId)
+{
+    if (!session('user_logged_in')) {
+        return response()->json(['error' => 'Unauthorized'], 401);
     }
+
+    $registrants = DB::table('event_registrants')
+        ->join('student_info', 'event_registrants.student_number', '=', 'student_info.student_number')
+        ->where('event_registrants.event_id', $eventId)
+        ->select(
+            'student_info.student_number',
+            'student_info.first_name',
+            'student_info.last_name',
+            'student_info.course',
+            'student_info.year_level',
+            'student_info.section',
+            'event_registrants.created_at'
+        )
+        ->orderBy('student_info.last_name')
+        ->get();
+
+    $attended = DB::table('event_attendance')
+        ->where('event_id', $eventId)
+        ->pluck('student_number')
+        ->toArray();
+
+    return response()->json([
+        'success'           => true,
+        'registrants'       => $registrants,
+        'attended'          => $attended,
+        'registrant_count'  => $registrants->count(),
+        'attendance_count'  => count($attended)
+    ]);
 }
 }
