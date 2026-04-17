@@ -2022,8 +2022,8 @@
                                     </div>
                                 </div>
 
-                                <!-- List of Events -->
-                                <div style="background:white; border-radius:12px; padding:20px; box-shadow:0 2px 8px rgba(0,0,0,0.06); margin-bottom: 24px;">
+<!-- List of Events -->
+                                <div id="act-events-list-box" style="background:white; border-radius:12px; padding:20px; box-shadow:0 2px 8px rgba(0,0,0,0.06); margin-bottom: 24px;">
                                     <h4 style="margin-bottom:16px; color:#1a4731;"><i class="fas fa-list"></i> List of Events / Seminars</h4>
                                     <div style="overflow-x:auto;">
                                         <table style="width:100%; border-collapse:collapse; font-size:13px;" id="activities-events-table">
@@ -2045,12 +2045,42 @@
                                 </div>
 
                                 <!-- Registrants per Program/Section -->
-                                <div style="background:white; border-radius:12px; padding:20px; box-shadow:0 2px 8px rgba(0,0,0,0.06); margin-bottom: 24px;">
-                                    <h4 style="margin-bottom:16px; color:#1a4731;"><i class="fas fa-users"></i> Registrants per Program / Section</h4>
-                                    <div style="margin-bottom:12px;">
-                                        <select id="activities-event-filter" style="padding:8px 12px; border:1px solid #ddd; border-radius:8px; font-size:13px; min-width:200px;">
-                                            <option value="">-- Select Event --</option>
-                                        </select>
+                                <div id="event-detail-view" style="display:none;">
+                                    <!-- Back Button -->
+                                    <div style="margin-bottom:16px;">
+                                        <button class="btn-secondary btn-sm" onclick="backToEventsList()">
+                                            <i class="fas fa-arrow-left"></i> Back to Activities & Events
+                                        </button>
+                                    </div>
+                                    <h3 id="event-detail-title" style="margin-bottom:20px; color:#1a4731; font-size:20px;"></h3>
+                                </div>
+
+                                <div id="registrants-section" style="background:white; border-radius:12px; padding:20px; box-shadow:0 2px 8px rgba(0,0,0,0.06); margin-bottom: 24px;">
+                                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px; flex-wrap:wrap; gap:8px;">
+                                        <h4 style="color:#1a4731; margin:0;"><i class="fas fa-users"></i> Registrants per Program / Section <span id="registrants-event-name" style="font-size:13px; color:#64748b; font-weight:400;"></span></h4>
+                                    </div>
+                                    <div style="margin-bottom:12px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+                                        <div>
+                                            <label style="display:block; font-size:11px; font-weight:600; color:#475569; text-transform:uppercase; margin-bottom:4px;">Program</label>
+                                            <select id="activities-program-filter" style="padding:8px 12px; border:1px solid #ddd; border-radius:8px; font-size:13px; min-width:160px;">
+                                                <option value="">-- All Programs --</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label style="display:block; font-size:11px; font-weight:600; color:#475569; text-transform:uppercase; margin-bottom:4px;">Section</label>
+                                            <input type="text" id="activities-section-filter" placeholder="e.g. 4A" style="padding:8px 12px; border:1px solid #ddd; border-radius:8px; font-size:13px; width:120px;">
+                                        </div>
+                                        <div style="display:flex; align-items:flex-end; gap:8px; padding-bottom:0;">
+                                            <button class="btn-primary btn-sm" onclick="applyRegistrantFilters()" style="margin-top:20px;">
+                                                <i class="fas fa-filter"></i> Filter
+                                            </button>
+                                            <button class="btn-secondary btn-sm" onclick="clearRegistrantFilters()" style="margin-top:20px;">
+                                                Clear
+                                            </button>
+                                            <span id="registrant-section-count" style="margin-top:20px; padding:6px 14px; background:#f0fdf4; color:#2E7D32; border-radius:8px; font-size:13px; font-weight:600; display:none;">
+                                                <i class="fas fa-users"></i> <span id="registrant-count-value">0</span> student(s)
+                                            </span>
+                                        </div>
                                     </div>
                                     <div style="overflow-x:auto;">
                                         <table style="width:100%; border-collapse:collapse; font-size:13px;">
@@ -2072,7 +2102,7 @@
                                 </div>
 
                                 <!-- Attendance -->
-                                <div style="background:white; border-radius:12px; padding:20px; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+                                <div id="attendance-section" style="background:white; border-radius:12px; padding:20px; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
                                     <h4 style="margin-bottom:16px; color:#1a4731;"><i class="fas fa-clipboard-check"></i> Attendance Summary</h4>
                                     <div id="activities-attendance-summary" style="color:#94a3b8; font-size:13px;">Select an event above to view attendance.</div>
                                 </div>
@@ -2725,7 +2755,7 @@
                     <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${registrants}</td>
                     <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${attended}</td>
                     <td style="padding:10px;border-bottom:1px solid #f0f0f0;">
-                        <button class="btn-primary btn-sm" onclick="openRegistrantsModal(${ev.announcement_id}, '${ev.title.replace(/'/g, "\\'")}')">
+                        <button class="btn-primary btn-sm" onclick="openEventDetailView(${ev.announcement_id}, '${ev.title.replace(/'/g, "\\'")}')">
                             <i class="fas fa-eye"></i> View
                         </button>
                     </td>
@@ -2812,6 +2842,150 @@
         } catch(e) {
             if (tbody) tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:#ef4444;">Error loading data.</td></tr>';
         }
+    }
+
+    // ===== EVENT DETAIL VIEW FUNCTIONS =====
+    let currentEventId = null;
+    let allRegistrantsData = [];
+
+    function openEventDetailView(eventId, eventTitle) {
+        currentEventId = eventId;
+        allRegistrantsData = [];
+
+        // Hide events list table, show detail view header
+        const eventsListDiv = document.getElementById('activities-events-table')?.closest('div[style*="margin-bottom: 24px"]') || document.getElementById('activities-events-table')?.closest('div');
+        document.getElementById('event-detail-view').style.display = 'block';
+        document.getElementById('event-detail-title').innerHTML = `<i class="fas fa-calendar-check" style="color:#2E7D32;"></i> ${eventTitle}`;
+        document.getElementById('registrants-event-name').textContent = `— ${eventTitle}`;
+
+        // Hide the events list section
+        const actStatCards = document.querySelector('#activities-tab > div:nth-child(1)');
+        document.getElementById('act-events-list-box').style.display = 'none';
+
+        // Show registrants & attendance sections
+        document.getElementById('registrants-section').style.display = 'block';
+        document.getElementById('attendance-section').style.display = 'block';
+
+        // Load data
+        loadRegistrantsForEvent(eventId);
+
+        // Populate program filter
+        populateProgramFilter(eventId);
+
+        // Scroll to top of activities tab
+        document.getElementById('activities-tab').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function backToEventsList() {
+        document.getElementById('event-detail-view').style.display = 'none';
+        currentEventId = null;
+        allRegistrantsData = [];
+        document.getElementById('registrant-section-count').style.display = 'none';
+        document.getElementById('act-events-list-box').style.display = 'block';
+        document.getElementById('activities-program-filter').value = '';
+        document.getElementById('activities-section-filter').value = '';
+        document.getElementById('activities-registrants-body').innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:#94a3b8;">Select an event to view registrants.</td></tr>';
+        document.getElementById('activities-attendance-summary').innerHTML = '<span style="color:#94a3b8;font-size:13px;">Select an event above to view attendance.</span>';
+        document.getElementById('registrants-event-name').textContent = '';
+    }
+
+    async function populateProgramFilter(eventId) {
+        try {
+            const token = document.querySelector('meta[name="csrf-token"]')?.content;
+            const res = await fetch(`/api/admin/announcements/${eventId}/registrants`, {
+                headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': token },
+                credentials: 'same-origin'
+            });
+            const data = await res.json();
+            allRegistrantsData = data.registrants || [];
+
+            // Get unique programs
+            const programs = [...new Set(allRegistrantsData.map(r => r.program || r.course).filter(Boolean))];
+            const programSelect = document.getElementById('activities-program-filter');
+            programSelect.innerHTML = '<option value="">-- All Programs --</option>' +
+                programs.map(p => `<option value="${p}">${p}</option>`).join('');
+        } catch(e) {}
+    }
+
+    function applyRegistrantFilters() {
+        const programFilter = document.getElementById('activities-program-filter').value.trim().toLowerCase();
+        const sectionFilter = document.getElementById('activities-section-filter').value.trim().toLowerCase();
+
+        let filtered = allRegistrantsData;
+        if (programFilter) filtered = filtered.filter(r => (r.program || r.course || '').toLowerCase() === programFilter);
+        if (sectionFilter) filtered = filtered.filter(r => (r.section || '').toLowerCase().includes(sectionFilter));
+
+        renderRegistrantsTable(filtered);
+
+        // Show total count
+        const countEl = document.getElementById('registrant-section-count');
+        const countVal = document.getElementById('registrant-count-value');
+        countEl.style.display = 'inline-flex';
+        countVal.textContent = filtered.length;
+    }
+
+    function clearRegistrantFilters() {
+        document.getElementById('activities-program-filter').value = '';
+        document.getElementById('activities-section-filter').value = '';
+        document.getElementById('registrant-section-count').style.display = 'none';
+        renderRegistrantsTable(allRegistrantsData);
+    }
+
+    function renderRegistrantsTable(registrants) {
+        const tbody = document.getElementById('activities-registrants-body');
+        if (!tbody) return;
+        if (registrants.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:#94a3b8;">No registrants found.</td></tr>';
+        } else {
+            tbody.innerHTML = registrants.map(r => {
+                const status = r.attendance_status || 'pending';
+                const statusStyle = status === 'present'
+                    ? 'background:#d1fae5;color:#065f46;'
+                    : status === 'absent'
+                        ? 'background:#fee2e2;color:#991b1b;'
+                        : 'background:#fef3c7;color:#92400e;';
+                const statusLabel = status === 'present' ? '✅ Present' : status === 'absent' ? '❌ Absent' : '⏳ Pending';
+                return `<tr>
+                    <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${r.last_name || ''}, ${r.first_name || ''}</td>
+                    <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${r.student_number || '-'}</td>
+                    <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${r.program || r.course || '-'}</td>
+                    <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${r.section || '-'}</td>
+                    <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${r.created_at ? new Date(r.created_at).toLocaleDateString('en-PH') : '-'}</td>
+                    <td style="padding:10px;border-bottom:1px solid #f0f0f0;">
+                        <span style="padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;${statusStyle}">${statusLabel}</span>
+                    </td>
+                </tr>`;
+            }).join('');
+        }
+        // Update attendance summary
+        updateAttendanceSummary(registrants);
+    }
+
+    function updateAttendanceSummary(registrants) {
+        const summary = document.getElementById('activities-attendance-summary');
+        if (!summary) return;
+        const presentCount = registrants.filter(r => r.attendance_status === 'present').length;
+        const absentCount = registrants.filter(r => r.attendance_status === 'absent').length;
+        const pendingCount = registrants.filter(r => !r.attendance_status || r.attendance_status === 'pending').length;
+        summary.innerHTML = `
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+                <div style="background:#f0fdf4;padding:16px;border-radius:10px;text-align:center;">
+                    <div style="font-size:24px;font-weight:700;color:#2E7D32;">${registrants.length}</div>
+                    <div style="font-size:12px;color:#555;">Total Registered</div>
+                </div>
+                <div style="background:#f0fdf4;padding:16px;border-radius:10px;text-align:center;">
+                    <div style="font-size:24px;font-weight:700;color:#2E7D32;">${presentCount}</div>
+                    <div style="font-size:12px;color:#555;">Attended</div>
+                </div>
+                <div style="background:#fef3c7;padding:16px;border-radius:10px;text-align:center;">
+                    <div style="font-size:24px;font-weight:700;color:#d97706;">${pendingCount}</div>
+                    <div style="font-size:12px;color:#555;">Pending</div>
+                </div>
+                <div style="background:#fff1f2;padding:16px;border-radius:10px;text-align:center;">
+                    <div style="font-size:24px;font-weight:700;color:#e11d48;">${absentCount}</div>
+                    <div style="font-size:12px;color:#555;">Absent</div>
+                </div>
+            </div>`;
     }
 
     function navigateTo(sectionId) {
