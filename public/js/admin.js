@@ -1127,9 +1127,11 @@ window.openRegistrantsModal = async function(eventId, eventTitle) {
                 <td style="padding:12px 10px;font-size:13px;color:#374151;">${r.course || r.program || 'N/A'}</td>
                 <td style="padding:12px 10px;font-size:13px;color:#374151;">${r.section || 'N/A'}</td>
                 <td style="padding:12px 10px;">
-                    ${hasAttended
-                        ? `<span style="background:#d1fae5;color:#065f46;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;">✅ Attended</span>`
-                        : `<span style="background:#fee2e2;color:#991b1b;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;">❌ Absent</span>`
+                    ${r.attendance_status === 'present'
+                        ? `<span style="background:#d1fae5;color:#065f46;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;">✅ Present</span>`
+                        : r.attendance_status === 'absent'
+                            ? `<span style="background:#fee2e2;color:#991b1b;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;">❌ Absent</span>`
+                            : `<span style="background:#fef3c7;color:#92400e;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;">⏳ Pending</span>`
                     }
                 </td>
             </tr>`;

@@ -2701,14 +2701,18 @@
             }
 
             // Fetch attendance per event
+            const token = document.querySelector('meta[name="csrf-token"]')?.content;
             const rows = await Promise.all(events.map(async (ev) => {
                 let registrants = 0, attended = 0;
                 try {
-                    const attRes = await fetch(`/api/attendance/${ev.announcement_id}`);
+                    const attRes = await fetch(`/api/admin/announcements/${ev.announcement_id}/registrants`, {
+                        headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': token },
+                        credentials: 'same-origin'
+                    });
                     if (attRes.ok) {
                         const attData = await attRes.json();
-                        registrants = attData.registrants || 0;
-                        attended = attData.attended || 0;
+                        registrants = attData.registrant_count || 0;
+                        attended = attData.attendance_count || 0;
                     }
                 } catch(e) {}
                 totalRegistrants += registrants;
@@ -2721,9 +2725,8 @@
                     <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${registrants}</td>
                     <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${attended}</td>
                     <td style="padding:10px;border-bottom:1px solid #f0f0f0;">
-                        <button class="btn-primary btn-sm" onclick="registerForEvent(${ann.announcement_id})">
-    <i class="fas fa-user-plus"></i> Register
-</button>
+                        <button class="btn-primary btn-sm" onclick="openRegistrantsModal(${ev.announcement_id}, '${ev.title.replace(/'/g, "\\'")}')">
+                            <i class="fas fa-eye"></i> View
                         </button>
                     </td>
                 </tr>`;
@@ -2749,31 +2752,46 @@
         if (tbody) tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:#94a3b8;">Loading...</td></tr>';
 
         try {
-            const res = await fetch(`/api/attendance/${eventId}`);
+            const token = document.querySelector('meta[name="csrf-token"]')?.content;
+            const res = await fetch(`/api/admin/announcements/${eventId}/registrants`, {
+                headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': token },
+                credentials: 'same-origin'
+            });
             const data = await res.json();
-            const registrants = data.registrants_list || [];
+            const registrants = data.registrants || [];
 
             if (tbody) {
                 if (registrants.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:#94a3b8;">No registrants yet.</td></tr>';
                 } else {
-                    tbody.innerHTML = registrants.map(r => `<tr>
-                        <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${r.name || '-'}</td>
-                        <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${r.student_number || '-'}</td>
-                        <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${r.program || '-'}</td>
-                        <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${r.section || '-'}</td>
-                        <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${r.registered_at ? new Date(r.registered_at).toLocaleDateString('en-PH') : '-'}</td>
-                        <td style="padding:10px;border-bottom:1px solid #f0f0f0;">
-                            <span style="padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:${r.attended ? '#d1fae5' : '#fee2e2'};color:${r.attended ? '#065f46' : '#991b1b'};">
-                                ${r.attended ? 'Present' : 'Absent'}
-                            </span>
-                        </td>
-                    </tr>`).join('');
+                    tbody.innerHTML = registrants.map(r => {
+                        const status = r.attendance_status || 'pending';
+                        const statusStyle = status === 'present'
+                            ? 'background:#d1fae5;color:#065f46;'
+                            : status === 'absent'
+                                ? 'background:#fee2e2;color:#991b1b;'
+                                : 'background:#fef3c7;color:#92400e;';
+                        const statusLabel = status === 'present' ? '✅ Present' : status === 'absent' ? '❌ Absent' : '⏳ Pending';
+                        return `<tr>
+                            <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${r.first_name || ''} ${r.last_name || ''}</td>
+                            <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${r.student_number || '-'}</td>
+                            <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${r.program || r.course || '-'}</td>
+                            <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${r.section || '-'}</td>
+                            <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${r.created_at ? new Date(r.created_at).toLocaleDateString('en-PH') : '-'}</td>
+                            <td style="padding:10px;border-bottom:1px solid #f0f0f0;">
+                                <span style="padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;${statusStyle}">
+                                    ${statusLabel}
+                                </span>
+                            </td>
+                        </tr>`;
+                    }).join('');
                 }
             }
 
             // Attendance summary
-            const attended = registrants.filter(r => r.attended).length;
+            const presentCount = registrants.filter(r => r.attendance_status === 'present').length;
+            const absentCount = registrants.filter(r => r.attendance_status === 'absent').length;
+            const pendingCount = registrants.filter(r => r.attendance_status === 'pending').length;
             if (summary) {
                 summary.innerHTML = `
                     <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
@@ -2782,11 +2800,11 @@
                             <div style="font-size:12px;color:#555;">Total Registered</div>
                         </div>
                         <div style="background:#f0fdf4;padding:16px;border-radius:10px;text-align:center;">
-                            <div style="font-size:24px;font-weight:700;color:#2E7D32;">${attended}</div>
+                            <div style="font-size:24px;font-weight:700;color:#2E7D32;">${presentCount}</div>
                             <div style="font-size:12px;color:#555;">Attended</div>
                         </div>
                         <div style="background:#fff7ed;padding:16px;border-radius:10px;text-align:center;">
-                            <div style="font-size:24px;font-weight:700;color:#ea580c;">${registrants.length - attended}</div>
+                            <div style="font-size:24px;font-weight:700;color:#ea580c;">${absentCount}</div>
                             <div style="font-size:12px;color:#555;">Absent</div>
                         </div>
                     </div>`;
