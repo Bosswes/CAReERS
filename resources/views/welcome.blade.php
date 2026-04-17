@@ -1495,6 +1495,116 @@
 
                             <!-- ========== ACTIVITIES TAB ========== -->
                             <div id="activities-tab" class="tab-content" style="display: none;">
+
+                                <!-- ===== VIEW A: Events List (default) ===== -->
+                                <div id="act-events-list-view">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+                                        <h3>Activities & Events</h3>
+                                    </div>
+
+                                    <!-- Stats -->
+                                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px;">
+                                        <div class="stat-summary-card">
+                                            <div class="stat-summary-label">Total Events</div>
+                                            <div class="stat-summary-value" id="act-total-events">0</div>
+                                        </div>
+                                        <div class="stat-summary-card">
+                                            <div class="stat-summary-label">Total Registrants</div>
+                                            <div class="stat-summary-value" id="act-total-registrants">0</div>
+                                        </div>
+                                        <div class="stat-summary-card">
+                                            <div class="stat-summary-label">Total Attendance</div>
+                                            <div class="stat-summary-value" id="act-total-attendance">0</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- List of Events -->
+                                    <div style="background:white; border-radius:12px; padding:20px; box-shadow:0 2px 8px rgba(0,0,0,0.06); margin-bottom: 24px;">
+                                        <h4 style="margin-bottom:16px; color:#1a4731;"><i class="fas fa-list"></i> List of Events / Seminars</h4>
+                                        <div style="overflow-x:auto;">
+                                            <table style="width:100%; border-collapse:collapse; font-size:13px;" id="activities-events-table">
+                                                <thead>
+                                                    <tr style="background:#f0fdf4; color:#1a4731;">
+                                                        <th style="padding:10px; text-align:left; border-bottom:2px solid #d1fae5;">Event Title</th>
+                                                        <th style="padding:10px; text-align:left; border-bottom:2px solid #d1fae5;">Date</th>
+                                                        <th style="padding:10px; text-align:left; border-bottom:2px solid #d1fae5;">Location</th>
+                                                        <th style="padding:10px; text-align:left; border-bottom:2px solid #d1fae5;">Registrants</th>
+                                                        <th style="padding:10px; text-align:left; border-bottom:2px solid #d1fae5;">Attended</th>
+                                                        <th style="padding:10px; text-align:left; border-bottom:2px solid #d1fae5;">Actions</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="activities-events-body">
+                                                    <tr><td colspan="6" style="text-align:center; padding:20px; color:#94a3b8;">Loading events...</td></tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div><!-- end #act-events-list-view -->
+
+                                <!-- ===== VIEW B: Event Detail (shown when View is clicked) ===== -->
+                                <div id="act-event-detail-view" style="display:none;">
+
+                                    <!-- Back Button + Event Title -->
+                                    <div style="display:flex; align-items:center; gap:16px; margin-bottom:24px; flex-wrap:wrap;">
+                                        <button class="btn-secondary btn-sm" onclick="actBackToList()" style="display:flex;align-items:center;gap:6px;">
+                                            <i class="fas fa-arrow-left"></i> Back to Activities &amp; Events
+                                        </button>
+                                        <h3 id="act-detail-title" style="margin:0; color:#1a4731; font-size:18px;"></h3>
+                                    </div>
+
+                                    <!-- Registrants per Program/Section -->
+                                    <div style="background:white; border-radius:12px; padding:20px; box-shadow:0 2px 8px rgba(0,0,0,0.06); margin-bottom: 24px;">
+                                        <h4 style="margin-bottom:16px; color:#1a4731;"><i class="fas fa-users"></i> Registrants per Program / Section</h4>
+
+                                        <!-- Filters row -->
+                                        <div style="display:flex; gap:12px; flex-wrap:wrap; align-items:flex-end; margin-bottom:14px;">
+                                            <div>
+                                                <label style="display:block;font-size:11px;font-weight:600;color:#475569;text-transform:uppercase;margin-bottom:4px;">Program</label>
+                                                <select id="act-program-filter" style="padding:8px 12px; border:1px solid #ddd; border-radius:8px; font-size:13px; min-width:160px;">
+                                                    <option value="">-- All Programs --</option>
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label style="display:block;font-size:11px;font-weight:600;color:#475569;text-transform:uppercase;margin-bottom:4px;">Section</label>
+                                                <input type="text" id="act-section-filter" placeholder="e.g. 4A" style="padding:8px 12px; border:1px solid #ddd; border-radius:8px; font-size:13px; width:120px;">
+                                            </div>
+                                            <button class="btn-primary btn-sm" onclick="actApplyFilters()">
+                                                <i class="fas fa-filter"></i> Filter
+                                            </button>
+                                            <button class="btn-secondary btn-sm" onclick="actClearFilters()">
+                                                Clear
+                                            </button>
+                                            <span id="act-filter-count" style="display:none; padding:6px 14px; background:#f0fdf4; color:#2E7D32; border-radius:8px; font-size:13px; font-weight:600;">
+                                                <i class="fas fa-users"></i> <span id="act-filter-count-val">0</span> student(s)
+                                            </span>
+                                        </div>
+
+                                        <div style="overflow-x:auto;">
+                                            <table style="width:100%; border-collapse:collapse; font-size:13px;">
+                                                <thead>
+                                                    <tr style="background:#f0fdf4; color:#1a4731;">
+                                                        <th style="padding:10px; text-align:left; border-bottom:2px solid #d1fae5;">Student Name</th>
+                                                        <th style="padding:10px; text-align:left; border-bottom:2px solid #d1fae5;">Student No.</th>
+                                                        <th style="padding:10px; text-align:left; border-bottom:2px solid #d1fae5;">Program</th>
+                                                        <th style="padding:10px; text-align:left; border-bottom:2px solid #d1fae5;">Section</th>
+                                                        <th style="padding:10px; text-align:left; border-bottom:2px solid #d1fae5;">Registered</th>
+                                                        <th style="padding:10px; text-align:left; border-bottom:2px solid #d1fae5;">Attendance</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="activities-registrants-body">
+                                                    <tr><td colspan="6" style="text-align:center; padding:20px; color:#94a3b8;">Loading registrants...</td></tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                    <!-- Attendance Summary -->
+                                    <div style="background:white; border-radius:12px; padding:20px; box-shadow:0 2px 8px rgba(0,0,0,0.06);">
+                                        <h4 style="margin-bottom:16px; color:#1a4731;"><i class="fas fa-clipboard-check"></i> Attendance Summary</h4>
+                                        <div id="activities-attendance-summary" style="color:#94a3b8; font-size:13px;">Loading...</div>
+                                    </div>
+
+                                </div><!-- end #act-event-detail-view -->
                                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
                                     <h3>Activities & Events</h3>
                                 </div>
@@ -2126,6 +2236,7 @@
                 const content = document.getElementById(tab);
                 if (content) { content.style.display = 'block'; content.classList.add('active'); }
                 if (tab === 'activities-tab') loadActivitiesData();
+if (tab === 'activities-tab') {
             });
         });
 
@@ -2202,7 +2313,196 @@
     // Store raw registrants for filtering
     let _currentRegistrants = [];
 
-    async function viewEventRegistrants(eventId, eventTitle) {
+    // ===== ACTIVITIES: global state =====
+    let _actAllRegistrants = [];
+
+    async function loadActivitiesData() {
+        try {
+            const res = await fetch('/api/announcements');
+            const data = await res.json();
+            const events = (data.announcements || []);
+
+            let totalRegistrants = 0, totalAttended = 0;
+            const tbody = document.getElementById('activities-events-body');
+            if (!tbody) return;
+
+            if (events.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:#94a3b8;">No events found.</td></tr>';
+                return;
+            }
+
+            const token = document.querySelector('meta[name="csrf-token"]')?.content;
+            const rows = await Promise.all(events.map(async (ev) => {
+                let registrants = 0, attended = 0;
+                try {
+                    const attRes = await fetch(`/api/admin/announcements/${ev.announcement_id}/registrants`, {
+                        headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': token },
+                        credentials: 'same-origin'
+                    });
+                    if (attRes.ok) {
+                        const attData = await attRes.json();
+                        registrants = attData.registrant_count || 0;
+                        attended = attData.attendance_count || 0;
+                    }
+                } catch(e) {}
+                totalRegistrants += registrants;
+                totalAttended += attended;
+                const date = ev.start_date ? new Date(ev.start_date).toLocaleDateString('en-PH', {year:'numeric',month:'short',day:'numeric'}) : '-';
+                const safeTitle = (ev.title || '').replace(/'/g, "\\'");
+                return `<tr>
+                    <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${ev.title}</td>
+                    <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${date}</td>
+                    <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${ev.location || '-'}</td>
+                    <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${registrants}</td>
+                    <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${attended}</td>
+                    <td style="padding:10px;border-bottom:1px solid #f0f0f0;">
+                        <button class="btn-primary btn-sm" onclick="actOpenDetailView(${ev.announcement_id}, '${safeTitle}')">
+                            <i class="fas fa-eye"></i> View
+                        </button>
+                    </td>
+                </tr>`;
+            }));
+
+            tbody.innerHTML = rows.join('');
+            const totalEventsEl = document.getElementById('act-total-events');
+            if (totalEventsEl) totalEventsEl.textContent = events.length;
+            const totalRegEl = document.getElementById('act-total-registrants');
+            if (totalRegEl) totalRegEl.textContent = totalRegistrants;
+            const totalAttEl = document.getElementById('act-total-attendance');
+            if (totalAttEl) totalAttEl.textContent = totalAttended;
+
+        } catch(e) {
+            console.error('Activities load error:', e);
+        }
+    }
+
+    async function actOpenDetailView(eventId, eventTitle) {
+        document.getElementById('act-events-list-view').style.display = 'none';
+        document.getElementById('act-event-detail-view').style.display = 'block';
+        document.getElementById('act-detail-title').textContent = eventTitle;
+
+        document.getElementById('act-program-filter').value = '';
+        document.getElementById('act-section-filter').value = '';
+        document.getElementById('act-filter-count').style.display = 'none';
+        _actAllRegistrants = [];
+
+        const tbody = document.getElementById('activities-registrants-body');
+        const summary = document.getElementById('activities-attendance-summary');
+        if (tbody) tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:#94a3b8;">Loading...</td></tr>';
+        if (summary) summary.innerHTML = '<span style="color:#94a3b8;font-size:13px;">Loading...</span>';
+
+        document.getElementById('act-event-detail-view').scrollIntoView({ behavior: 'smooth' });
+
+        try {
+            const token = document.querySelector('meta[name="csrf-token"]')?.content;
+            const res = await fetch(`/api/admin/announcements/${eventId}/registrants`, {
+                headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': token },
+                credentials: 'same-origin'
+            });
+            const data = await res.json();
+            _actAllRegistrants = data.registrants || [];
+
+            const programs = [...new Set(_actAllRegistrants.map(r => r.program || r.course).filter(Boolean))];
+            const progSelect = document.getElementById('act-program-filter');
+            progSelect.innerHTML = '<option value="">-- All Programs --</option>' +
+                programs.map(p => `<option value="${p}">${p}</option>`).join('');
+
+            actRenderTable(_actAllRegistrants);
+
+        } catch(e) {
+            if (tbody) tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:#ef4444;">Error loading data.</td></tr>';
+        }
+    }
+
+    function actBackToList() {
+        document.getElementById('act-event-detail-view').style.display = 'none';
+        document.getElementById('act-events-list-view').style.display = 'block';
+        document.getElementById('act-events-list-view').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function actApplyFilters() {
+        const prog = document.getElementById('act-program-filter').value.trim();
+        const sec  = document.getElementById('act-section-filter').value.trim().toLowerCase();
+
+        let filtered = _actAllRegistrants;
+        if (prog) filtered = filtered.filter(r => (r.program || r.course || '') === prog);
+        if (sec)  filtered = filtered.filter(r => (r.section || '').toLowerCase().includes(sec));
+
+        actRenderTable(filtered);
+
+        const badge = document.getElementById('act-filter-count');
+        document.getElementById('act-filter-count-val').textContent = filtered.length;
+        badge.style.display = 'inline-flex';
+        badge.style.alignItems = 'center';
+        badge.style.gap = '6px';
+    }
+
+    function actClearFilters() {
+        document.getElementById('act-program-filter').value = '';
+        document.getElementById('act-section-filter').value = '';
+        document.getElementById('act-filter-count').style.display = 'none';
+        actRenderTable(_actAllRegistrants);
+    }
+
+    function actRenderTable(registrants) {
+        const tbody = document.getElementById('activities-registrants-body');
+        const summary = document.getElementById('activities-attendance-summary');
+
+        if (tbody) {
+            if (registrants.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:#94a3b8;">No registrants found.</td></tr>';
+            } else {
+                tbody.innerHTML = registrants.map(r => {
+                    const status = r.attendance_status || 'pending';
+                    const statusStyle = status === 'present'
+                        ? 'background:#d1fae5;color:#065f46;'
+                        : status === 'absent'
+                            ? 'background:#fee2e2;color:#991b1b;'
+                            : 'background:#fef3c7;color:#92400e;';
+                    const statusLabel = status === 'present' ? 'Present' : status === 'absent' ? 'Absent' : 'Pending';
+                    return `<tr>
+                        <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${r.last_name || ''}, ${r.first_name || ''}</td>
+                        <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${r.student_number || '-'}</td>
+                        <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${r.program || r.course || '-'}</td>
+                        <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${r.section || '-'}</td>
+                        <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${r.created_at ? new Date(r.created_at).toLocaleDateString('en-PH') : '-'}</td>
+                        <td style="padding:10px;border-bottom:1px solid #f0f0f0;">
+                            <span style="padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;${statusStyle}">${statusLabel}</span>
+                        </td>
+                    </tr>`;
+                }).join('');
+            }
+        }
+
+        const presentCount = registrants.filter(r => r.attendance_status === 'present').length;
+        const absentCount  = registrants.filter(r => r.attendance_status === 'absent').length;
+        const pendingCount = registrants.filter(r => !r.attendance_status || r.attendance_status === 'pending').length;
+        if (summary) {
+            summary.innerHTML = `
+                <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
+                    <div style="background:#f0fdf4;padding:16px;border-radius:10px;text-align:center;">
+                        <div style="font-size:28px;font-weight:700;color:#2E7D32;">${registrants.length}</div>
+                        <div style="font-size:12px;color:#555;margin-top:4px;">Total Registered</div>
+                    </div>
+                    <div style="background:#f0fdf4;padding:16px;border-radius:10px;text-align:center;">
+                        <div style="font-size:28px;font-weight:700;color:#2E7D32;">${presentCount}</div>
+                        <div style="font-size:12px;color:#555;margin-top:4px;">Attended</div>
+                    </div>
+                    <div style="background:#fef9c3;padding:16px;border-radius:10px;text-align:center;">
+                        <div style="font-size:28px;font-weight:700;color:#ca8a04;">${pendingCount}</div>
+                        <div style="font-size:12px;color:#555;margin-top:4px;">Pending</div>
+                    </div>
+                    <div style="background:#fff1f2;padding:16px;border-radius:10px;text-align:center;">
+                        <div style="font-size:28px;font-weight:700;color:#e11d48;">${absentCount}</div>
+                        <div style="font-size:12px;color:#555;margin-top:4px;">Absent</div>
+                    </div>
+                </div>`;
+        }
+    }
+
+    async function loadRegistrantsForEvent(eventId) {
+        if (eventId) await actOpenDetailView(eventId, '');
+    }
         // Show the registrants and attendance sections
         const regSection = document.getElementById('registrants-section');
         const attSection = document.getElementById('attendance-summary-section');
