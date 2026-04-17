@@ -2245,7 +2245,8 @@
                 program: r.course || r.program || '-',
                 section: r.section || '-',
                 registered_at: r.created_at,
-                attended: attendedNumbers.includes(String(r.student_number))
+                attended: attendedNumbers.includes(String(r.student_number)),
+                attendance_status: r.attendance_status || (attendedNumbers.includes(String(r.student_number)) ? 'present' : 'pending')
             }));
 
             // Store raw data for filtering
@@ -2262,10 +2263,12 @@
             renderRegistrantsTable(registrants);
 
             // Attendance summary (based on full list, not filtered)
-            const attended = registrants.filter(r => r.attended).length;
+            const attended = registrants.filter(r => r.attendance_status === 'present').length;
+            const absent = registrants.filter(r => r.attendance_status === 'absent').length;
+            const pending = registrants.filter(r => r.attendance_status === 'pending').length;
             if (summary) {
                 summary.innerHTML = `
-                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;">
+                    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;">
                         <div style="background:#f0fdf4;padding:16px;border-radius:10px;text-align:center;">
                             <div style="font-size:24px;font-weight:700;color:#2E7D32;">${registrants.length}</div>
                             <div style="font-size:12px;color:#555;">Total Registered</div>
@@ -2274,8 +2277,12 @@
                             <div style="font-size:24px;font-weight:700;color:#2E7D32;">${attended}</div>
                             <div style="font-size:12px;color:#555;">Attended</div>
                         </div>
+                        <div style="background:#fef9c3;padding:16px;border-radius:10px;text-align:center;">
+                            <div style="font-size:24px;font-weight:700;color:#854d0e;">${pending}</div>
+                            <div style="font-size:12px;color:#555;">Pending</div>
+                        </div>
                         <div style="background:#fff7ed;padding:16px;border-radius:10px;text-align:center;">
-                            <div style="font-size:24px;font-weight:700;color:#ea580c;">${registrants.length - attended}</div>
+                            <div style="font-size:24px;font-weight:700;color:#ea580c;">${absent}</div>
                             <div style="font-size:12px;color:#555;">Absent</div>
                         </div>
                     </div>`;
@@ -2298,8 +2305,10 @@
                 <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${r.section || '-'}</td>
                 <td style="padding:10px;border-bottom:1px solid #f0f0f0;">${r.registered_at ? new Date(r.registered_at).toLocaleDateString('en-PH') : '-'}</td>
                 <td style="padding:10px;border-bottom:1px solid #f0f0f0;">
-                    <span style="padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;background:${r.attended ? '#d1fae5' : '#fee2e2'};color:${r.attended ? '#065f46' : '#991b1b'};">
-                        ${r.attended ? 'Present' : 'Absent'}
+                    <span style="padding:3px 10px;border-radius:20px;font-size:11px;font-weight:600;
+                        background:${r.attendance_status === 'present' ? '#d1fae5' : r.attendance_status === 'absent' ? '#fee2e2' : '#fef9c3'};
+                        color:${r.attendance_status === 'present' ? '#065f46' : r.attendance_status === 'absent' ? '#991b1b' : '#854d0e'};">
+                        ${r.attendance_status === 'present' ? 'Present' : r.attendance_status === 'absent' ? 'Absent' : 'Pending'}
                     </span>
                 </td>
             </tr>`).join('');
