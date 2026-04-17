@@ -657,7 +657,7 @@ public function getEventRegistrantsWithAttendance($eventId)
         return response()->json(['error' => 'Unauthorized'], 401);
     }
 
-    $event = DB::table('announcements')->where('id', $eventId)->first();
+    $event = DB::table('announcements')->where('announcement_id', $eventId)->first();
 
     $registrants = DB::table('event_registrants')
         ->join('student_info', 'event_registrants.student_number', '=', 'student_info.student_number')
