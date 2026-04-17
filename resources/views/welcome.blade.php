@@ -2155,13 +2155,14 @@
             }
 
             // Fetch attendance per event
+            const token = document.querySelector('meta[name="csrf-token"]')?.content;
             const rows = await Promise.all(events.map(async (ev) => {
                 let registrants = 0, attended = 0;
                 try {
                     const attRes = await fetch(`/api/admin/announcements/${ev.announcement_id}/registrants`, {
-                headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': token },
-                credentials: 'same-origin'
-            });
+                        headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': token },
+                        credentials: 'same-origin'
+                    });
                     if (attRes.ok) {
                         const attData = await attRes.json();
                         registrants = attData.registrant_count || 0;
@@ -2240,14 +2241,15 @@
             const rawRegistrants = data.registrants || [];
             const attendedNumbers = (data.attended || []).map(String);
             const registrants = rawRegistrants.map(r => ({
-                name: (r.first_name || '') + ' ' + (r.last_name || ''),
+                name: (r.last_name || '') + ', ' + (r.first_name || ''),
+                last_name: r.last_name || '',
                 student_number: r.student_number,
                 program: r.course || r.program || '-',
                 section: r.section || '-',
                 registered_at: r.created_at,
                 attended: attendedNumbers.includes(String(r.student_number)),
                 attendance_status: r.attendance_status || (attendedNumbers.includes(String(r.student_number)) ? 'present' : 'pending')
-            }));
+            })).sort((a, b) => a.last_name.localeCompare(b.last_name));
 
             // Store raw data for filtering
             _currentRegistrants = registrants;
