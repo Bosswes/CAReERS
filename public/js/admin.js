@@ -1045,4 +1045,115 @@ window.openApplicantsModal = async function(jobId) {
         console.error('Error loading applicants:', e);
         document.getElementById('appl-modal-body').innerHTML = '<p style="text-align:center;color:#ef4444;padding:30px;">Error loading applicants.</p>';
     }
+    // =============================================
+// REGISTRANTS MODAL (Events/Announcements)
+// =============================================
+window.openRegistrantsModal = async function(eventId, eventTitle) {
+    let modal = document.getElementById('event-registrants-modal');
+    if (!modal) {
+        modal = document.createElement('div');
+        modal.id = 'event-registrants-modal';
+        modal.style.cssText = 'display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9999;align-items:center;justify-content:center;padding:20px;';
+        modal.innerHTML = `
+            <div style="background:white;border-radius:20px;max-width:900px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 25px 60px rgba(0,0,0,0.25);">
+                <div style="display:flex;align-items:center;justify-content:space-between;padding:22px 28px;border-bottom:1px solid #e2e8f0;position:sticky;top:0;background:white;border-radius:20px 20px 0 0;z-index:1;">
+                    <div style="display:flex;align-items:center;gap:12px;">
+                        <div style="width:42px;height:42px;background:#d1fae5;border-radius:12px;display:flex;align-items:center;justify-content:center;">
+                            <i class="fas fa-users" style="color:#2E7D32;font-size:18px;"></i>
+                        </div>
+                        <div>
+                            <h3 id="reg-modal-title" style="margin:0;color:#1e293b;font-size:18px;font-weight:700;">Registrants</h3>
+                            <p id="reg-modal-subtitle" style="margin:0;font-size:13px;color:#64748b;"></p>
+                        </div>
+                    </div>
+                    <button onclick="document.getElementById('event-registrants-modal').style.display='none';"
+                        style="background:#f1f5f9;border:none;width:36px;height:36px;border-radius:10px;cursor:pointer;font-size:18px;color:#64748b;">&times;</button>
+                </div>
+                <div id="reg-modal-body" style="padding:28px;">
+                    <div style="text-align:center;padding:40px;color:#94a3b8;">
+                        <i class="fas fa-spinner fa-spin" style="font-size:28px;"></i>
+                        <p style="margin-top:12px;">Loading registrants...</p>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.appendChild(modal);
+        modal.addEventListener('click', e => { if (e.target === modal) modal.style.display = 'none'; });
+    }
+
+    modal.style.display = 'flex';
+    document.getElementById('reg-modal-title').textContent = eventTitle || 'Registrants';
+    document.getElementById('reg-modal-subtitle').textContent = '';
+    document.getElementById('reg-modal-body').innerHTML = `
+        <div style="text-align:center;padding:40px;color:#94a3b8;">
+            <i class="fas fa-spinner fa-spin" style="font-size:28px;"></i>
+            <p style="margin-top:12px;">Loading registrants...</p>
+        </div>`;
+
+    try {
+        const token = document.querySelector('meta[name="csrf-token"]')?.content;
+        const res = await fetch(`/api/admin/announcements/${eventId}/registrants`, {
+            headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': token },
+            credentials: 'same-origin'
+        });
+        const data = await res.json();
+
+        if (!data.success) throw new Error(data.message || 'Failed to load registrants');
+
+        const registrants = data.registrants || [];
+        const attended = data.attended || [];
+
+        document.getElementById('reg-modal-subtitle').textContent =
+            `${data.registrant_count} registrant(s) · ${data.attendance_count} attended`;
+
+        if (registrants.length === 0) {
+            document.getElementById('reg-modal-body').innerHTML = `
+                <div style="text-align:center;padding:50px;color:#94a3b8;">
+                    <i class="fas fa-user-slash" style="font-size:42px;margin-bottom:14px;display:block;"></i>
+                    <p style="font-size:15px;font-weight:600;">No registrants yet</p>
+                    <p style="font-size:13px;">No students have registered for this event.</p>
+                </div>`;
+            return;
+        }
+
+        const rows = registrants.map(r => {
+            const hasAttended = attended.includes(r.student_number);
+            return `<tr style="border-bottom:1px solid #f1f5f9;">
+                <td style="padding:12px 10px;">
+                    <div style="font-weight:700;color:#1e293b;">${r.first_name} ${r.last_name}</div>
+                    <div style="font-size:12px;color:#64748b;">${r.cvsu_email || ''}</div>
+                </td>
+                <td style="padding:12px 10px;font-size:13px;color:#374151;">${r.student_number}</td>
+                <td style="padding:12px 10px;font-size:13px;color:#374151;">${r.course || r.program || 'N/A'}</td>
+                <td style="padding:12px 10px;font-size:13px;color:#374151;">${r.section || 'N/A'}</td>
+                <td style="padding:12px 10px;">
+                    ${hasAttended
+                        ? `<span style="background:#d1fae5;color:#065f46;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;">✅ Attended</span>`
+                        : `<span style="background:#fee2e2;color:#991b1b;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;">❌ Absent</span>`
+                    }
+                </td>
+            </tr>`;
+        }).join('');
+
+        document.getElementById('reg-modal-body').innerHTML = `
+            <div style="overflow-x:auto;">
+                <table style="width:100%;border-collapse:collapse;font-size:13px;">
+                    <thead>
+                        <tr style="background:#f0fdf4;">
+                            <th style="padding:10px;text-align:left;color:#1a4731;border-bottom:2px solid #d1fae5;">Student</th>
+                            <th style="padding:10px;text-align:left;color:#1a4731;border-bottom:2px solid #d1fae5;">Student No.</th>
+                            <th style="padding:10px;text-align:left;color:#1a4731;border-bottom:2px solid #d1fae5;">Course</th>
+                            <th style="padding:10px;text-align:left;color:#1a4731;border-bottom:2px solid #d1fae5;">Section</th>
+                            <th style="padding:10px;text-align:left;color:#1a4731;border-bottom:2px solid #d1fae5;">Attendance</th>
+                        </tr>
+                    </thead>
+                    <tbody>${rows}</tbody>
+                </table>
+            </div>`;
+    } catch(e) {
+        console.error('Error loading registrants:', e);
+        document.getElementById('reg-modal-body').innerHTML =
+            '<p style="text-align:center;color:#ef4444;padding:30px;">Error loading registrants.</p>';
+    }
+};
 };

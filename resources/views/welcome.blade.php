@@ -2158,11 +2158,14 @@
             const rows = await Promise.all(events.map(async (ev) => {
                 let registrants = 0, attended = 0;
                 try {
-                    const attRes = await fetch(`/api/attendance/${ev.announcement_id}`);
+                    const attRes = await fetch(`/api/admin/announcements/${ev.announcement_id}/registrants`, {
+                headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': token },
+                credentials: 'same-origin'
+            });
                     if (attRes.ok) {
                         const attData = await attRes.json();
-                        registrants = attData.registrants || 0;
-                        attended = attData.attended || 0;
+                        registrants = attData.registrant_count || 0;
+                        attended = attData.attendance_count || 0;
                     }
                 } catch(e) {}
                 totalRegistrants += registrants;
@@ -2228,9 +2231,22 @@
         if (tbody) tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;padding:20px;color:#94a3b8;">Loading...</td></tr>';
 
         try {
-            const res = await fetch(`/api/attendance/${eventId}`);
+            const token = document.querySelector('meta[name="csrf-token"]')?.content;
+            const res = await fetch(`/api/admin/announcements/${eventId}/registrants`, {
+                headers: { 'Accept': 'application/json', 'X-CSRF-TOKEN': token },
+                credentials: 'same-origin'
+            });
             const data = await res.json();
-            const registrants = data.registrants_list || [];
+            const rawRegistrants = data.registrants || [];
+            const attendedNumbers = (data.attended || []).map(String);
+            const registrants = rawRegistrants.map(r => ({
+                name: (r.first_name || '') + ' ' + (r.last_name || ''),
+                student_number: r.student_number,
+                program: r.course || r.program || '-',
+                section: r.section || '-',
+                registered_at: r.created_at,
+                attended: attendedNumbers.includes(String(r.student_number))
+            }));
 
             // Store raw data for filtering
             _currentRegistrants = registrants;

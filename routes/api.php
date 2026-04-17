@@ -98,5 +98,6 @@ Route::post('/announcements/{id}/scan', [AnnouncementController::class, 'scanQR'
         // Attendance
         Route::post('/attendance', [AdminController::class, 'recordAttendance']);
         Route::get('/attendance/{eventId}', [AdminController::class, 'getEventAttendance']);
+        Route::get('/announcements/{id}/registrants', [AdminController::class, 'getEventRegistrantsWithAttendance']);
     });
 });
