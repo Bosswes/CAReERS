@@ -657,13 +657,16 @@ public function getEventRegistrantsWithAttendance($eventId)
         return response()->json(['error' => 'Unauthorized'], 401);
     }
 
+    $event = DB::table('announcements')->where('id', $eventId)->first();
+
     $registrants = DB::table('event_registrants')
         ->join('student_info', 'event_registrants.student_number', '=', 'student_info.student_number')
-        ->where('event_registrants.event_id', $eventId)
+       ->where('event_registrants.event_id', $eventId)
         ->select(
             'student_info.student_number',
             'student_info.first_name',
             'student_info.last_name',
+            'student_info.program',
             'student_info.course',
             'student_info.year_level',
             'student_info.section',
@@ -677,9 +680,23 @@ public function getEventRegistrantsWithAttendance($eventId)
         ->pluck('student_number')
         ->toArray();
 
+    $eventEnded = $event && $event->end_date && now()->gt(\Carbon\Carbon::parse($event->end_date)->endOfDay());
+
+    $registrantsWithStatus = $registrants->map(function($r) use ($attended, $eventEnded) {
+        $scanned = in_array($r->student_number, $attended);
+        if ($scanned) {
+            $r->attendance_status = 'present';
+        } elseif ($eventEnded) {
+            $r->attendance_status = 'absent';
+        } else {
+            $r->attendance_status = 'pending';
+        }
+        return $r;
+    });
+
     return response()->json([
         'success'           => true,
-        'registrants'       => $registrants,
+        'registrants'       => $registrantsWithStatus,
         'attended'          => $attended,
         'registrant_count'  => $registrants->count(),
         'attendance_count'  => count($attended)

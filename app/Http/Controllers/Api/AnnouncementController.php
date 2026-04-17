@@ -131,7 +131,6 @@ class AnnouncementController extends Controller
 
         $studentNumber = $student->student_number;
 
-        // Check in event_registrants (NOT event_attendance)
         $exists = DB::table('event_registrants')
             ->where('event_id', $id)
             ->where('student_number', $studentNumber)
@@ -144,7 +143,6 @@ class AnnouncementController extends Controller
         $now = now()->timezone('Asia/Manila');
         $qrCode = 'EVT-' . $id . '-' . $studentNumber . '-' . time();
 
-        // Insert to event_registrants only — attendance is recorded via QR scan
         DB::table('event_registrants')->insert([
             'event_id'       => $id,
             'student_number' => $studentNumber,
@@ -172,13 +170,11 @@ class AnnouncementController extends Controller
             return response()->json(['registered' => false]);
         }
 
-        // Check registration (event_registrants)
         $registration = DB::table('event_registrants')
             ->where('event_id', $id)
             ->where('student_number', $student->student_number)
             ->first();
 
-        // Check attendance (event_attendance) — only set after QR scan
         $attended = DB::table('event_attendance')
             ->where('event_id', $id)
             ->where('student_number', $student->student_number)
@@ -198,6 +194,20 @@ class AnnouncementController extends Controller
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
+        // -------------------------------------------------------
+        // TOTAL counts (walang filter) — para sa List of Events table
+        // -------------------------------------------------------
+        $totalRegistrantCount = DB::table('event_registrants')
+            ->where('event_id', $id)
+            ->count();
+
+        $totalAttendanceCount = DB::table('event_attendance')
+            ->where('event_id', $id)
+            ->count();
+
+        // -------------------------------------------------------
+        // Filtered query — para sa Registrants per Program table
+        // -------------------------------------------------------
         $query = DB::table('event_registrants as r')
             ->join('student_info as s', 'r.student_number', '=', 's.student_number')
             ->where('r.event_id', $id)
@@ -218,11 +228,32 @@ class AnnouncementController extends Controller
             ->pluck('student_number')
             ->toArray();
 
+        // -------------------------------------------------------
+        // Attendance status per registrant:
+        //   - present  : na-scan na ang QR niya
+        //   - absent   : hindi na-scan, tapos na ang event
+        //   - pending  : hindi pa na-scan, ongoing/hindi pa tapos ang event
+        // -------------------------------------------------------
+        $event = DB::table('announcements')->where('announcement_id', $id)->first();
+        $eventEnded = $event && $event->end_date && now()->gt(\Carbon\Carbon::parse($event->end_date)->endOfDay());
+
+        $registrantsWithStatus = $registrants->map(function ($r) use ($attendedNumbers, $eventEnded) {
+            $scanned = in_array($r->student_number, $attendedNumbers);
+            if ($scanned) {
+                $r->attendance_status = 'present';
+            } elseif ($eventEnded) {
+                $r->attendance_status = 'absent';
+            } else {
+                $r->attendance_status = 'pending';
+            }
+            return $r;
+        });
+
         return response()->json([
             'success'          => true,
-            'registrant_count' => $registrants->count(),
-            'attendance_count' => count($attendedNumbers),
-            'registrants'      => $registrants,
+            'registrant_count' => $totalRegistrantCount,  // total lahat, walang filter
+            'attendance_count' => $totalAttendanceCount,  // total na-scan
+            'registrants'      => $registrantsWithStatus,
             'attended'         => $attendedNumbers,
         ]);
     }
@@ -263,6 +294,12 @@ class AnnouncementController extends Controller
             'created_at'      => $now,
             'updated_at'      => $now,
         ]);
+
+        // I-update ang event_registrants para ma-track ang scan time
+        DB::table('event_registrants')
+            ->where('event_id', $id)
+            ->where('student_number', $registrant->student_number)
+            ->update(['updated_at' => $now]);
 
         $student = DB::table('student_info')
             ->where('student_number', $registrant->student_number)
