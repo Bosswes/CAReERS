@@ -1756,6 +1756,16 @@ FULL PATH: resources/views/auth/register.blade.php
                         parentCellphone:  getValue('parentCellphone'),
                         parentAddress:    getValue('parentAddress'),
                         parentOccupation: getValue('parentOccupation'),
+                        // Personal details for resume
+                        houseNo:          getValue('houseNo'),
+                        street:           getValue('street'),
+                        barangay:         getValue('barangay'),
+                        town:             getValue('town'),
+                        province:         getValue('province'),
+                        zipCode:          getValue('zipCode'),
+                        dateOfBirth:      getValue('dateOfBirth'),
+                        age:              getValue('age'),
+                        birthPlace:       getValue('birthPlace'),
                     };
                     sessionStorage.setItem('registrationData', JSON.stringify(regData));
                     showPopup(data.message || 'Registration successful! Redirecting to login...', 'success', function() {

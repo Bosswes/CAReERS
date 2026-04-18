@@ -445,8 +445,8 @@
         .resume-field span { font-size: 11px; color: #1e293b; font-weight: 500; }
         .resume-skills { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
         .resume-skill-tag { background: #d1fae5; color: #065f46; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 600; }
-        .resume-school-item { display: grid; grid-template-columns: 1fr auto; gap: 2px; margin-bottom: 6px; padding-bottom: 6px; border-bottom: 1px dashed #e2e8f0; }
-        .resume-school-item:last-child { border-bottom: none; }
+        .resume-school-item { display: grid; grid-template-columns: 1fr auto; gap: 2px; margin-bottom: 6px; padding-bottom: 6px; }
+        .resume-school-item:last-child { }
         .resume-school-name { font-size: 11px; font-weight: 600; color: #1e293b; }
         .resume-school-level { font-size: 10px; color: #64748b; }
         .resume-school-year { font-size: 11px; color: #2E7D32; font-weight: 600; text-align: right; }
@@ -1806,7 +1806,7 @@
                     <button onclick="closeResumeModal()" style="background:#e2e8f0;color:#1e293b;border:none;padding:8px 18px;border-radius:8px;cursor:pointer;font-weight:600;font-size:13px;"><i class="fas fa-times"></i> Close</button>
                 </div>
             </div>
-            <div id="resume-content">
+           <div id="resume-content">
                 <div class="resume-header" style="display:flex; align-items:center; gap:24px; text-align:left;">
                     <div id="r-photo-container" style="width:100px; height:100px; border-radius:8px; border:2px solid #2E7D32; overflow:hidden; flex-shrink:0; display:flex; align-items:center; justify-content:center; background:#f0fdf4;">
                         <i class="fas fa-user" style="font-size:36px; color:#94a3b8;"></i>
@@ -1815,7 +1815,7 @@
                         <h1 id="r-fullname" style="margin-bottom:6px;">-</h1>
                         <p id="r-email">-</p>
                         <p id="r-contact">-</p>
-                        <p id="r-studentno">-</p>
+                        <p id="r-address-header">-</p>
                     </div>
                 </div>
                 <div class="resume-section">
@@ -1824,7 +1824,10 @@
                         <div class="resume-field"><label>Full Name</label><span id="r-name2">-</span></div>
                         <div class="resume-field"><label>Email Address</label><span id="r-email2">-</span></div>
                         <div class="resume-field"><label>Contact Number</label><span id="r-contact2">-</span></div>
-                        <div class="resume-field"><label>Student Number</label><span id="r-studentno2">-</span></div>
+                        <div class="resume-field"><label>Date of Birth</label><span id="r-birthdate">-</span></div>
+                        <div class="resume-field"><label>Age</label><span id="r-age">-</span></div>
+                        <div class="resume-field"><label>Birth Place</label><span id="r-birthplace">-</span></div>
+                        <div class="resume-field" style="grid-column: span 2;"><label>Full Address</label><span id="r-address">-</span></div>
                     </div>
                 </div>
                 <div class="resume-section">
@@ -1838,9 +1841,9 @@
                 </div>
                 <div class="resume-section">
                     <div class="resume-section-title">Educational Background</div>
-                    <div class="resume-school-item"><div><div class="resume-school-name" id="r-shs-school">-</div><div class="resume-school-level">Senior High School</div></div><div class="resume-school-year" id="r-shs-year">-</div></div>
-                    <div class="resume-school-item"><div><div class="resume-school-name" id="r-hs-school">-</div><div class="resume-school-level">High School</div></div><div class="resume-school-year" id="r-hs-year">-</div></div>
-                    <div class="resume-school-item"><div><div class="resume-school-name" id="r-elem-school">-</div><div class="resume-school-level">Elementary</div></div><div class="resume-school-year" id="r-elem-year">-</div></div>
+                    <div class="resume-school-item"><div><div class="resume-school-name" id="r-shs-school">-</div><div class="resume-school-level">Senior High School</div></div><div><div class="resume-school-year" id="r-shs-year">-</div><div style="font-size:9px;color:#94a3b8;text-align:right;">Year Graduated</div></div></div>
+                    <div class="resume-school-item"><div><div class="resume-school-name" id="r-hs-school">-</div><div class="resume-school-level">High School</div></div><div><div class="resume-school-year" id="r-hs-year">-</div><div style="font-size:9px;color:#94a3b8;text-align:right;">Year Graduated</div></div></div>
+                    <div class="resume-school-item"><div><div class="resume-school-name" id="r-elem-school">-</div><div class="resume-school-level">Elementary</div></div><div><div class="resume-school-year" id="r-elem-year">-</div><div style="font-size:9px;color:#94a3b8;text-align:right;">Year Graduated</div></div></div>
                 </div>
                 <div class="resume-section">
                     <div class="resume-section-title">Skills & Expertise</div>
@@ -2083,16 +2086,34 @@
         const name = document.getElementById('profile-name')?.value || user.name || '-';
         const email = document.getElementById('profile-email')?.value || user.email || '-';
         const contact = document.getElementById('profile-contact')?.value || '-';
-        const studentNo = document.getElementById('profile-student-id')?.value || user.student_number || '-';
+
+        const reg = JSON.parse(sessionStorage.getItem('registrationData') || '{}');
+
+        // Build full address from registration data
+        const houseNo   = reg.houseNo || '';
+        const street    = reg.street || '';
+        const barangay  = reg.barangay || '';
+        const town      = reg.town || reg.townCity || '';
+        const province  = reg.province || '';
+        const zipCode   = reg.zipCode || '';
+        const addressParts = [houseNo, street, barangay ? 'Brgy. ' + barangay : '', town, province, zipCode].filter(Boolean);
+        const fullAddress = addressParts.length ? addressParts.join(', ') : '-';
+
+        const birthdate  = reg.dateOfBirth || reg.birthdate || '-';
+        const age        = reg.age || '-';
+        const birthplace = reg.birthPlace || reg.birthplace || '-';
 
         document.getElementById('r-fullname').textContent = name;
         document.getElementById('r-email').innerHTML = '<i class="fas fa-envelope"></i> ' + email;
         document.getElementById('r-contact').innerHTML = '<i class="fas fa-phone"></i> ' + contact;
-        document.getElementById('r-studentno').innerHTML = '<i class="fas fa-id-card"></i> Student No: ' + studentNo;
+        document.getElementById('r-address-header').innerHTML = '<i class="fas fa-map-marker-alt"></i> ' + fullAddress;
         document.getElementById('r-name2').textContent = name;
         document.getElementById('r-email2').textContent = email;
         document.getElementById('r-contact2').textContent = contact;
-        document.getElementById('r-studentno2').textContent = studentNo;
+        document.getElementById('r-birthdate').textContent = birthdate;
+        document.getElementById('r-age').textContent = age;
+        document.getElementById('r-birthplace').textContent = birthplace;
+        document.getElementById('r-address').textContent = fullAddress;
 
         const degree = document.getElementById('profile-degree')?.value || '-';
         const year = document.getElementById('profile-year-level')?.value || '-';
@@ -2105,7 +2126,6 @@
         document.getElementById('r-gwa').textContent = gwa || '-';
         document.getElementById('r-section').textContent = section || '-';
 
-        const reg = JSON.parse(sessionStorage.getItem('registrationData') || '{}');
         document.getElementById('r-shs-school').textContent = reg.shsSchool || '-';
         document.getElementById('r-shs-year').textContent = reg.shsYearGrad || '-';
         document.getElementById('r-hs-school').textContent = reg.hsSchool || '-';
