@@ -1173,6 +1173,14 @@
                                             <input type="text" id="employer-contact" placeholder="e.g., hr@company.com">
                                         </div>
                                     </div>
+
+                                    <div class="form-row">
+                                        <div class="form-group">
+                                            <label for="placement-admin-email">Job Placement Admin Email</label>
+                                            <input type="email" id="placement-admin-email" placeholder="e.g., jobplacement@cvsu.edu.ph">
+                                            <p class="text-muted mt-1" style="font-size:12px;">This admin will receive a copy of every student application for this job.</p>
+                                        </div>
+                                    </div>
                                     
                                     <div class="form-group">
                                         <label for="job-description">Job Description *</label>

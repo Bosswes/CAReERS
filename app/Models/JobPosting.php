@@ -35,7 +35,8 @@ class JobPosting extends Model
         'rejected_by',
         'rejected_at',
         'views_count',
-        'applications_count'
+        'applications_count',
+        'placement_admin_email'
     ];
 
     protected $casts = [

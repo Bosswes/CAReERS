@@ -275,6 +275,7 @@ class AdminController extends Controller
                 'location' => $request->location,
                 'employer_name' => $request->employer_name,
                 'employer_contact' => $request->employer_contact,
+                'placement_admin_email' => $request->placement_admin_email,
                 'posted_by' => session('user_id'),
                 'salary_range_min' => $request->salary_min,
                 'salary_range_max' => $request->salary_max,

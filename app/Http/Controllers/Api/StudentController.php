@@ -356,21 +356,23 @@ $courseKeywords = []; // no longer used for primary filter
             }
         }
 
-        // Send email to employer if contact email exists
+        // Send email to employer and placement admin if applicable
+        $studentName = trim(($student->first_name ?? '') . ' ' . ($student->last_name ?? ''));
+        $emailBody =
+            "Hello,\n\nA student has applied for your job posting.\n\n" .
+            "Job Title: {$job->title}\n" .
+            "Student Name: {$studentName}\n" .
+            "Student Email: " . ($student->cvsu_email ?? 'N/A') . "\n" .
+            "Student Number: {$studentId}\n" .
+            "Program: " . ($student->program ?? 'N/A') . "\n" .
+            "Year Level: " . ($student->year_level ?? 'N/A') . "\n\n" .
+            "Please log in to the CAReERS system to review this application.\n\n" .
+            "CAReERS - CvSU Carmona Job Recommendation System";
+
         if ($job->employer_contact && filter_var($job->employer_contact, FILTER_VALIDATE_EMAIL)) {
             try {
-                $studentName = trim(($student->first_name ?? '') . ' ' . ($student->last_name ?? ''));
-
                 \Illuminate\Support\Facades\Mail::raw(
-                    "Hello,\n\nA student has applied for your job posting.\n\n" .
-                    "Job Title: {$job->title}\n" .
-                    "Student Name: {$studentName}\n" .
-                    "Student Email: " . ($student->cvsu_email ?? 'N/A') . "\n" .
-                    "Student Number: {$studentId}\n" .
-                    "Program: " . ($student->program ?? 'N/A') . "\n" .
-                    "Year Level: " . ($student->year_level ?? 'N/A') . "\n\n" .
-                    "Please log in to the CAReERS system to review this application.\n\n" .
-                    "CAReERS - CvSU Carmona Job Recommendation System",
+                    $emailBody,
                     function($message) use ($job, $resumePath) {
                         $message->to($job->employer_contact)
                                 ->subject('New Job Application - ' . $job->title);
@@ -383,8 +385,28 @@ $courseKeywords = []; // no longer used for primary filter
                     }
                 );
             } catch (\Exception $e) {
-                \Illuminate\Support\Facades\Log::error('Email failed: ' . $e->getMessage() . ' | ' . $e->getTraceAsString());
-return response()->json(['success' => true, 'message' => 'Application submitted! Email error: ' . $e->getMessage()]);
+                \Illuminate\Support\Facades\Log::error('Email to employer failed: ' . $e->getMessage());
+            }
+        }
+
+        // Send copy to placement admin if email is set on the job posting
+        if (!empty($job->placement_admin_email) && filter_var($job->placement_admin_email, FILTER_VALIDATE_EMAIL)) {
+            try {
+                \Illuminate\Support\Facades\Mail::raw(
+                    "[PLACEMENT ADMIN COPY]\n\n" . $emailBody,
+                    function($message) use ($job, $resumePath) {
+                        $message->to($job->placement_admin_email)
+                                ->subject('[Admin Copy] New Application - ' . $job->title);
+                        if ($resumePath && file_exists($resumePath)) {
+                            $message->attach($resumePath, [
+                                'as' => 'Student_Resume.pdf',
+                                'mime' => 'application/pdf'
+                            ]);
+                        }
+                    }
+                );
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Email to placement admin failed: ' . $e->getMessage());
             }
         }
 

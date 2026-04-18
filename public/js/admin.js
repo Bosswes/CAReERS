@@ -428,6 +428,7 @@ const Admin = (function() {
         const location = document.getElementById('job-location')?.value;
         const employerName = document.getElementById('employer-name')?.value;
         const employerContact = document.getElementById('employer-contact')?.value;
+        const placementAdminEmail = document.getElementById('placement-admin-email')?.value;
         const description = document.getElementById('job-description')?.value;
         const minGwa = document.getElementById('job-gwa')?.value;
         const minYearLevel = document.getElementById('job-year-level')?.value;
@@ -447,6 +448,7 @@ const Admin = (function() {
                 location,
                 employer_name: employerName,
                 employer_contact: employerContact,
+                placement_admin_email: placementAdminEmail,
                 description,
                 min_gwa: minGwa,
                 min_year_level: minYearLevel,
