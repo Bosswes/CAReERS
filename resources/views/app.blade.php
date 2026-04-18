@@ -2615,6 +2615,8 @@
  
 // ===== ADD BEFORE </script>: beforeprint listener =====
  
+    </script>
+    <script>
     function buildRefsHTML() {
         const ref1Name = document.getElementById('r-ref1-name')?.value.trim();
         const ref2Name = document.getElementById('r-ref2-name')?.value.trim();
