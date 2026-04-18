@@ -2613,7 +2613,7 @@
 // ===== END openResumeModal =====
  
  
-// ===== ADD BEFORE </script>: beforeprint listener =====
+// ===== ADD BEFORE </script>
  
     </script>
     <script>
