@@ -2520,7 +2520,8 @@
     </div>
 
     <!-- Toast Notification -->
- 
+
+    <script>
     function openResumeModal() {
         const user = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
  
@@ -2651,9 +2652,7 @@
             if (refsDisplay) refsDisplay.innerHTML = buildRefsHTML();
         });
     });
-            </div>
-        </div>
-    </div>
+    </script>
 
     <!-- Toast Notification -->
     <div id="toast" class="toast">
@@ -2895,7 +2894,9 @@
         document.getElementById('r-gwa').textContent = gwa || '-';
         document.getElementById('r-section').textContent = section || '-';
 
-        // School Background — pulled from registration data in DB via session
+        // School Background — pulled from registration data in DB via session<!-- Toast Notification -->
+ 
+    function openResumeModal() {
         document.getElementById('r-shs-school').textContent = reg.shsSchool || '-';
         document.getElementById('r-shs-year').textContent = reg.shsYearGrad || '-';
         document.getElementById('r-hs-school').textContent = reg.hsSchool || '-';
