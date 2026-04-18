@@ -451,30 +451,28 @@
         .resume-school-level { font-size: 10px; color: #64748b; }
         .resume-school-year { font-size: 11px; color: #2E7D32; font-weight: 600; text-align: right; }
         @media print {
+            @page { size: A4 portrait; margin: 15mm 20mm; }
             body * { visibility: hidden; }
             #resume-content, #resume-content * { visibility: visible; }
             #resume-content {
                 position: fixed;
                 top: 0; left: 0;
-                width: 210mm;
-                padding: 15mm 20mm;
+                width: 170mm;
+                padding: 0;
                 font-size: 11px;
                 max-height: none;
                 overflow: visible;
+                box-shadow: none;
             }
             .resume-modal { display: block !important; }
             .resume-actions { display: none !important; }
-            @page { size: A4; margin: 0; }
-            #resume-content input {
-                border: none !important;
-                background: transparent !important;
-                font-size: 13px !important;
-                font-weight: 500 !important;
-                color: #1e293b !important;
-                padding: 0 !important;
-                width: auto !important;
-            }
-            #resume-content p[style*="color:#94a3b8"] { display: none !important; }
+            /* Hide input fields and labels on print */
+            .ref-inputs { display: none !important; }
+            .ref-fill-note { display: none !important; }
+            /* Show the built refs display only if it has content */
+            #r-refs-display { display: block !important; }
+            /* Hide character references section entirely if no refs filled */
+            #r-char-ref-section:not(:has(#r-refs-display *)) { display: none !important; }
         }
 
         /* Responsive fixes */
@@ -1827,88 +1825,91 @@
             <div id="resume-content">
                 <!-- HEADER -->
                 <div class="resume-header" style="display:flex; gap:16px; align-items:flex-start;">
-                    <div id="r-photo-container" style="width:80px;height:80px;border-radius:8px;border:1px solid #e2e8f0;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#f0fdf4;flex-shrink:0;"></div>
+                    <div id="r-photo-container" style="width:90px;height:90px;border-radius:6px;border:2px solid #e2e8f0;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#f0fdf4;flex-shrink:0;"></div>
                     <div style="flex:1;">
-                        <h1 id="r-fullname">Full Name</h1>
-                        <p id="r-email"></p>
-                        <p id="r-contact"></p>
-                        <p id="r-address-header"></p>
+                        <h1 id="r-fullname" style="font-size:22px;font-weight:800;color:#1e293b;margin:0 0 4px;text-transform:uppercase;letter-spacing:1px;">Full Name</h1>
+                        <p id="r-email" style="font-size:11px;color:#64748b;margin:2px 0;"></p>
+                        <p id="r-contact" style="font-size:11px;color:#64748b;margin:2px 0;"></p>
+                        <p id="r-student-no-header" style="font-size:11px;color:#64748b;margin:2px 0;"></p>
                     </div>
                 </div>
-                <!-- TWO-COLUMN LAYOUT -->
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 24px;margin-top:12px;">
-                    <!-- LEFT COLUMN -->
-                    <div>
-                        <div class="resume-section">
-                            <div class="resume-section-title">Personal Information</div>
-                            <div class="resume-row">
-                                <div class="resume-field"><label>Full Name</label><span id="r-name2">-</span></div>
-                                <div class="resume-field"><label>Email</label><span id="r-email2">-</span></div>
-                            </div>
-                            <div class="resume-row">
-                                <div class="resume-field"><label>Contact</label><span id="r-contact2">-</span></div>
-                                <div class="resume-field"><label>Birthdate</label><span id="r-birthdate">-</span></div>
-                            </div>
-                            <div class="resume-row">
-                                <div class="resume-field"><label>Age</label><span id="r-age">-</span></div>
-                                <div class="resume-field"><label>Birthplace</label><span id="r-birthplace">-</span></div>
-                            </div>
-                            <div class="resume-row">
-                                <div class="resume-field" style="grid-column:1/-1;"><label>Address</label><span id="r-address">-</span></div>
-                            </div>
+                <!-- SINGLE-COLUMN SECTIONS -->
+                <div style="margin-top:14px;">
+                    <!-- PERSONAL INFORMATION -->
+                    <div class="resume-section">
+                        <div class="resume-section-title">Personal Information</div>
+                        <div class="resume-row">
+                            <div class="resume-field"><label>Full Name</label><span id="r-name2">-</span></div>
+                            <div class="resume-field"><label>Email Address</label><span id="r-email2">-</span></div>
                         </div>
-                        <div class="resume-section">
-                            <div class="resume-section-title">Current Education</div>
-                            <div class="resume-row">
-                                <div class="resume-field"><label>Degree</label><span id="r-degree">-</span></div>
-                                <div class="resume-field"><label>Year Level</label><span id="r-year">-</span></div>
-                            </div>
-                            <div class="resume-row">
-                                <div class="resume-field"><label>GWA</label><span id="r-gwa">-</span></div>
-                                <div class="resume-field"><label>Section</label><span id="r-section">-</span></div>
-                            </div>
-                        </div>
-                        <div class="resume-section">
-                            <div class="resume-section-title">Skills</div>
-                            <div class="resume-skills" id="r-skills"></div>
+                        <div class="resume-row">
+                            <div class="resume-field"><label>Contact Number</label><span id="r-contact2">-</span></div>
+                            <div class="resume-field"><label>Student Number</label><span id="r-student-no">-</span></div>
                         </div>
                     </div>
-                    <!-- RIGHT COLUMN -->
-                    <div>
-                        <div class="resume-section">
-                            <div class="resume-section-title">Educational Background</div>
-                            <div class="resume-school-item">
-                                <div><div class="resume-school-name" id="r-shs-school">-</div><div class="resume-school-level">Senior High School</div></div>
-                                <div class="resume-school-year" id="r-shs-year">-</div>
+                    <!-- EDUCATION (current) -->
+                    <div class="resume-section">
+                        <div class="resume-section-title">Education</div>
+                        <div class="resume-row">
+                            <div class="resume-field"><label>Degree Program</label><span id="r-degree">-</span></div>
+                            <div class="resume-field"><label>Year Level</label><span id="r-year">-</span></div>
+                        </div>
+                        <div class="resume-row">
+                            <div class="resume-field"><label>GWA</label><span id="r-gwa">-</span></div>
+                            <div class="resume-field"><label>Section</label><span id="r-section">-</span></div>
+                        </div>
+                    </div>
+                    <!-- EDUCATIONAL BACKGROUND -->
+                    <div class="resume-section">
+                        <div class="resume-section-title">Educational Background</div>
+                        <div class="resume-school-item">
+                            <div><div class="resume-school-name" id="r-shs-school">-</div><div class="resume-school-level">Senior High School</div></div>
+                            <div class="resume-school-year" id="r-shs-year">-</div>
+                        </div>
+                        <div class="resume-school-item">
+                            <div><div class="resume-school-name" id="r-hs-school">-</div><div class="resume-school-level">High School</div></div>
+                            <div class="resume-school-year" id="r-hs-year">-</div>
+                        </div>
+                        <div class="resume-school-item">
+                            <div><div class="resume-school-name" id="r-elem-school">-</div><div class="resume-school-level">Elementary</div></div>
+                            <div class="resume-school-year" id="r-elem-year">-</div>
+                        </div>
+                    </div>
+                    <!-- SKILLS -->
+                    <div class="resume-section">
+                        <div class="resume-section-title">Skills &amp; Expertise</div>
+                        <div class="resume-skills" id="r-skills"></div>
+                    </div>
+                    <!-- CHARACTER REFERENCES — inputs visible on screen, hidden on print; display section visible on print only if filled -->
+                    <div class="resume-section" id="r-char-ref-section">
+                        <div class="resume-section-title">Character References</div>
+                        <p class="ref-fill-note" style="font-size:10px;color:#94a3b8;margin-bottom:8px;">Fill in before printing. This will not be saved.</p>
+                        <div class="ref-inputs" style="display:grid;grid-template-columns:1fr 1fr;gap:8px 16px;">
+                            <!-- REF 1 -->
+                            <div>
+                                <div style="font-size:9px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Reference 1 - Full Name</div>
+                                <input id="r-ref1-name" placeholder="e.g., Juan dela Cruz" style="width:100%;padding:5px 8px;border:1px solid #e2e8f0;border-radius:6px;font-size:11px;margin-bottom:4px;box-sizing:border-box;">
+                                <div style="font-size:9px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Position / Title</div>
+                                <input id="r-ref1-position" placeholder="e.g., Department Head" style="width:100%;padding:5px 8px;border:1px solid #e2e8f0;border-radius:6px;font-size:11px;margin-bottom:4px;box-sizing:border-box;">
+                                <div style="font-size:9px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Company / Organization</div>
+                                <input id="r-ref1-company" placeholder="e.g., ABC Corporation" style="width:100%;padding:5px 8px;border:1px solid #e2e8f0;border-radius:6px;font-size:11px;margin-bottom:4px;box-sizing:border-box;">
+                                <div style="font-size:9px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Contact Number</div>
+                                <input id="r-ref1-contact" placeholder="e.g., 09xxxxxxxxx" style="width:100%;padding:5px 8px;border:1px solid #e2e8f0;border-radius:6px;font-size:11px;box-sizing:border-box;">
                             </div>
-                            <div class="resume-school-item">
-                                <div><div class="resume-school-name" id="r-hs-school">-</div><div class="resume-school-level">Junior High School</div></div>
-                                <div class="resume-school-year" id="r-hs-year">-</div>
-                            </div>
-                            <div class="resume-school-item">
-                                <div><div class="resume-school-name" id="r-elem-school">-</div><div class="resume-school-level">Elementary</div></div>
-                                <div class="resume-school-year" id="r-elem-year">-</div>
+                            <!-- REF 2 -->
+                            <div>
+                                <div style="font-size:9px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Reference 2 - Full Name</div>
+                                <input id="r-ref2-name" placeholder="e.g., Maria Santos" style="width:100%;padding:5px 8px;border:1px solid #e2e8f0;border-radius:6px;font-size:11px;margin-bottom:4px;box-sizing:border-box;">
+                                <div style="font-size:9px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Position / Title</div>
+                                <input id="r-ref2-position" placeholder="e.g., Professor" style="width:100%;padding:5px 8px;border:1px solid #e2e8f0;border-radius:6px;font-size:11px;margin-bottom:4px;box-sizing:border-box;">
+                                <div style="font-size:9px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Company / Organization</div>
+                                <input id="r-ref2-company" placeholder="e.g., CvSU Carmona" style="width:100%;padding:5px 8px;border:1px solid #e2e8f0;border-radius:6px;font-size:11px;margin-bottom:4px;box-sizing:border-box;">
+                                <div style="font-size:9px;font-weight:700;color:#94a3b8;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:4px;">Contact Number</div>
+                                <input id="r-ref2-contact" placeholder="e.g., 09xxxxxxxxx" style="width:100%;padding:5px 8px;border:1px solid #e2e8f0;border-radius:6px;font-size:11px;box-sizing:border-box;">
                             </div>
                         </div>
-                        <div class="resume-section">
-                            <div class="resume-section-title">Character References</div>
-                            <div class="ref-inputs">
-                                <p style="font-size:10px;color:#94a3b8;margin-bottom:6px;">Fill in before printing:</p>
-                                <div style="margin-bottom:8px;">
-                                    <input id="r-ref1-name" placeholder="Reference 1 Name" style="width:100%;padding:4px 8px;border:1px solid #e2e8f0;border-radius:6px;font-size:11px;margin-bottom:3px;">
-                                    <input id="r-ref1-position" placeholder="Position / Title" style="width:100%;padding:4px 8px;border:1px solid #e2e8f0;border-radius:6px;font-size:11px;margin-bottom:3px;">
-                                    <input id="r-ref1-company" placeholder="Company / Organization" style="width:100%;padding:4px 8px;border:1px solid #e2e8f0;border-radius:6px;font-size:11px;margin-bottom:3px;">
-                                    <input id="r-ref1-contact" placeholder="Contact Number" style="width:100%;padding:4px 8px;border:1px solid #e2e8f0;border-radius:6px;font-size:11px;">
-                                </div>
-                                <div>
-                                    <input id="r-ref2-name" placeholder="Reference 2 Name" style="width:100%;padding:4px 8px;border:1px solid #e2e8f0;border-radius:6px;font-size:11px;margin-bottom:3px;">
-                                    <input id="r-ref2-position" placeholder="Position / Title" style="width:100%;padding:4px 8px;border:1px solid #e2e8f0;border-radius:6px;font-size:11px;margin-bottom:3px;">
-                                    <input id="r-ref2-company" placeholder="Company / Organization" style="width:100%;padding:4px 8px;border:1px solid #e2e8f0;border-radius:6px;font-size:11px;margin-bottom:3px;">
-                                    <input id="r-ref2-contact" placeholder="Contact Number" style="width:100%;padding:4px 8px;border:1px solid #e2e8f0;border-radius:6px;font-size:11px;">
-                                </div>
-                            </div>
-                            <div id="r-refs-display" style="display:none;"></div>
-                        </div>
+                        <!-- Print-only display (hidden on screen, shown on print if filled) -->
+                        <div id="r-refs-display" style="display:none;"></div>
                     </div>
                 </div>
             </div>
@@ -1954,7 +1955,7 @@
             age = Math.floor((today - dobDate) / (365.25 * 24 * 60 * 60 * 1000));
         }
  
-        if (document.getElementById('r-dob'))         document.getElementById('r-dob').textContent         = dobFormatted;
+        if (document.getElementById('r-birthdate'))   document.getElementById('r-birthdate').textContent   = dobFormatted;
         if (document.getElementById('r-age'))         document.getElementById('r-age').textContent         = age !== '-' ? age + ' years old' : '-';
         if (document.getElementById('r-birthplace'))  document.getElementById('r-birthplace').textContent  = birthplace;
         if (document.getElementById('r-address'))     document.getElementById('r-address').textContent     = address;
@@ -1963,6 +1964,10 @@
                 ? '<i class="fas fa-map-marker-alt"></i> ' + address
                 : '';
         }
+        // Student number
+        const studentNo = user.student_number || '-';
+        if (document.getElementById('r-student-no'))        document.getElementById('r-student-no').textContent        = studentNo;
+        if (document.getElementById('r-student-no-header')) document.getElementById('r-student-no-header').innerHTML   = studentNo !== '-' ? '<i class="fas fa-id-card"></i> Student No: ' + studentNo : '';
  
         // --- Education ---
         const degree  = document.getElementById('profile-degree')?.value      || '-';
@@ -2034,10 +2039,17 @@
  
     window.addEventListener('beforeprint', function () {
         const refsDisplay = document.getElementById('r-refs-display');
+        const refSection  = document.getElementById('r-char-ref-section');
         if (!refsDisplay) return;
         const html = buildRefsHTML();
-        refsDisplay.innerHTML   = html;
+        refsDisplay.innerHTML = html;
         refsDisplay.style.display = html ? 'block' : 'none';
+        // Hide the entire character references section on print if no refs filled
+        if (refSection) refSection.style.display = html ? 'block' : 'none';
+    });
+    window.addEventListener('afterprint', function () {
+        const refSection = document.getElementById('r-char-ref-section');
+        if (refSection) refSection.style.display = 'block'; // restore after print
     });
  
     // Also rebuild refs display whenever any ref input changes
