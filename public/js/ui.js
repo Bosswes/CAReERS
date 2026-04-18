@@ -75,6 +75,7 @@ const UI = (function() {
                 { href: '#user-management', text: 'User Management', icon: 'fas fa-users-cog', section: 'user-management' },
                 { href: '#job-management', text: 'Job Management', icon: 'fas fa-clipboard-check', section: 'job-management' },
                 { href: '#data-monitoring', text: 'Data Monitoring', icon: 'fas fa-chart-pie', section: 'data-monitoring' },
+                { href: '#student-filtering', text: 'Student Filtering', icon: 'fas fa-filter', section: 'student-filtering' },
                 { href: '#reports-announcements', text: 'Reports & Announcements', icon: 'fas fa-bullhorn', section: 'reports-announcements' }
             ];
         }
@@ -144,6 +145,8 @@ const UI = (function() {
                 Admin.showJobManagement();
             } else if (section === 'data-monitoring') {
                 Admin.showDataMonitoring();
+            } else if (section === 'student-filtering') {
+                Admin.showStudentFiltering();
             } else if (section === 'reports-announcements') {
                 Admin.showReportsAnnouncements();
             }

@@ -464,6 +464,9 @@ const Admin = (function() {
     
     function showDataMonitoring() {
         loadMonitoringStats();
+    }
+
+    function showStudentFiltering() {
         setupStudentFilters();
     }
 
@@ -816,6 +819,7 @@ const Admin = (function() {
         showUserManagement,
         showJobManagement,
         showDataMonitoring,
+        showStudentFiltering,
         showReportsAnnouncements
     };
 })();

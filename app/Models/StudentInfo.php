@@ -28,7 +28,22 @@ class StudentInfo extends Authenticatable
         'year_level',
         'general_weighted_average',
         'contact_number',
-        'section'
+        'section',
+        'town',
+        'profile_photo',
+        'shs_school',
+        'shs_year_grad',
+        'shs_type',
+        'hs_school',
+        'hs_year_grad',
+        'hs_type',
+        'elem_school',
+        'elem_year_grad',
+        'elem_type',
+        // New personal detail fields
+        'birth_date',
+        'birth_place',
+        'full_address',
     ];
 
     protected $hidden = [
@@ -36,7 +51,6 @@ class StudentInfo extends Authenticatable
         'remember_token'
     ];
 
-    // Add these relationships
     public function skills()
     {
         return $this->hasMany(StudentSkill::class, 'student_id', 'student_number');

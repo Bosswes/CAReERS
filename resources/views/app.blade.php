@@ -355,8 +355,8 @@
         .resume-field span { font-size: 11px; color: #1e293b; font-weight: 500; }
         .resume-skills { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
         .resume-skill-tag { background: #d1fae5; color: #065f46; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 600; }
-        .resume-school-item { display: grid; grid-template-columns: 1fr auto; gap: 2px; margin-bottom: 6px; padding-bottom: 6px; border-bottom: 1px dashed #e2e8f0; }
-        .resume-school-item:last-child { border-bottom: none; }
+        .resume-school-item { display: grid; grid-template-columns: 1fr auto; gap: 2px; margin-bottom: 6px; padding-bottom: 6px; }
+        .resume-school-item:last-child { }
         .resume-school-name { font-size: 11px; font-weight: 600; color: #1e293b; }
         .resume-school-level { font-size: 10px; color: #08408f; }
         .resume-school-year { font-size: 11px; color: #2E7D32; font-weight: 600; text-align: right; }
@@ -684,6 +684,8 @@
         @media print {
             body * { visibility: hidden; }
             #resume-content, #resume-content * { visibility: visible; }
+            .ref-inputs { display: none !important; }
+            #r-refs-display { display: block !important; }
             #resume-content {
                 position: fixed;
                 top: 0; left: 0;
@@ -692,6 +694,8 @@
             }
             .resume-modal { display: block !important; }
             .resume-actions { display: none !important; }
+            .print-refs { display: none; }
+        @media screen { .print-refs { display: none; } }
         }
     </style>
 </head>
@@ -1403,17 +1407,24 @@
                                     </div>
                                     <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
                                 </a>
-                                <a href="#data-monitoring" class="action-card" onclick="navigateTo('data-monitoring')">
-                                    <div class="action-icon"><i class="fas fa-chart-pie"></i></div>
+                                <<a href="#reports-announcements" class="action-card" onclick="navigateTo('reports-announcements')">
+                                    <div class="action-icon"><i class="fas fa-bullhorn"></i></div>
                                     <div class="action-content">
                                         <h4>Data Monitoring</h4>
                                         <p>Track system metrics</p>
                                     </div>
                                     <div class="action-arrow"><i class="fas fa-chevron-right"></i></div>
                                 </a>
+                                <a href="#student-filtering" class="action-card" onclick="navigateTo('student-filtering')">
+                                    <div class="action-icon"><i class="fas fa-filter"></i></div>
+                                    <div>
+                                        <h4>Student Filtering</h4>
+                                        <p>Search and filter student profiles</p>
+                                    </div>
+                                </a>
                                 <a href="#reports-announcements" class="action-card" onclick="navigateTo('reports-announcements')">
                                     <div class="action-icon"><i class="fas fa-bullhorn"></i></div>
-                                    <div class="action-content">
+                                    <div>
                                         <h4>Reports & Announcements</h4>
                                         <p>Generate reports and manage announcements</p>
                                     </div>
@@ -1721,6 +1732,85 @@
                                         </tr>
                                     </thead>
                                     <tbody id="student-data-table-body"></tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <<!-- ========== STUDENT FILTERING ========== -->
+                        <div id="student-filtering" class="dashboard-section" style="display: none;">
+                            <div class="dashboard-header">
+                                <h2>Student Filtering</h2>
+                                <p class="dashboard-subtitle">Search and filter students by course, GWA, skills, and profile status</p>
+                            </div>
+
+                            <!-- FILTER PANEL -->
+                            <div style="background:#fff; border-radius:12px; padding:20px; margin-bottom:20px; box-shadow:0 2px 8px rgba(0,0,0,0.07);">
+                                <h3 style="margin-bottom:16px; color:#1a4731;"><i class="fas fa-filter"></i> Filter Students</h3>
+                                <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(180px, 1fr)); gap:12px;">
+                                    <div>
+                                        <label style="font-size:12px; font-weight:600; color:#555;">Name / Student No.</label>
+                                        <input type="text" id="student-search" placeholder="Search name..." style="width:100%; padding:8px 10px; border:1px solid #ddd; border-radius:8px; margin-top:4px;">
+                                    </div>
+                                    <div>
+                                        <label style="font-size:12px; font-weight:600; color:#555;">Course / Program</label>
+                                        <input type="text" id="filter-course" placeholder="e.g. BSCS" style="width:100%; padding:8px 10px; border:1px solid #ddd; border-radius:8px; margin-top:4px;">
+                                    </div>
+                                    <div>
+                                        <label style="font-size:12px; font-weight:600; color:#555;">GWA Min</label>
+                                        <input type="number" id="filter-gwa-min" placeholder="e.g. 1.0" step="0.01" min="1" max="5" style="width:100%; padding:8px 10px; border:1px solid #ddd; border-radius:8px; margin-top:4px;">
+                                    </div>
+                                    <div>
+                                        <label style="font-size:12px; font-weight:600; color:#555;">GWA Max</label>
+                                        <input type="number" id="filter-gwa-max" placeholder="e.g. 3.0" step="0.01" min="1" max="5" style="width:100%; padding:8px 10px; border:1px solid #ddd; border-radius:8px; margin-top:4px;">
+                                    </div>
+                                    <div>
+                                        <label style="font-size:12px; font-weight:600; color:#555;">Year Level</label>
+                                        <select id="filter-year-level" style="width:100%; padding:8px 10px; border:1px solid #ddd; border-radius:8px; margin-top:4px;">
+                                            <option value="">All Years</option>
+                                            <option value="1">1st Year</option>
+                                            <option value="2">2nd Year</option>
+                                            <option value="3">3rd Year</option>
+                                            <option value="4">4th Year</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label style="font-size:12px; font-weight:600; color:#555;">Skill</label>
+                                        <input type="text" id="filter-skill" placeholder="e.g. Python" style="width:100%; padding:8px 10px; border:1px solid #ddd; border-radius:8px; margin-top:4px;">
+                                    </div>
+                                    <div>
+                                        <label style="font-size:12px; font-weight:600; color:#555;">Profile Status</label>
+                                        <select id="filter-profile-status" style="width:100%; padding:8px 10px; border:1px solid #ddd; border-radius:8px; margin-top:4px;">
+                                            <option value="all">All</option>
+                                            <option value="complete">Complete</option>
+                                            <option value="incomplete">Incomplete</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div style="margin-top:14px; display:flex; gap:10px; align-items:center;">
+                                    <button id="apply-student-filters" style="background:#16a34a; color:white; border:none; padding:9px 20px; border-radius:8px; cursor:pointer; font-weight:600;"><i class="fas fa-search"></i> Apply Filters</button>
+                                    <button id="reset-student-filters" style="background:#6b7280; color:white; border:none; padding:9px 20px; border-radius:8px; cursor:pointer;"><i class="fas fa-times"></i> Reset</button>
+                                    <span id="student-filter-count" style="font-size:13px; color:#888; margin-left:8px;"></span>
+                                </div>
+                            </div>
+
+                            <!-- STUDENT TABLE -->
+                            <div style="background:#fff; border-radius:12px; padding:20px; box-shadow:0 2px 8px rgba(0,0,0,0.07); overflow-x:auto;">
+                                <table style="width:100%; border-collapse:collapse; font-size:13px;">
+                                    <thead>
+                                        <tr style="background:#f0fdf4; color:#1a4731;">
+                                            <th style="padding:10px; text-align:left; border-bottom:2px solid #d1fae5;">Name</th>
+                                            <th style="padding:10px; text-align:left; border-bottom:2px solid #d1fae5;">Student No.</th>
+                                            <th style="padding:10px; text-align:left; border-bottom:2px solid #d1fae5;">Course</th>
+                                            <th style="padding:10px; text-align:left; border-bottom:2px solid #d1fae5;">Year</th>
+                                            <th style="padding:10px; text-align:left; border-bottom:2px solid #d1fae5;">GWA</th>
+                                            <th style="padding:10px; text-align:left; border-bottom:2px solid #d1fae5;">Skills</th>
+                                            <th style="padding:10px; text-align:left; border-bottom:2px solid #d1fae5;">Completion</th>
+                                            <th style="padding:10px; text-align:left; border-bottom:2px solid #d1fae5;">Profile Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="student-data-table-body">
+                                        <tr><td colspan="8" class="text-center text-muted">Loading...</td></tr>
+                                    </tbody>
                                 </table>
                             </div>
                         </div>
@@ -2332,92 +2422,235 @@
     <div class="resume-modal" id="resume-modal">
         <div class="resume-wrapper">
             <div class="resume-actions">
-                <span><i class="fas fa-file-alt"></i> Resume Preview</span>
+                <span>📄 Resume Preview</span>
                 <div class="resume-actions-btns">
-                    <button onclick="window.print()" style="background:#2E7D32;color:white;border:none;padding:8px 18px;border-radius:8px;cursor:pointer;font-weight:600;font-size:13px;"><i class="fas fa-print"></i> Print</button>
-                    <button onclick="closeResumeModal()" style="background:#e2e8f0;color:#1e293b;border:none;padding:8px 18px;border-radius:8px;cursor:pointer;font-weight:600;font-size:13px;"><i class="fas fa-times"></i> Close</button>
+                    <button class="btn-primary btn-sm" onclick="window.print()"><i class="fas fa-print"></i> Print</button>
+                    <button class="btn-secondary btn-sm" onclick="closeResumeModal()"><i class="fas fa-times"></i> Close</button>
                 </div>
             </div>
             <div id="resume-content">
-                <div class="resume-header" style="display:flex; align-items:center; gap:24px; text-align:left;">
-                    <div id="r-photo-container" style="width:100px; height:100px; border-radius:8px; border:2px solid #2E7D32; overflow:hidden; flex-shrink:0; display:flex; align-items:center; justify-content:center; background:#f0fdf4;">
-                        <i class="fas fa-user" style="font-size:36px; color:#94a3b8;"></i>
-                    </div>
-                    <div style="flex:1; border-bottom:3px solid #2E7D32; padding-bottom:16px;">
-                        <h1 id="r-fullname" style="margin-bottom:6px;">-</h1>
-                        <p id="r-email">-</p>
-                        <p id="r-contact">-</p>
-                        <p id="r-studentno">-</p>
-                    </div>
-                </div>
-                <div class="resume-section">
-                    <div class="resume-section-title">Personal Information</div>
-                    <div class="resume-row">
-                        <div class="resume-field"><label>Full Name</label><span id="r-name2">-</span></div>
-                        <div class="resume-field"><label>Email Address</label><span id="r-email2">-</span></div>
-                        <div class="resume-field"><label>Contact Number</label><span id="r-contact2">-</span></div>
-                        <div class="resume-field"><label>Student Number</label><span id="r-studentno2">-</span></div>
+                <!-- HEADER -->
+                <div class="resume-header" style="display:flex; gap:16px; align-items:flex-start;">
+                    <div id="r-photo-container" style="width:80px;height:80px;border-radius:8px;border:1px solid #e2e8f0;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#f0fdf4;flex-shrink:0;"></div>
+                    <div style="flex:1;">
+                        <h1 id="r-fullname">Full Name</h1>
+                        <p id="r-email"></p>
+                        <p id="r-contact"></p>
+                        <p id="r-address-header"></p>
                     </div>
                 </div>
-                <div class="resume-section">
-                    <div class="resume-section-title">Education</div>
-                    <div class="resume-row">
-                        <div class="resume-field"><label>Degree Program</label><span id="r-degree">-</span></div>
-                        <div class="resume-field"><label>Year Level</label><span id="r-year">-</span></div>
-                        <div class="resume-field"><label>GWA</label><span id="r-gwa">-</span></div>
-                        <div class="resume-field"><label>Section</label><span id="r-section">-</span></div>
-                    </div>
-                </div>
-                <div class="resume-section">
-                    <div class="resume-section-title">Educational Background</div>
-                    <div class="resume-school-item"><div><div class="resume-school-name" id="r-shs-school">-</div><div class="resume-school-level">Senior High School</div></div><div class="resume-school-year" id="r-shs-year">-</div></div>
-                    <div class="resume-school-item"><div><div class="resume-school-name" id="r-hs-school">-</div><div class="resume-school-level">High School</div></div><div class="resume-school-year" id="r-hs-year">-</div></div>
-                    <div class="resume-school-item"><div><div class="resume-school-name" id="r-elem-school">-</div><div class="resume-school-level">Elementary</div></div><div class="resume-school-year" id="r-elem-year">-</div></div>
-                </div>
-                <div class="resume-section">
-                    <div class="resume-section-title">Skills & Expertise</div>
-                    <div class="resume-skills" id="r-skills"><span style="color:#94a3b8;font-size:13px;">No skills added yet.</span></div>
-                </div>
-                <div class="resume-section">
-                    <div class="resume-section-title">Character References</div>
-                    <p style="font-size:12px;color:#94a3b8;margin-bottom:10px;">Fill in before printing. This will not be saved.</p>
-                    <div class="resume-row" style="margin-bottom:12px;">
-                        <div class="resume-field">
-                            <label>Reference 1 - Full Name</label>
-                            <input type="text" id="r-ref1-name" placeholder="e.g., Juan dela Cruz" style="width:100%;border:1px solid #d1fae5;border-radius:6px;padding:6px 10px;font-size:13px;">
+                <!-- TWO-COLUMN LAYOUT -->
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:0 24px;margin-top:12px;">
+                    <!-- LEFT COLUMN -->
+                    <div>
+                        <div class="resume-section">
+                            <div class="resume-section-title">Personal Information</div>
+                            <div class="resume-row">
+                                <div class="resume-field"><label>Full Name</label><span id="r-name2">-</span></div>
+                                <div class="resume-field"><label>Email</label><span id="r-email2">-</span></div>
+                            </div>
+                            <div class="resume-row">
+                                <div class="resume-field"><label>Contact</label><span id="r-contact2">-</span></div>
+                                <div class="resume-field"><label>Birthdate</label><span id="r-birthdate">-</span></div>
+                            </div>
+                            <div class="resume-row">
+                                <div class="resume-field"><label>Age</label><span id="r-age">-</span></div>
+                                <div class="resume-field"><label>Birthplace</label><span id="r-birthplace">-</span></div>
+                            </div>
+                            <div class="resume-row">
+                                <div class="resume-field" style="grid-column:1/-1;"><label>Address</label><span id="r-address">-</span></div>
+                            </div>
                         </div>
-                        <div class="resume-field">
-                            <label>Position / Title</label>
-                            <input type="text" id="r-ref1-position" placeholder="e.g., Department Head" style="width:100%;border:1px solid #d1fae5;border-radius:6px;padding:6px 10px;font-size:13px;">
+                        <div class="resume-section">
+                            <div class="resume-section-title">Current Education</div>
+                            <div class="resume-row">
+                                <div class="resume-field"><label>Degree</label><span id="r-degree">-</span></div>
+                                <div class="resume-field"><label>Year Level</label><span id="r-year">-</span></div>
+                            </div>
+                            <div class="resume-row">
+                                <div class="resume-field"><label>GWA</label><span id="r-gwa">-</span></div>
+                                <div class="resume-field"><label>Section</label><span id="r-section">-</span></div>
+                            </div>
                         </div>
-                        <div class="resume-field">
-                            <label>Company / Organization</label>
-                            <input type="text" id="r-ref1-company" placeholder="e.g., ABC Corporation" style="width:100%;border:1px solid #d1fae5;border-radius:6px;padding:6px 10px;font-size:13px;">
-                        </div>
-                        <div class="resume-field">
-                            <label>Contact Number</label>
-                            <input type="text" id="r-ref1-contact" placeholder="e.g., 09xxxxxxxxx" style="width:100%;border:1px solid #d1fae5;border-radius:6px;padding:6px 10px;font-size:13px;">
+                        <div class="resume-section">
+                            <div class="resume-section-title">Skills</div>
+                            <div class="resume-skills" id="r-skills"></div>
                         </div>
                     </div>
-                    <div class="resume-row">
-                        <div class="resume-field">
-                            <label>Reference 2 - Full Name</label>
-                            <input type="text" id="r-ref2-name" placeholder="e.g., Maria Santos" style="width:100%;border:1px solid #d1fae5;border-radius:6px;padding:6px 10px;font-size:13px;">
+                    <!-- RIGHT COLUMN -->
+                    <div>
+                        <div class="resume-section">
+                            <div class="resume-section-title">Educational Background</div>
+                            <div class="resume-school-item">
+                                <div><div class="resume-school-name" id="r-shs-school">-</div><div class="resume-school-level">Senior High School</div></div>
+                                <div class="resume-school-year" id="r-shs-year">-</div>
+                            </div>
+                            <div class="resume-school-item">
+                                <div><div class="resume-school-name" id="r-hs-school">-</div><div class="resume-school-level">Junior High School</div></div>
+                                <div class="resume-school-year" id="r-hs-year">-</div>
+                            </div>
+                            <div class="resume-school-item">
+                                <div><div class="resume-school-name" id="r-elem-school">-</div><div class="resume-school-level">Elementary</div></div>
+                                <div class="resume-school-year" id="r-elem-year">-</div>
+                            </div>
                         </div>
-                        <div class="resume-field">
-                            <label>Position / Title</label>
-                            <input type="text" id="r-ref2-position" placeholder="e.g., Professor" style="width:100%;border:1px solid #d1fae5;border-radius:6px;padding:6px 10px;font-size:13px;">
-                        </div>
-                        <div class="resume-field">
-                            <label>Company / Organization</label>
-                            <input type="text" id="r-ref2-company" placeholder="e.g., CvSU Carmona" style="width:100%;border:1px solid #d1fae5;border-radius:6px;padding:6px 10px;font-size:13px;">
-                        </div>
-                        <div class="resume-field">
-                            <label>Contact Number</label>
-                            <input type="text" id="r-ref2-contact" placeholder="e.g., 09xxxxxxxxx" style="width:100%;border:1px solid #d1fae5;border-radius:6px;padding:6px 10px;font-size:13px;">
+                        <div class="resume-section">
+                            <div class="resume-section-title">Character References</div>
+                            <div class="ref-inputs">
+                                <p style="font-size:10px;color:#94a3b8;margin-bottom:6px;">Fill in before printing:</p>
+                                <div style="margin-bottom:8px;">
+                                    <input id="r-ref1-name" placeholder="Reference 1 Name" style="width:100%;padding:4px 8px;border:1px solid #e2e8f0;border-radius:6px;font-size:11px;margin-bottom:3px;">
+                                    <input id="r-ref1-position" placeholder="Position / Title" style="width:100%;padding:4px 8px;border:1px solid #e2e8f0;border-radius:6px;font-size:11px;margin-bottom:3px;">
+                                    <input id="r-ref1-company" placeholder="Company / Organization" style="width:100%;padding:4px 8px;border:1px solid #e2e8f0;border-radius:6px;font-size:11px;margin-bottom:3px;">
+                                    <input id="r-ref1-contact" placeholder="Contact Number" style="width:100%;padding:4px 8px;border:1px solid #e2e8f0;border-radius:6px;font-size:11px;">
+                                </div>
+                                <div>
+                                    <input id="r-ref2-name" placeholder="Reference 2 Name" style="width:100%;padding:4px 8px;border:1px solid #e2e8f0;border-radius:6px;font-size:11px;margin-bottom:3px;">
+                                    <input id="r-ref2-position" placeholder="Position / Title" style="width:100%;padding:4px 8px;border:1px solid #e2e8f0;border-radius:6px;font-size:11px;margin-bottom:3px;">
+                                    <input id="r-ref2-company" placeholder="Company / Organization" style="width:100%;padding:4px 8px;border:1px solid #e2e8f0;border-radius:6px;font-size:11px;margin-bottom:3px;">
+                                    <input id="r-ref2-contact" placeholder="Contact Number" style="width:100%;padding:4px 8px;border:1px solid #e2e8f0;border-radius:6px;font-size:11px;">
+                                </div>
+                            </div>
+                            <div id="r-refs-display" style="display:none;"></div>
                         </div>
                     </div>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+ 
+    function openResumeModal() {
+        const user = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+ 
+        if (!document.getElementById('r-fullname')) {
+            console.error('Resume modal elements not found.');
+            return;
+        }
+ 
+        // --- Header ---
+        const name    = document.getElementById('profile-name')?.value    || user.name  || '-';
+        const email   = document.getElementById('profile-email')?.value   || user.email || '-';
+        const contact = document.getElementById('profile-contact')?.value || '-';
+ 
+        document.getElementById('r-fullname').textContent = name;
+        document.getElementById('r-email').innerHTML    = '<i class="fas fa-envelope"></i> ' + email;
+        document.getElementById('r-contact').innerHTML  = '<i class="fas fa-phone"></i> '    + contact;
+ 
+        // --- Personal Info fields ---
+        document.getElementById('r-name2').textContent    = name;
+        document.getElementById('r-email2').textContent   = email;
+        document.getElementById('r-contact2').textContent = contact;
+ 
+        // Birth date, age, birth place, address
+        const dob        = user.birth_date   || '-';
+        const birthplace = user.birth_place  || '-';
+        const address    = user.full_address || '-';
+ 
+        let dobFormatted = '-';
+        let age          = '-';
+        if (dob !== '-') {
+            const dobDate = new Date(dob);
+            dobFormatted  = dobDate.toLocaleDateString('en-PH', { year: 'numeric', month: 'long', day: 'numeric' });
+            const today   = new Date();
+            age = Math.floor((today - dobDate) / (365.25 * 24 * 60 * 60 * 1000));
+        }
+ 
+        if (document.getElementById('r-dob'))         document.getElementById('r-dob').textContent         = dobFormatted;
+        if (document.getElementById('r-age'))         document.getElementById('r-age').textContent         = age !== '-' ? age + ' years old' : '-';
+        if (document.getElementById('r-birthplace'))  document.getElementById('r-birthplace').textContent  = birthplace;
+        if (document.getElementById('r-address'))     document.getElementById('r-address').textContent     = address;
+        if (document.getElementById('r-address-header')) {
+            document.getElementById('r-address-header').innerHTML = address !== '-'
+                ? '<i class="fas fa-map-marker-alt"></i> ' + address
+                : '';
+        }
+ 
+        // --- Education ---
+        const degree  = document.getElementById('profile-degree')?.value      || '-';
+        const year    = document.getElementById('profile-year-level')?.value  || '-';
+        const gwa     = document.getElementById('profile-gwa')?.value         || '-';
+        const section = document.getElementById('profile-section')?.value     || '-';
+        const yearLabels = { '1':'1st Year', '2':'2nd Year', '3':'3rd Year', '4':'4th Year', '5':'5th Year' };
+ 
+        document.getElementById('r-degree').textContent  = degree || '-';
+        document.getElementById('r-year').textContent    = yearLabels[year] || year || '-';
+        document.getElementById('r-gwa').textContent     = gwa     || '-';
+        document.getElementById('r-section').textContent = section || '-';
+ 
+        // --- Educational Background (from DB via user object) ---
+        document.getElementById('r-shs-school').textContent  = user.shs_school    || '-';
+        document.getElementById('r-shs-year').textContent    = user.shs_year_grad || '-';
+        document.getElementById('r-hs-school').textContent   = user.hs_school     || '-';
+        document.getElementById('r-hs-year').textContent     = user.hs_year_grad  || '-';
+        document.getElementById('r-elem-school').textContent = user.elem_school   || '-';
+        document.getElementById('r-elem-year').textContent   = user.elem_year_grad|| '-';
+ 
+        // --- Photo ---
+        const photoContainer = document.getElementById('r-photo-container');
+        const profilePhoto   = document.getElementById('profile-photo-preview');
+        if (photoContainer && profilePhoto && profilePhoto.src && !profilePhoto.src.endsWith('#')) {
+            photoContainer.innerHTML = `<img src="${profilePhoto.src}" style="width:100%;height:100%;object-fit:cover;">`;
+        }
+ 
+        // --- Skills ---
+        const skillsRaw       = document.getElementById('profile-skills')?.value || '';
+        const skillsContainer = document.getElementById('r-skills');
+        if (skillsRaw.trim()) {
+            skillsContainer.innerHTML = skillsRaw.split(',')
+                .map(s => s.trim()).filter(Boolean)
+                .map(s => `<span class="resume-skill-tag">${s}</span>`)
+                .join('');
+        } else {
+            skillsContainer.innerHTML = '<span style="color:#94a3b8;font-size:11px;">No skills added yet.</span>';
+        }
+ 
+        document.getElementById('resume-modal').classList.add('show');
+    }
+ 
+// ===== END openResumeModal =====
+ 
+ 
+// ===== ADD BEFORE </script>: beforeprint listener =====
+ 
+    function buildRefsHTML() {
+        const ref1Name = document.getElementById('r-ref1-name')?.value.trim();
+        const ref2Name = document.getElementById('r-ref2-name')?.value.trim();
+        let html = '';
+        const makeRef = (name, posId, coId, cnId) => {
+            const pos = document.getElementById(posId)?.value.trim() || '';
+            const co  = document.getElementById(coId)?.value.trim()  || '';
+            const cn  = document.getElementById(cnId)?.value.trim()  || '';
+            return `<div style="margin-bottom:8px;">
+                        <div style="font-size:11px;font-weight:700;color:#1e293b;">${name}</div>
+                        <div style="font-size:10px;color:#2E7D32;">${pos}${co ? ' &bull; ' + co : ''}</div>
+                        ${cn ? `<div style="font-size:10px;color:#64748b;">${cn}</div>` : ''}
+                    </div>`;
+        };
+        if (ref1Name) html += makeRef(ref1Name, 'r-ref1-position', 'r-ref1-company', 'r-ref1-contact');
+        if (ref2Name) html += makeRef(ref2Name, 'r-ref2-position', 'r-ref2-company', 'r-ref2-contact');
+        return html;
+    }
+ 
+    window.addEventListener('beforeprint', function () {
+        const refsDisplay = document.getElementById('r-refs-display');
+        if (!refsDisplay) return;
+        const html = buildRefsHTML();
+        refsDisplay.innerHTML   = html;
+        refsDisplay.style.display = html ? 'block' : 'none';
+    });
+ 
+    // Also rebuild refs display whenever any ref input changes
+    ['r-ref1-name','r-ref1-position','r-ref1-company','r-ref1-contact',
+     'r-ref2-name','r-ref2-position','r-ref2-company','r-ref2-contact']
+    .forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.addEventListener('input', function () {
+            const refsDisplay = document.getElementById('r-refs-display');
+            if (refsDisplay) refsDisplay.innerHTML = buildRefsHTML();
+        });
+    });
             </div>
         </div>
     </div>
@@ -2625,11 +2858,30 @@
         document.getElementById('r-fullname').textContent = name;
         document.getElementById('r-email').innerHTML = '<i class="fas fa-envelope"></i> ' + email;
         document.getElementById('r-contact').innerHTML = '<i class="fas fa-phone"></i> ' + contact;
-        document.getElementById('r-studentno').innerHTML = '<i class="fas fa-id-card"></i> Student No: ' + studentNo;
         document.getElementById('r-name2').textContent = name;
         document.getElementById('r-email2').textContent = email;
         document.getElementById('r-contact2').textContent = contact;
-        document.getElementById('r-studentno2').textContent = studentNo;
+
+        const reg = JSON.parse(sessionStorage.getItem('registrationData') || '{}');
+        const houseNo   = reg.houseNo || '';
+        const street    = reg.street || '';
+        const barangay  = reg.barangay || '';
+        const town      = reg.town || reg.townCity || '';
+        const province  = reg.province || '';
+        const zipCode   = reg.zipCode || '';
+        const addressParts = [houseNo, street, barangay ? 'Brgy. ' + barangay : '', town, province, zipCode].filter(Boolean);
+        const fullAddress = addressParts.length ? addressParts.join(', ') : '-';
+        const dob = user.birth_date || reg.dateOfBirth || '-';
+        const birthplace = user.birth_place || reg.birthPlace || '-';
+        const address = fullAddress;
+        const dobFormatted = dob !== '-' ? new Date(dob).toLocaleDateString('en-PH', {year:'numeric',month:'long',day:'numeric'}) : '-';
+        const today = new Date();
+        const birthDateObj = dob !== '-' ? new Date(dob) : null;
+        const age = birthDateObj ? Math.floor((today - birthDateObj) / (365.25 * 24 * 60 * 60 * 1000)) : '-';
+        if (document.getElementById('r-dob')) document.getElementById('r-dob').textContent = dobFormatted;
+        if (document.getElementById('r-age')) document.getElementById('r-age').textContent = age !== '-' ? age + ' years old' : '-';
+        if (document.getElementById('r-birthplace')) document.getElementById('r-birthplace').textContent = birthplace;
+        if (document.getElementById('r-address')) document.getElementById('r-address').textContent = address;
 
         // Education
         const degree = document.getElementById('profile-degree')?.value || '-';
@@ -2644,7 +2896,6 @@
         document.getElementById('r-section').textContent = section || '-';
 
         // School Background — pulled from registration data in DB via session
-        const reg = JSON.parse(sessionStorage.getItem('registrationData') || '{}');
         document.getElementById('r-shs-school').textContent = reg.shsSchool || '-';
         document.getElementById('r-shs-year').textContent = reg.shsYearGrad || '-';
         document.getElementById('r-hs-school').textContent = reg.hsSchool || '-';
@@ -2671,6 +2922,30 @@
             skillsContainer.innerHTML = '<span style="color:#94a3b8;font-size:13px;">No skills added yet.</span>';
         }
 
+        // Build character references print display
+        const refsDisplay = document.getElementById('r-refs-display');
+        if (refsDisplay) {
+            refsDisplay.innerHTML = '';
+            // Wait a tick so inputs are ready
+            setTimeout(() => {
+                const ref1Name = document.getElementById('r-ref1-name')?.value.trim();
+                const ref2Name = document.getElementById('r-ref2-name')?.value.trim();
+                let refsHTML = '';
+                if (ref1Name) {
+                    const pos = document.getElementById('r-ref1-position')?.value.trim() || '';
+                    const co = document.getElementById('r-ref1-company')?.value.trim() || '';
+                    const cn = document.getElementById('r-ref1-contact')?.value.trim() || '';
+                    refsHTML += `<div style="margin-bottom:8px;"><div style="font-size:11px;font-weight:700;color:#1e293b;">${ref1Name}</div><div style="font-size:10px;color:#2E7D32;">${pos}${co ? ' &bull; ' + co : ''}</div>${cn ? '<div style="font-size:10px;color:#64748b;">' + cn + '</div>' : ''}</div>`;
+                }
+                if (ref2Name) {
+                    const pos = document.getElementById('r-ref2-position')?.value.trim() || '';
+                    const co = document.getElementById('r-ref2-company')?.value.trim() || '';
+                    const cn = document.getElementById('r-ref2-contact')?.value.trim() || '';
+                    refsHTML += `<div style="margin-bottom:8px;"><div style="font-size:11px;font-weight:700;color:#1e293b;">${ref2Name}</div><div style="font-size:10px;color:#2E7D32;">${pos}${co ? ' &bull; ' + co : ''}</div>${cn ? '<div style="font-size:10px;color:#64748b;">' + cn + '</div>' : ''}</div>`;
+                }
+                refsDisplay.innerHTML = refsHTML;
+            }, 100);
+        }
         document.getElementById('resume-modal').classList.add('show');
     }
 

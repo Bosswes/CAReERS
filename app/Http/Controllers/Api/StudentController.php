@@ -71,7 +71,17 @@ class StudentController extends Controller
             $updateData['section'] = $request->section;
         }
         if ($request->has('profile_photo')) {
-            $updateData['profile_photo'] = $request->profile_photo; // base64 string
+            $updateData['profile_photo'] = $request->profile_photo;
+        }
+        // New personal detail fields
+        if ($request->has('birth_date')) {
+            $updateData['birth_date'] = $request->birth_date;
+        }
+        if ($request->has('birth_place')) {
+            $updateData['birth_place'] = $request->birth_place;
+        }
+        if ($request->has('full_address')) {
+            $updateData['full_address'] = $request->full_address;
         }
         
         // Handle resume upload
@@ -179,12 +189,10 @@ class StudentController extends Controller
 
         $studentId = session('user_id');
 
-        // Get student info (course and town/city for location sorting)
         $student = DB::table('student_info')->where('student_number', $studentId)->first();
         $studentCourse = strtoupper(trim($student->program ?? $student->course ?? ''));
         $studentTown = strtolower(trim($student->town ?? ''));
 
-        // Course-to-industry/keyword mapping (matched to full degree names)
         $courseAliases = [
             'BSCS'  => 'BS COMPUTER SCIENCE',
             'BSIT'  => 'BS INFORMATION TECHNOLOGY',
@@ -195,62 +203,52 @@ class StudentController extends Controller
         ];
         $normalizedCourse = $courseAliases[$studentCourse] ?? $studentCourse;
 
-        // Industry-based course mapping
-$courseIndustryMap = [
-    'BS COMPUTER SCIENCE'             => ['IT'],
-    'BS INFORMATION TECHNOLOGY'       => ['IT'],
-    'BS COMPUTER ENGINEERING'         => ['IT'],
-    'BACHELOR OF SECONDARY EDUCATION' => ['Education'],
-    'BS BUSINESS MANAGEMENT'          => ['Finance'],
-    'BS HOSPITALITY MANAGEMENT'       => ['Hospitality', 'Healthcare'],
-    'BS INDUSTRIAL TECHNOLOGY'        => ['Engineering'],
-    'BS NURSING'                      => ['Healthcare'],
-    'BS MEDICAL TECHNOLOGY'           => ['Healthcare'],
-];
+        $courseIndustryMap = [
+            'BS COMPUTER SCIENCE'             => ['IT'],
+            'BS INFORMATION TECHNOLOGY'       => ['IT'],
+            'BS COMPUTER ENGINEERING'         => ['IT'],
+            'BACHELOR OF SECONDARY EDUCATION' => ['Education'],
+            'BS BUSINESS MANAGEMENT'          => ['Finance'],
+            'BS HOSPITALITY MANAGEMENT'       => ['Hospitality', 'Healthcare'],
+            'BS INDUSTRIAL TECHNOLOGY'        => ['Engineering'],
+            'BS NURSING'                      => ['Healthcare'],
+            'BS MEDICAL TECHNOLOGY'           => ['Healthcare'],
+        ];
 
-$matchedIndustries = $courseIndustryMap[$normalizedCourse] ?? [];
-$courseKeywords = []; // no longer used for primary filter
-        
+        $matchedIndustries = $courseIndustryMap[$normalizedCourse] ?? [];
 
-        // Get student skills
         $studentSkills = DB::table('student_skills')
             ->where('student_id', $studentId)
             ->pluck('skill_name')
             ->map(fn($s) => strtolower(trim($s)))
             ->toArray();
 
-        // Get all approved jobs
         $jobs = DB::table('job_postings')
             ->where('status', 'approved')
             ->get();
 
-        // Filter to course-related jobs only (if mapping exists), then score & sort
         $recommendations = $jobs->filter(function($job) use ($matchedIndustries) {
-    if (empty($matchedIndustries)) return true; // show all if no mapping
-
-    return in_array($job->industry, $matchedIndustries);
+            if (empty($matchedIndustries)) return true;
+            return in_array($job->industry, $matchedIndustries);
         })->map(function($job) use ($studentSkills, $studentTown, $student) {
-            // Skill match score
             $requiredSkills = DB::table('required_skills')
                 ->where('job_id', $job->job_id)
                 ->pluck('skill_name')
                 ->map(fn($s) => strtolower(trim($s)))
                 ->toArray();
 
-            // === SKILLS SCORE (60%) ===
             $skillScore = 0;
             if (!empty($requiredSkills) && !empty($studentSkills)) {
                 $matched = count(array_intersect($studentSkills, $requiredSkills));
                 $skillScore = round(($matched / max(count($requiredSkills), 1)) * 60);
             } elseif (empty($requiredSkills)) {
-                $skillScore = 30; // partial credit if no required skills listed
+                $skillScore = 30;
             }
 
-            // === GWA SCORE (25%) ===
             $gwaRaw = $student->general_weighted_average ?? null;
             $gwa = $gwaRaw !== null ? (float) $gwaRaw : null;
             if ($gwa === null) {
-                $gwaScore = 10; // neutral if no GWA entered
+                $gwaScore = 10;
             } elseif ($gwa <= 1.5) {
                 $gwaScore = 25;
             } elseif ($gwa <= 2.0) {
@@ -263,21 +261,18 @@ $courseKeywords = []; // no longer used for primary filter
                 $gwaScore = 5;
             }
 
-            // === YEAR LEVEL SCORE (15%) ===
             $studentYear = (int) ($student->year_level ?? 0);
             $requiredYear = (int) ($job->min_year_level ?? 0);
-            // already correct, no change needed
             if ($studentYear === 0) {
-                $yearScore = 8; // neutral if no year level entered
+                $yearScore = 8;
             } elseif ($requiredYear === 0 || $studentYear >= $requiredYear) {
                 $yearScore = 15;
             } else {
                 $yearScore = 0;
             }
-            // === TOTAL MATCH SCORE ===
+
             $matchScore = max(10, min(99, $skillScore + $gwaScore + $yearScore));
 
-            // Location proximity score (1 = same city, 0 = different)
             $jobLocation = strtolower($job->location ?? '');
             $locationScore = (!empty($studentTown) && str_contains($jobLocation, $studentTown)) ? 1 : 0;
 
@@ -286,8 +281,8 @@ $courseKeywords = []; // no longer used for primary filter
             $job->required_skills = $requiredSkills;
             return $job;
         })->sortBy([
-            fn($a, $b) => $b->location_score <=> $a->location_score, // nearest first
-            fn($a, $b) => $b->match_score <=> $a->match_score,       // then highest match
+            fn($a, $b) => $b->location_score <=> $a->location_score,
+            fn($a, $b) => $b->match_score <=> $a->match_score,
         ])->values();
 
         return response()->json([
@@ -309,7 +304,6 @@ $courseKeywords = []; // no longer used for primary filter
             return response()->json(['success' => false, 'message' => 'Job ID required'], 400);
         }
 
-        // Check if already applied
         $exists = DB::table('applications')
             ->where('student_number', $studentId)
             ->where('job_id', $jobId)
@@ -319,16 +313,13 @@ $courseKeywords = []; // no longer used for primary filter
             return response()->json(['success' => false, 'message' => 'You have already applied for this job.']);
         }
 
-        // Get job details
         $job = DB::table('job_postings')->where('job_id', $jobId)->first();
         if (!$job) {
             return response()->json(['success' => false, 'message' => 'Job not found.'], 404);
         }
 
-        // Get student details
         $student = DB::table('student_info')->where('student_number', $studentId)->first();
 
-        // Save application
         DB::table('applications')->insert([
             'student_number'   => $studentId,
             'job_id'           => $jobId,
@@ -338,12 +329,24 @@ $courseKeywords = []; // no longer used for primary filter
             'updated_at'       => now(),
         ]);
 
-        // Increment applications count on job posting
         DB::table('job_postings')->where('job_id', $jobId)->increment('applications_count');
 
-        // Save resume PDF from base64 if provided by browser
+        // Save resume HTML as PDF if provided
         $resumePath = null;
-        if ($request->has('resume_base64') && $request->resume_base64) {
+        if ($request->has('resume_html') && $request->resume_html) {
+            try {
+                $resumeHtml = $request->resume_html;
+                $filename = 'resume_' . $studentId . '_' . time() . '.html';
+                $dir = storage_path('app/public/resumes');
+                if (!file_exists($dir)) mkdir($dir, 0755, true);
+                // Store HTML version for email attachment reference
+                $htmlPath = $dir . '/' . $filename;
+                file_put_contents($htmlPath, $resumeHtml);
+                $resumePath = $htmlPath;
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Resume save error: ' . $e->getMessage());
+            }
+        } elseif ($request->has('resume_base64') && $request->resume_base64) {
             try {
                 $pdfData = base64_decode($request->resume_base64);
                 $filename = 'resume_' . $studentId . '_' . time() . '.pdf';
@@ -356,16 +359,29 @@ $courseKeywords = []; // no longer used for primary filter
             }
         }
 
-        // Send email to employer and placement admin if applicable
         $studentName = trim(($student->first_name ?? '') . ' ' . ($student->last_name ?? ''));
+
+        // Build detailed email body with new personal fields
+        $birthDate   = !empty($student->birth_date)   ? date('F d, Y', strtotime($student->birth_date)) : 'N/A';
+        $birthPlace  = $student->birth_place  ?? 'N/A';
+        $fullAddress = $student->full_address ?? 'N/A';
+
         $emailBody =
             "Hello,\n\nA student has applied for your job posting.\n\n" .
-            "Job Title: {$job->title}\n" .
-            "Student Name: {$studentName}\n" .
-            "Student Email: " . ($student->cvsu_email ?? 'N/A') . "\n" .
-            "Student Number: {$studentId}\n" .
-            "Program: " . ($student->program ?? 'N/A') . "\n" .
-            "Year Level: " . ($student->year_level ?? 'N/A') . "\n\n" .
+            "=== JOB DETAILS ===\n" .
+            "Job Title: {$job->title}\n\n" .
+            "=== STUDENT INFORMATION ===\n" .
+            "Full Name:      {$studentName}\n" .
+            "Email:          " . ($student->cvsu_email ?? 'N/A') . "\n" .
+            "Contact Number: " . ($student->contact_number ?? 'N/A') . "\n" .
+            "Date of Birth:  {$birthDate}\n" .
+            "Birth Place:    {$birthPlace}\n" .
+            "Address:        {$fullAddress}\n\n" .
+            "=== ACADEMIC DETAILS ===\n" .
+            "Program:        " . ($student->program ?? 'N/A') . "\n" .
+            "Year Level:     " . ($student->year_level ?? 'N/A') . "\n" .
+            "Section:        " . ($student->section ?? 'N/A') . "\n" .
+            "GWA:            " . ($student->general_weighted_average ?? 'N/A') . "\n\n" .
             "Please log in to the CAReERS system to review this application.\n\n" .
             "CAReERS - CvSU Carmona Job Recommendation System";
 
@@ -377,9 +393,10 @@ $courseKeywords = []; // no longer used for primary filter
                         $message->to($job->employer_contact)
                                 ->subject('New Job Application - ' . $job->title);
                         if ($resumePath && file_exists($resumePath)) {
+                            $isPdf = str_ends_with($resumePath, '.pdf');
                             $message->attach($resumePath, [
-                                'as' => 'Student_Resume.pdf',
-                                'mime' => 'application/pdf'
+                                'as'   => $isPdf ? 'Student_Resume.pdf' : 'Student_Resume.html',
+                                'mime' => $isPdf ? 'application/pdf' : 'text/html',
                             ]);
                         }
                     }
@@ -389,7 +406,6 @@ $courseKeywords = []; // no longer used for primary filter
             }
         }
 
-        // Send copy to placement admin if email is set on the job posting
         if (!empty($job->placement_admin_email) && filter_var($job->placement_admin_email, FILTER_VALIDATE_EMAIL)) {
             try {
                 \Illuminate\Support\Facades\Mail::raw(
@@ -398,9 +414,10 @@ $courseKeywords = []; // no longer used for primary filter
                         $message->to($job->placement_admin_email)
                                 ->subject('[Admin Copy] New Application - ' . $job->title);
                         if ($resumePath && file_exists($resumePath)) {
+                            $isPdf = str_ends_with($resumePath, '.pdf');
                             $message->attach($resumePath, [
-                                'as' => 'Student_Resume.pdf',
-                                'mime' => 'application/pdf'
+                                'as'   => $isPdf ? 'Student_Resume.pdf' : 'Student_Resume.html',
+                                'mime' => $isPdf ? 'application/pdf' : 'text/html',
                             ]);
                         }
                     }
