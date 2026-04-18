@@ -447,9 +447,10 @@
         .resume-skill-tag { background: #d1fae5; color: #065f46; padding: 2px 8px; border-radius: 20px; font-size: 10px; font-weight: 600; }
         .resume-school-item { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding-bottom: 8px; border-bottom: 1px solid #f1f5f9; }
         .resume-school-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .resume-school-left { flex: 1; }
         .resume-school-name { font-size: 11px; font-weight: 600; color: #1e293b; }
         .resume-school-level { font-size: 10px; color: #64748b; margin-top: 1px; }
-        .resume-school-year { font-size: 11px; color: #2E7D32; font-weight: 700; text-align: right; white-space: nowrap; padding-left: 12px; flex-shrink: 0; }
+        .resume-school-year { font-size: 11px; color: #2E7D32; font-weight: 700; text-align: right; white-space: nowrap; padding-left: 16px; flex-shrink: 0; }
         @media print {
             @page { size: A4 portrait; margin: 15mm 20mm; }
             body * { visibility: hidden; }
@@ -1871,35 +1872,27 @@
                 <div class="resume-section">
                     <div class="resume-section-title">Educational Background</div>
                     <div class="resume-school-item">
-                        <div>
+                        <div class="resume-school-left">
                             <div class="resume-school-name" id="r-shs-school">-</div>
                             <div class="resume-school-level">Senior High School</div>
                         </div>
-                        <div style="text-align:right;">
-                            <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:1px;">Graduated</div>
-                            <div class="resume-school-year" id="r-shs-year">-</div>
-                        </div>
+                        <div class="resume-school-year" id="r-shs-year">-</div>
                     </div>
                     <div class="resume-school-item">
-                        <div>
+                        <div class="resume-school-left">
                             <div class="resume-school-name" id="r-hs-school">-</div>
                             <div class="resume-school-level">High School</div>
                         </div>
-                        <div style="text-align:right;">
-                            <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:1px;">Graduated</div>
-                            <div class="resume-school-year" id="r-hs-year">-</div>
-                        </div>
+                        <div class="resume-school-year" id="r-hs-year">-</div>
                     </div>
                     <div class="resume-school-item">
-                        <div>
+                        <div class="resume-school-left">
                             <div class="resume-school-name" id="r-elem-school">-</div>
                             <div class="resume-school-level">Elementary</div>
                         </div>
-                        <div style="text-align:right;">
-                            <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:1px;">Graduated</div>
-                            <div class="resume-school-year" id="r-elem-year">-</div>
-                        </div>
+                        <div class="resume-school-year" id="r-elem-year">-</div>
                     </div>
+                </div>
                 </div>
 
                 <!-- SKILLS -->
