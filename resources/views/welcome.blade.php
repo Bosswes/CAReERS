@@ -507,7 +507,7 @@
 </head>
 <body>
     <!-- Auth Container with University Background -->
-    <div id="auth-container" class="auth-container" style="display:none;"
+    <div id="auth-container" class="auth-container" style="display:none;">
         <!-- Login Card -->
         <div class="auth-card" id="login-card">
             <div class="osas-header">
@@ -1917,6 +1917,7 @@
 
     <!-- Toast Notification -->
  
+    <script>
     function openResumeModal() {
         const user = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
  
@@ -2047,10 +2048,7 @@
             if (refsDisplay) refsDisplay.innerHTML = buildRefsHTML();
         });
     });
-                </div>
-            </div>
-        </div>
-    </div>
+    </script>
 
     <!-- Toast Notification -->
     <div id="toast" class="toast">
