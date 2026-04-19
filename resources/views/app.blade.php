@@ -335,7 +335,7 @@
         .resume-actions span { font-weight: 700; color: #1e293b; font-size: 15px; }
         .resume-actions-btns { display: flex; gap: 10px; }
         #resume-content {
-            padding: 16px 24px;
+            padding: 4px 24px;
             font-family: 'Inter', sans-serif;
             color: #1e293b;
             width: 210mm;
@@ -343,7 +343,7 @@
             max-height: 297mm;
             overflow: hidden;
             box-sizing: border-box;
-            font-size: 11px;
+            font-size: 14px;
         }
         .resume-header { border-bottom: 2px solid #2E7D32; padding-bottom: 10px; margin-bottom: 12px; }
         .resume-header h1 { font-size: 20px; font-weight: 800; color: #1e293b; margin: 0 0 4px; text-transform: uppercase; letter-spacing: 1px; }
