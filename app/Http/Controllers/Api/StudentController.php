@@ -84,6 +84,16 @@ class StudentController extends Controller
             $updateData['full_address'] = $request->full_address;
         }
         
+        // Character references
+        if ($request->has('ref1_name'))     $updateData['ref1_name']     = $request->ref1_name;
+        if ($request->has('ref1_position')) $updateData['ref1_position'] = $request->ref1_position;
+        if ($request->has('ref1_company'))  $updateData['ref1_company']  = $request->ref1_company;
+        if ($request->has('ref1_contact'))  $updateData['ref1_contact']  = $request->ref1_contact;
+        if ($request->has('ref2_name'))     $updateData['ref2_name']     = $request->ref2_name;
+        if ($request->has('ref2_position')) $updateData['ref2_position'] = $request->ref2_position;
+        if ($request->has('ref2_company'))  $updateData['ref2_company']  = $request->ref2_company;
+        if ($request->has('ref2_contact'))  $updateData['ref2_contact']  = $request->ref2_contact;
+
         // Handle resume upload
         if ($request->hasFile('resume')) {
             $file = $request->file('resume');

@@ -156,6 +156,18 @@ const Student = (function() {
                 currentUser.elem_year_grad = p.elem_year_grad || currentUser.elem_year_grad || '';
                 sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
 
+                // Load character references from DB
+                const refMap = {
+                    'ref1_name': 'r-ref1-name', 'ref1_position': 'r-ref1-position',
+                    'ref1_company': 'r-ref1-company', 'ref1_contact': 'r-ref1-contact',
+                    'ref2_name': 'r-ref2-name', 'ref2_position': 'r-ref2-position',
+                    'ref2_company': 'r-ref2-company', 'ref2_contact': 'r-ref2-contact',
+                };
+                Object.entries(refMap).forEach(([dbField, elId]) => {
+                    const el = document.getElementById(elId);
+                    if (el && p[dbField]) el.value = p[dbField];
+                });
+
                 // Auto-set section based on course
                 const sectionField = document.getElementById('profile-section');
                 if (sectionField) {
@@ -203,6 +215,16 @@ const Student = (function() {
         const photoImg = document.querySelector('#profile-photo-preview img');
         const profilePhoto = photoImg ? photoImg.src : null;
 
+        // Get character references
+        const ref1Name     = document.getElementById('r-ref1-name')?.value.trim()     || null;
+        const ref1Position = document.getElementById('r-ref1-position')?.value.trim() || null;
+        const ref1Company  = document.getElementById('r-ref1-company')?.value.trim()  || null;
+        const ref1Contact  = document.getElementById('r-ref1-contact')?.value.trim()  || null;
+        const ref2Name     = document.getElementById('r-ref2-name')?.value.trim()     || null;
+        const ref2Position = document.getElementById('r-ref2-position')?.value.trim() || null;
+        const ref2Company  = document.getElementById('r-ref2-company')?.value.trim()  || null;
+        const ref2Contact  = document.getElementById('r-ref2-contact')?.value.trim()  || null;
+
         try {
             await API.updateStudentProfile({
                 first_name: firstName,
@@ -213,7 +235,15 @@ const Student = (function() {
                 general_weighted_average: gwa,
                 skills: skills,
                 section: section,
-                profile_photo: profilePhoto
+                profile_photo: profilePhoto,
+                ref1_name: ref1Name,
+                ref1_position: ref1Position,
+                ref1_company: ref1Company,
+                ref1_contact: ref1Contact,
+                ref2_name: ref2Name,
+                ref2_position: ref2Position,
+                ref2_company: ref2Company,
+                ref2_contact: ref2Contact
             });
             
             // Save photo to sessionStorage per student after successful save
@@ -351,8 +381,8 @@ const Student = (function() {
                         refsDisplay.style.display = 'block';
                     }
 
-                    const pdfBlob = await html2pdf().set({
-                        margin: [8, 10, 8, 10],
+                   const pdfBlob = await html2pdf().set({
+                        margin: [2, 10, 8, 10],
                         filename: 'resume.pdf',
                         image: { type: 'jpeg', quality: 0.98 },
                         html2canvas: { scale: 2, useCORS: true, logging: false },

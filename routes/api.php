@@ -30,6 +30,8 @@ Route::middleware(['auth.session'])->group(function () {
         Route::get('/applications', [StudentController::class, 'myApplications']);
         Route::get('/ojt-offerings', [StudentController::class, 'getOjtOfferings']);
         Route::get('/announcements', [StudentController::class, 'announcements']);
+        Route::get('/references', [StudentController::class, 'getReferences']);
+        Route::put('/references', [StudentController::class, 'saveReferences']);
     });
     
     // Job routes

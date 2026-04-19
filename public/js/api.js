@@ -169,6 +169,12 @@ const API = (function() {
         },
         async getMyEventRegistration(eventId) {
             return request(`/announcements/${eventId}/registration-status`);
+        },
+        async saveCharacterReferences(data) {
+            return request('/student/references', { method: 'PUT', body: JSON.stringify(data) });
+        },
+        async getCharacterReferences() {
+            return request('/student/references');
         }
     };
 })();

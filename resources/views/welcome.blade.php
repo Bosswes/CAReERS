@@ -1870,36 +1870,38 @@
                 <!-- EDUCATIONAL BACKGROUND -->
                 <div class="resume-section">
                     <div class="resume-section-title">Educational Background</div>
-                    <div class="resume-school-item">
-                        <div style="flex:1;">
-                            <div class="resume-school-name" id="r-shs-school">-</div>
-                            <div class="resume-school-level">Senior High School</div>
-                        </div>
-                        <div style="text-align:right;min-width:80px;flex-shrink:0;">
-                            <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:1px;display:block;">Graduated</div>
-                            <div id="r-shs-year" style="font-size:11px;color:#2E7D32;font-weight:700;display:block;min-width:50px;">-</div>
-                        </div>
-                    </div>
-                    <div class="resume-school-item">
-                        <div style="flex:1;">
-                            <div class="resume-school-name" id="r-hs-school">-</div>
-                            <div class="resume-school-level">High School</div>
-                        </div>
-                        <div style="text-align:right;min-width:80px;flex-shrink:0;">
-                            <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:1px;display:block;">Graduated</div>
-                            <div id="r-hs-year" style="font-size:11px;color:#2E7D32;font-weight:700;display:block;min-width:50px;">-</div>
-                        </div>
-                    </div>
-                    <div class="resume-school-item">
-                        <div style="flex:1;">
-                            <div class="resume-school-name" id="r-elem-school">-</div>
-                            <div class="resume-school-level">Elementary</div>
-                        </div>
-                        <div style="text-align:right;min-width:80px;flex-shrink:0;">
-                            <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:1px;display:block;">Graduated</div>
-                            <div id="r-elem-year" style="font-size:11px;color:#2E7D32;font-weight:700;display:block;min-width:50px;">-</div>
-                        </div>
-                    </div>
+                    <table style="width:100%;border-collapse:collapse;margin-bottom:4px;">
+                        <tr style="border-bottom:1px solid #f1f5f9;">
+                            <td style="padding:4px 0;vertical-align:middle;">
+                                <div style="font-size:11px;font-weight:600;color:#1e293b;" id="r-shs-school">-</div>
+                                <div style="font-size:10px;color:#64748b;">Senior High School</div>
+                            </td>
+                            <td style="padding:4px 0;vertical-align:middle;text-align:right;width:90px;">
+                                <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;">Graduated</div>
+                                <div id="r-shs-year" style="font-size:11px;color:#2E7D32;font-weight:700;">-</div>
+                            </td>
+                        </tr>
+                        <tr style="border-bottom:1px solid #f1f5f9;">
+                            <td style="padding:4px 0;vertical-align:middle;">
+                                <div style="font-size:11px;font-weight:600;color:#1e293b;" id="r-hs-school">-</div>
+                                <div style="font-size:10px;color:#64748b;">High School</div>
+                            </td>
+                            <td style="padding:4px 0;vertical-align:middle;text-align:right;width:90px;">
+                                <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;">Graduated</div>
+                                <div id="r-hs-year" style="font-size:11px;color:#2E7D32;font-weight:700;">-</div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="padding:4px 0;vertical-align:middle;">
+                                <div style="font-size:11px;font-weight:600;color:#1e293b;" id="r-elem-school">-</div>
+                                <div style="font-size:10px;color:#64748b;">Elementary</div>
+                            </td>
+                            <td style="padding:4px 0;vertical-align:middle;text-align:right;width:90px;">
+                                <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;">Graduated</div>
+                                <div id="r-elem-year" style="font-size:11px;color:#2E7D32;font-weight:700;">-</div>
+                            </td>
+                        </tr>
+                    </table>
                 </div>
 
                 <!-- SKILLS -->
