@@ -2474,35 +2474,35 @@
                 <!-- EDUCATIONAL BACKGROUND -->
                 <div class="resume-section">
                     <div class="resume-section-title">Educational Background</div>
-                    <table style="width:100%;border-collapse:collapse;margin-bottom:4px;">
+                    <table style="width:100%;border-collapse:collapse;margin-bottom:4px;table-layout:fixed;">
                         <tr style="border-bottom:1px solid #f1f5f9;">
-                            <td style="padding:4px 0;vertical-align:middle;">
-                                <div style="font-size:11px;font-weight:600;color:#1e293b;" id="r-shs-school">-</div>
-                                <div style="font-size:10px;color:#64748b;">Senior High School</div>
+                            <td style="padding:4px 0;vertical-align:top;width:75%;">
+                                <div style="font-size:11px;font-weight:600;color:#1e293b !important;" id="r-shs-school">-</div>
+                                <div style="font-size:10px;color:#64748b !important;">Senior High School</div>
                             </td>
-                            <td style="padding:4px 0;vertical-align:middle;text-align:right;width:90px;">
-                                <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;">Graduated</div>
-                                <div id="r-shs-year" style="font-size:11px;color:#2E7D32;font-weight:700;">-</div>
+                            <td style="padding:4px 0;vertical-align:top;text-align:right;width:25%;">
+                                <div style="font-size:9px;color:#94a3b8 !important;text-transform:uppercase;">Graduated</div>
+                                <div id="r-shs-year" style="font-size:11px;color:#2E7D32 !important;font-weight:700;">-</div>
                             </td>
                         </tr>
                         <tr style="border-bottom:1px solid #f1f5f9;">
-                            <td style="padding:4px 0;vertical-align:middle;">
-                                <div style="font-size:11px;font-weight:600;color:#1e293b;" id="r-hs-school">-</div>
-                                <div style="font-size:10px;color:#64748b;">High School</div>
+                            <td style="padding:4px 0;vertical-align:top;width:75%;">
+                                <div style="font-size:11px;font-weight:600;color:#1e293b !important;" id="r-hs-school">-</div>
+                                <div style="font-size:10px;color:#64748b !important;">High School</div>
                             </td>
-                            <td style="padding:4px 0;vertical-align:middle;text-align:right;width:90px;">
-                                <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;">Graduated</div>
-                                <div id="r-hs-year" style="font-size:11px;color:#2E7D32;font-weight:700;">-</div>
+                            <td style="padding:4px 0;vertical-align:top;text-align:right;width:25%;">
+                                <div style="font-size:9px;color:#94a3b8 !important;text-transform:uppercase;">Graduated</div>
+                                <div id="r-hs-year" style="font-size:11px;color:#2E7D32 !important;font-weight:700;">-</div>
                             </td>
                         </tr>
                         <tr>
-                            <td style="padding:4px 0;vertical-align:middle;">
-                                <div style="font-size:11px;font-weight:600;color:#1e293b;" id="r-elem-school">-</div>
-                                <div style="font-size:10px;color:#64748b;">Elementary</div>
+                            <td style="padding:4px 0;vertical-align:top;width:75%;">
+                                <div style="font-size:11px;font-weight:600;color:#1e293b !important;" id="r-elem-school">-</div>
+                                <div style="font-size:10px;color:#64748b !important;">Elementary</div>
                             </td>
-                            <td style="padding:4px 0;vertical-align:middle;text-align:right;width:90px;">
-                                <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;">Graduated</div>
-                                <div id="r-elem-year" style="font-size:11px;color:#2E7D32;font-weight:700;">-</div>
+                            <td style="padding:4px 0;vertical-align:top;text-align:right;width:25%;">
+                                <div style="font-size:9px;color:#94a3b8 !important;text-transform:uppercase;">Graduated</div>
+                                <div id="r-elem-year" style="font-size:11px;color:#2E7D32 !important;font-weight:700;">-</div>
                             </td>
                         </tr>
                     </table>
@@ -2942,12 +2942,19 @@
         // School Background — pulled from registration data in DB via session<!-- Toast Notification -->
  
     function openResumeModal() {
-        document.getElementById('r-shs-school').textContent = reg.shsSchool || user.shs_school || '-';
-        document.getElementById('r-shs-year').textContent = reg.shsYearGrad || user.shs_year_grad || '-';
-        document.getElementById('r-hs-school').textContent = reg.hsSchool || user.hs_school || '-';
-        document.getElementById('r-hs-year').textContent = reg.hsYearGrad || user.hs_year_grad || '-';
-        document.getElementById('r-elem-school').textContent = reg.elemSchool || user.elem_school || '-';
-        document.getElementById('r-elem-year').textContent = reg.elemYearGrad || user.elem_year_grad || '-';
+        dconst shsSchool = reg.shsSchool || user.shs_school || '-';
+        const shsYear   = reg.shsYearGrad || user.shs_year_grad || '';
+        const hsSchool  = reg.hsSchool || user.hs_school || '-';
+        const hsYear    = reg.hsYearGrad || user.hs_year_grad || '';
+        const elemSchool= reg.elemSchool || user.elem_school || '-';
+        const elemYear  = reg.elemYearGrad || user.elem_year_grad || '';
+
+        document.getElementById('r-shs-school').textContent  = shsSchool + (shsYear ? ' (' + shsYear + ')' : '');
+        document.getElementById('r-shs-year').textContent    = shsYear;
+        document.getElementById('r-hs-school').textContent   = hsSchool + (hsYear ? ' (' + hsYear + ')' : '');
+        document.getElementById('r-hs-year').textContent     = hsYear;
+        document.getElementById('r-elem-school').textContent = elemSchool + (elemYear ? ' (' + elemYear + ')' : '');
+        document.getElementById('r-elem-year').textContent   = elemYear;
 
         // Guardian
         document.getElementById('r-guardian').textContent = reg.parentGuardian || '-';
