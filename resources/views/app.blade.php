@@ -2538,7 +2538,7 @@
                             <input id="r-ref2-contact" placeholder="e.g., 09xxxxxxxxx" style="width:100%;padding:5px 8px;border:1px solid #e2e8f0;border-radius:6px;font-size:11px;box-sizing:border-box;">
                         </div>
                     </div>
-                    <div id="r-refs-display" style="display:none;"></div>
+                    <div id="r-refs-display" style="display:block;margin-top:8px;"></div>
                 </div>
 
             </div>
@@ -2571,9 +2571,10 @@
         document.getElementById('r-contact2').textContent = contact;
  
         // Birth date, age, birth place, address
-        const dob        = user.birth_date   || '-';
-        const birthplace = user.birth_place  || '-';
-        const address    = user.full_address || '-';
+        const regData2   = JSON.parse(sessionStorage.getItem('registrationData') || '{}');
+        const dob        = user.birth_date   || regData2.dateOfBirth  || regData2.dateofbirth  || '-';
+        const birthplace = user.birth_place  || regData2.birthPlace   || regData2.placeOfBirth || '-';
+        const address    = user.full_address || regData2.fullAddress  || regData2.full_address || '-';
  
         let dobFormatted = '-';
         let age          = '-';
@@ -2651,9 +2652,9 @@
             const pos = document.getElementById(posId)?.value.trim() || '';
             const co  = document.getElementById(coId)?.value.trim()  || '';
             const cn  = document.getElementById(cnId)?.value.trim()  || '';
-            return `<div style="margin-bottom:8px;">
+            return `<div style="margin-bottom:8px;padding:0;border:none;background:none;">
                         <div style="font-size:11px;font-weight:700;color:#1e293b;">${name}</div>
-                        <div style="font-size:10px;color:#2E7D32;">${pos}${co ? ' &bull; ' + co : ''}</div>
+                        ${pos || co ? `<div style="font-size:10px;color:#2E7D32;">${pos}${co ? ' &bull; ' + co : ''}</div>` : ''}
                         ${cn ? `<div style="font-size:10px;color:#64748b;">${cn}</div>` : ''}
                     </div>`;
         };
@@ -2668,14 +2669,21 @@
         if (!refsDisplay) return;
         const html = buildRefsHTML();
         refsDisplay.innerHTML = html;
-        refsDisplay.style.display = html ? 'block' : 'none';
+        refsDisplay.style.display = 'block';
+        // Hide input fields on print
+        document.querySelectorAll('.ref-inputs').forEach(el => el.style.display = 'none');
+        document.querySelectorAll('.ref-fill-note').forEach(el => el.style.display = 'none');
         // Hide the entire character references section on print if no refs filled
         if (refSection) refSection.style.display = html ? 'block' : 'none';
     });
     window.addEventListener('afterprint', function () {
+        // Restore input fields after print
+        document.querySelectorAll('.ref-inputs').forEach(el => el.style.display = 'grid');
+        document.querySelectorAll('.ref-fill-note').forEach(el => el.style.display = 'block');
         const refSection = document.getElementById('r-char-ref-section');
-        if (refSection) refSection.style.display = 'block'; // restore after print
+        if (refSection) refSection.style.display = 'block';
     });
+    
  
     // Also rebuild refs display whenever any ref input changes
     ['r-ref1-name','r-ref1-position','r-ref1-company','r-ref1-contact',

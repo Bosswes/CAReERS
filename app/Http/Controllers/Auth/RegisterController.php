@@ -44,6 +44,15 @@ class RegisterController extends Controller
                 'elem_school'    => $request->elemSchool ?? null,
                 'elem_year_grad' => $request->elemYearGrad ?? null,
                 'elem_type'      => $request->elemType ?? null,
+                // Personal details
+                'birth_date'     => $request->dateOfBirth ?? null,
+                'birth_place'    => $request->placeOfBirth ?? null,
+                'full_address'   => trim(implode(', ', array_filter([
+                                        $request->houseNo ?? '',
+                                        $request->barangay ?? '',
+                                        $request->town ?? '',
+                                        $request->province ?? '',
+                                    ]))),
                 'status'         => 'active',
                 'created_at'     => now(),
                 'updated_at'     => now(),

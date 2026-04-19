@@ -63,6 +63,10 @@ class LoginController extends Controller
                         'parentCellphone'     => $student->parent_cellphone ?? '',
                         'parentAddress'       => $student->parent_address ?? '',
                         'parentOccupation'    => $student->parent_occupation ?? '',
+                        // Personal details — para laging available sa resume kahit mag-relogin
+                        'dateOfBirth'         => $student->birth_date ?? '',
+                        'birthPlace'          => $student->birth_place ?? '',
+                        'fullAddress'         => $student->full_address ?? '',
                     ]
                 ]);
             }

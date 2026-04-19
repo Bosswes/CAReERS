@@ -143,6 +143,13 @@ const Student = (function() {
                 };
                 sessionStorage.setItem('registrationData', JSON.stringify(updatedRegData));
 
+                // Save personal details from DB to currentUser so resume always shows them
+                const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
+                currentUser.birth_date   = p.birth_date   || currentUser.birth_date   || '';
+                currentUser.birth_place  = p.birth_place  || currentUser.birth_place  || '';
+                currentUser.full_address = p.full_address || currentUser.full_address || '';
+                sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
+
                 // Auto-set section based on course
                 const sectionField = document.getElementById('profile-section');
                 if (sectionField) {

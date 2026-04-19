@@ -1765,7 +1765,7 @@ FULL PATH: resources/views/auth/register.blade.php
                         zipCode:          getValue('zipCode'),
                         dateOfBirth:      getValue('dateOfBirth'),
                         age:              getValue('age'),
-                        birthPlace:       getValue('birthPlace'),
+                        birthPlace:       getValue('placeOfBirth'),
                     };
                     sessionStorage.setItem('registrationData', JSON.stringify(regData));
                     showPopup(data.message || 'Registration successful! Redirecting to login...', 'success', function() {
