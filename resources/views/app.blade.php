@@ -2940,12 +2940,12 @@
         // School Background — pulled from registration data in DB via session<!-- Toast Notification -->
  
     function openResumeModal() {
-        document.getElementById('r-shs-school').textContent = reg.shsSchool || '-';
-        document.getElementById('r-shs-year').textContent = reg.shsYearGrad || '-';
-        document.getElementById('r-hs-school').textContent = reg.hsSchool || '-';
-        document.getElementById('r-hs-year').textContent = reg.hsYearGrad || '-';
-        document.getElementById('r-elem-school').textContent = reg.elemSchool || '-';
-        document.getElementById('r-elem-year').textContent = reg.elemYearGrad || '-';
+        document.getElementById('r-shs-school').textContent = reg.shsSchool || user.shs_school || '-';
+        document.getElementById('r-shs-year').textContent = reg.shsYearGrad || user.shs_year_grad || '-';
+        document.getElementById('r-hs-school').textContent = reg.hsSchool || user.hs_school || '-';
+        document.getElementById('r-hs-year').textContent = reg.hsYearGrad || user.hs_year_grad || '-';
+        document.getElementById('r-elem-school').textContent = reg.elemSchool || user.elem_school || '-';
+        document.getElementById('r-elem-year').textContent = reg.elemYearGrad || user.elem_year_grad || '-';
 
         // Guardian
         document.getElementById('r-guardian').textContent = reg.parentGuardian || '-';

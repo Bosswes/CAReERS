@@ -145,9 +145,15 @@ const Student = (function() {
 
                 // Save personal details from DB to currentUser so resume always shows them
                 const currentUser = JSON.parse(sessionStorage.getItem('currentUser') || '{}');
-                currentUser.birth_date   = p.birth_date   || currentUser.birth_date   || '';
-                currentUser.birth_place  = p.birth_place  || currentUser.birth_place  || '';
-                currentUser.full_address = p.full_address || currentUser.full_address || '';
+                currentUser.birth_date     = p.birth_date     || currentUser.birth_date     || '';
+                currentUser.birth_place    = p.birth_place    || currentUser.birth_place    || '';
+                currentUser.full_address   = p.full_address   || currentUser.full_address   || '';
+                currentUser.shs_school     = p.shs_school     || currentUser.shs_school     || '';
+                currentUser.shs_year_grad  = p.shs_year_grad  || currentUser.shs_year_grad  || '';
+                currentUser.hs_school      = p.hs_school      || currentUser.hs_school      || '';
+                currentUser.hs_year_grad   = p.hs_year_grad   || currentUser.hs_year_grad   || '';
+                currentUser.elem_school    = p.elem_school    || currentUser.elem_school    || '';
+                currentUser.elem_year_grad = p.elem_year_grad || currentUser.elem_year_grad || '';
                 sessionStorage.setItem('currentUser', JSON.stringify(currentUser));
 
                 // Auto-set section based on course
