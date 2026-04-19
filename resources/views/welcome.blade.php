@@ -449,7 +449,7 @@
         .resume-school-item:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
         .resume-school-name { font-size: 11px; font-weight: 600; color: #1e293b; }
         .resume-school-level { font-size: 10px; color: #64748b; margin-top: 1px; }
-        .resume-school-year { font-size: 11px; color: #2E7D32; font-weight: 700; text-align: right; white-space: nowrap; padding-left: 12px; flex-shrink: 0; }
+        .resume-school-year { font-size: 11px; color: #2E7D32; font-weight: 700; text-align: right; white-space: nowrap; padding-left: 12px; flex-shrink: 0; min-width: 60px; display: block; }
         @media print {
             @page { size: A4 portrait; margin: 10mm 15mm; }
             body * { visibility: hidden; }
@@ -1871,33 +1871,33 @@
                 <div class="resume-section">
                     <div class="resume-section-title">Educational Background</div>
                     <div class="resume-school-item">
-                        <div>
+                        <div style="flex:1;">
                             <div class="resume-school-name" id="r-shs-school">-</div>
                             <div class="resume-school-level">Senior High School</div>
                         </div>
-                        <div style="text-align:right;min-width:80px;">
-                            <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:1px;">Graduated</div>
-                            <div class="resume-school-year" id="r-shs-year" style="font-size:11px;color:#2E7D32;font-weight:700;">-</div>
+                        <div style="text-align:right;min-width:80px;flex-shrink:0;">
+                            <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:1px;display:block;">Graduated</div>
+                            <div id="r-shs-year" style="font-size:11px;color:#2E7D32;font-weight:700;display:block;min-width:50px;">-</div>
                         </div>
                     </div>
                     <div class="resume-school-item">
-                        <div>
+                        <div style="flex:1;">
                             <div class="resume-school-name" id="r-hs-school">-</div>
                             <div class="resume-school-level">High School</div>
                         </div>
-                        <div style="text-align:right;min-width:80px;">
-                            <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:1px;">Graduated</div>
-                            <div class="resume-school-year" id="r-hs-year" style="font-size:11px;color:#2E7D32;font-weight:700;">-</div>
+                        <div style="text-align:right;min-width:80px;flex-shrink:0;">
+                            <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:1px;display:block;">Graduated</div>
+                            <div id="r-hs-year" style="font-size:11px;color:#2E7D32;font-weight:700;display:block;min-width:50px;">-</div>
                         </div>
                     </div>
                     <div class="resume-school-item">
-                        <div>
+                        <div style="flex:1;">
                             <div class="resume-school-name" id="r-elem-school">-</div>
                             <div class="resume-school-level">Elementary</div>
                         </div>
-                        <div style="text-align:right;min-width:80px;">
-                            <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:1px;">Graduated</div>
-                            <div class="resume-school-year" id="r-elem-year" style="font-size:11px;color:#2E7D32;font-weight:700;">-</div>
+                        <div style="text-align:right;min-width:80px;flex-shrink:0;">
+                            <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:1px;display:block;">Graduated</div>
+                            <div id="r-elem-year" style="font-size:11px;color:#2E7D32;font-weight:700;display:block;min-width:50px;">-</div>
                         </div>
                     </div>
                 </div>
