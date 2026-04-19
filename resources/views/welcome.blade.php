@@ -2334,11 +2334,11 @@
         const elemSchool= reg.elemSchool || user.elem_school || '-';
         const elemYear  = reg.elemYearGrad || user.elem_year_grad || '';
 
-        document.getElementById('r-shs-school').textContent  = shsSchool + (shsYear ? ' (' + shsYear + ')' : '');
+        document.getElementById('r-shs-school').textContent  = shsSchool;
         document.getElementById('r-shs-year').textContent    = shsYear;
-        document.getElementById('r-hs-school').textContent   = hsSchool + (hsYear ? ' (' + hsYear + ')' : '');
+        document.getElementById('r-hs-school').textContent   = hsSchool;
         document.getElementById('r-hs-year').textContent     = hsYear;
-        document.getElementById('r-elem-school').textContent = elemSchool + (elemYear ? ' (' + elemYear + ')' : '');
+        document.getElementById('r-elem-school').textContent = elemSchool;
         document.getElementById('r-elem-year').textContent   = elemYear;
 
         const skillsRaw = document.getElementById('profile-skills')?.value || '';
