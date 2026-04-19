@@ -336,13 +336,27 @@ const Student = (function() {
                     // Temporarily open resume modal to render it properly
                     if (typeof openResumeModal === 'function') openResumeModal();
 
+                    // Hide ref inputs before PDF capture so they don't appear
+                    document.querySelectorAll('.ref-inputs').forEach(el => el.style.display = 'none');
+                    document.querySelectorAll('.ref-fill-note').forEach(el => el.style.display = 'none');
+                    const refsDisplay = document.getElementById('r-refs-display');
+                    if (refsDisplay) {
+                        refsDisplay.innerHTML = buildRefsHTML ? buildRefsHTML() : refsDisplay.innerHTML;
+                        refsDisplay.style.display = 'block';
+                    }
+
                     const pdfBlob = await html2pdf().set({
-                        margin: 10,
+                        margin: [8, 10, 8, 10],
                         filename: 'resume.pdf',
                         image: { type: 'jpeg', quality: 0.98 },
-                        html2canvas: { scale: 2, useCORS: true },
-                        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                        html2canvas: { scale: 2, useCORS: true, logging: false },
+                        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                        pagebreak: { mode: 'avoid-all' }
                     }).from(resumeElement).outputPdf('blob');
+
+                    // Restore ref inputs after PDF capture
+                    document.querySelectorAll('.ref-inputs').forEach(el => el.style.display = 'grid');
+                    document.querySelectorAll('.ref-fill-note').forEach(el => el.style.display = 'block');
 
                     // Close resume modal after generating
                     if (typeof closeResumeModal === 'function') closeResumeModal();

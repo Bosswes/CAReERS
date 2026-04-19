@@ -425,7 +425,7 @@
         .resume-actions span { font-weight: 700; color: #1e293b; font-size: 15px; }
         .resume-actions-btns { display: flex; gap: 10px; }
         #resume-content {
-            padding: 20px 30px;
+            padding: 16px 24px;
             font-family: 'Inter', sans-serif;
             color: #1e293b;
             width: 210mm;
@@ -433,7 +433,7 @@
             max-height: 297mm;
             overflow: hidden;
             box-sizing: border-box;
-            font-size: 12px;
+            font-size: 11px;
         }
         .resume-header { border-bottom: 2px solid #2E7D32; padding-bottom: 10px; margin-bottom: 12px; }
         .resume-header h1 { font-size: 20px; font-weight: 800; color: #1e293b; margin: 0 0 4px; text-transform: uppercase; letter-spacing: 1px; }
@@ -451,25 +451,25 @@
         .resume-school-level { font-size: 10px; color: #64748b; margin-top: 1px; }
         .resume-school-year { font-size: 11px; color: #2E7D32; font-weight: 700; text-align: right; white-space: nowrap; padding-left: 12px; flex-shrink: 0; }
         @media print {
-            @page { size: A4 portrait; margin: 15mm 20mm; }
+            @page { size: A4 portrait; margin: 10mm 15mm; }
             body * { visibility: hidden; }
             #resume-content, #resume-content * { visibility: visible; }
             #resume-content {
                 position: fixed;
                 top: 0; left: 0;
-                width: 170mm;
+                width: 180mm;
                 padding: 0;
-                font-size: 11px;
+                font-size: 10px;
                 max-height: none;
                 overflow: visible;
                 box-shadow: none;
             }
             .resume-modal { display: block !important; }
             .resume-actions { display: none !important; }
-            /* Hide input fields and labels on print */
+            /* Hide input fields, labels, borders on print/PDF */
             .ref-inputs { display: none !important; }
             .ref-fill-note { display: none !important; }
-            /* Show the built refs display only if it has content */
+            /* Show only the clean formatted refs */
             #r-refs-display { display: block !important; }
             /* Hide character references section entirely if no refs filled */
             #r-char-ref-section:not(:has(#r-refs-display *)) { display: none !important; }
@@ -1875,9 +1875,9 @@
                             <div class="resume-school-name" id="r-shs-school">-</div>
                             <div class="resume-school-level">Senior High School</div>
                         </div>
-                        <div style="text-align:right;">
+                        <div style="text-align:right;min-width:80px;">
                             <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:1px;">Graduated</div>
-                            <div class="resume-school-year" id="r-shs-year">-</div>
+                            <div class="resume-school-year" id="r-shs-year" style="font-size:11px;color:#2E7D32;font-weight:700;">-</div>
                         </div>
                     </div>
                     <div class="resume-school-item">
@@ -1885,9 +1885,9 @@
                             <div class="resume-school-name" id="r-hs-school">-</div>
                             <div class="resume-school-level">High School</div>
                         </div>
-                        <div style="text-align:right;">
+                        <div style="text-align:right;min-width:80px;">
                             <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:1px;">Graduated</div>
-                            <div class="resume-school-year" id="r-hs-year">-</div>
+                            <div class="resume-school-year" id="r-hs-year" style="font-size:11px;color:#2E7D32;font-weight:700;">-</div>
                         </div>
                     </div>
                     <div class="resume-school-item">
@@ -1895,9 +1895,9 @@
                             <div class="resume-school-name" id="r-elem-school">-</div>
                             <div class="resume-school-level">Elementary</div>
                         </div>
-                        <div style="text-align:right;">
+                        <div style="text-align:right;min-width:80px;">
                             <div style="font-size:9px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:1px;">Graduated</div>
-                            <div class="resume-school-year" id="r-elem-year">-</div>
+                            <div class="resume-school-year" id="r-elem-year" style="font-size:11px;color:#2E7D32;font-weight:700;">-</div>
                         </div>
                     </div>
                 </div>
