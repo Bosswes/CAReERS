@@ -326,58 +326,16 @@ const Student = (function() {
                 let resumeBase64 = null;
 
                 if (resumeElement && typeof html2pdf !== 'undefined') {
-                    // Open modal to render data properly
+                    // Temporarily open resume modal to render it properly
                     if (typeof openResumeModal === 'function') openResumeModal();
 
-                    // Hide inputs and notes — only show filled refs if any
-                    const refInputsEl   = resumeElement.querySelector('.ref-inputs');
-                    const refNoteEl     = resumeElement.querySelector('.ref-fill-note');
-                    const refSection    = resumeElement.querySelector('#r-char-ref-section');
-                    const refsDisplay   = resumeElement.querySelector('#r-refs-display');
-
-                    // Build refs HTML from inputs
-                    const ref1Name = document.getElementById('r-ref1-name')?.value.trim();
-                    const ref2Name = document.getElementById('r-ref2-name')?.value.trim();
-                    let refsHTML = '';
-                    const makeRef = (name, posId, coId, cnId) => {
-                        const pos = document.getElementById(posId)?.value.trim() || '';
-                        const co  = document.getElementById(coId)?.value.trim()  || '';
-                        const cn  = document.getElementById(cnId)?.value.trim()  || '';
-                        return `<div style="margin-bottom:10px;">
-                            <div style="font-size:11px;font-weight:700;color:#1e293b;">${name}</div>
-                            <div style="font-size:10px;color:#2E7D32;">${pos}${co ? ' &bull; ' + co : ''}</div>
-                            ${cn ? `<div style="font-size:10px;color:#64748b;">${cn}</div>` : ''}
-                        </div>`;
-                    };
-                    if (ref1Name) refsHTML += makeRef(ref1Name, 'r-ref1-position', 'r-ref1-company', 'r-ref1-contact');
-                    if (ref2Name) refsHTML += makeRef(ref2Name, 'r-ref2-position', 'r-ref2-company', 'r-ref2-contact');
-
-                    // Hide inputs/notes
-                    if (refInputsEl) refInputsEl.style.display = 'none';
-                    if (refNoteEl)   refNoteEl.style.display   = 'none';
-
-                    // Show refs display only if filled, else hide entire section
-                    if (refsDisplay) {
-                        refsDisplay.innerHTML = refsHTML;
-                        refsDisplay.style.display = refsHTML ? 'block' : 'none';
-                    }
-                    if (refSection) {
-                        refSection.style.display = refsHTML ? 'block' : 'none';
-                    }
-
                     const pdfBlob = await html2pdf().set({
-                        margin:     [12, 15, 12, 15],
-                        filename:   'Student_Resume.pdf',
-                        image:      { type: 'jpeg', quality: 0.98 },
-                        html2canvas:{ scale: 2, useCORS: true, logging: false },
-                        jsPDF:      { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                        margin: 10,
+                        filename: 'resume.pdf',
+                        image: { type: 'jpeg', quality: 0.98 },
+                        html2canvas: { scale: 2, useCORS: true },
+                        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
                     }).from(resumeElement).outputPdf('blob');
-
-                    // Restore inputs/notes after capture
-                    if (refInputsEl) refInputsEl.style.display = '';
-                    if (refNoteEl)   refNoteEl.style.display   = '';
-                    if (refSection)  refSection.style.display  = 'block';
-                    if (refsDisplay) refsDisplay.style.display = 'none';
 
                     // Close resume modal after generating
                     if (typeof closeResumeModal === 'function') closeResumeModal();
