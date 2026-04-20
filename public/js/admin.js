@@ -714,9 +714,7 @@ const Admin = (function() {
             document.getElementById('announcement-type').value = 'general';
             document.getElementById('announcement-date').value = new Date().toISOString().split('T')[0];
             document.getElementById('announcement-location').value = '';
-            document.getElementById('announcement-form-link').value = '';
             document.getElementById('announcement-registration-status').value = 'open';
-            document.getElementById('announcement-end-date').value = '';
             document.getElementById('announcement-publish').checked = true;
         } else if (mode === 'edit' && id) {
             title.textContent = 'Edit Announcement';
