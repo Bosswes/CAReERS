@@ -1758,22 +1758,13 @@
                                 <option value="closed">Closed Registration</option>
                             </select>
                         </div>
-                        <div class="form-group">
-                            <label for="announcement-end-date">End Date (Optional)</label>
-                            <input type="date" id="announcement-end-date">
-                        </div>
+                        
                     </div>
                     <div class="form-group">
                         <label for="announcement-location">Location (Optional)</label>
                         <input type="text" id="announcement-location">
                     </div>
-                    <div class="form-group">
-                        <label for="announcement-form-link">Google Form Link (Optional)</label>
-                        <input type="url" id="announcement-form-link" placeholder="https://forms.gle/..." style="border-color: #adb5bd;">
-                        <p class="text-muted" style="font-size:12px; margin-top:4px; color:#6c757d;">
-                            <i class="fas fa-info-circle"></i> Students can register via QR code scan even without a Google Form link.
-                        </p>
-                    </div>
+                    
                     <div class="form-group">
                         <label><input type="checkbox" id="announcement-publish" checked> Publish immediately</label>
                     </div>

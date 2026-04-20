@@ -749,9 +749,7 @@ const Admin = (function() {
                     document.getElementById('announcement-type').value = ann.announcement_type;
                     document.getElementById('announcement-date').value = ann.start_date;
                     document.getElementById('announcement-location').value = ann.location || '';
-                    document.getElementById('announcement-form-link').value = ann.form_link || '';
                     document.getElementById('announcement-registration-status').value = ann.registration_status || 'open';
-                    document.getElementById('announcement-end-date').value = ann.end_date || '';
                     document.getElementById('announcement-publish').checked = ann.is_published;
                 }
             }
@@ -767,14 +765,23 @@ const Admin = (function() {
         const type = document.getElementById('announcement-type').value;
         const date = document.getElementById('announcement-date').value;
         const location = document.getElementById('announcement-location').value;
-        const formLink = document.getElementById('announcement-form-link').value;
         const registrationStatus = document.getElementById('announcement-registration-status').value;
-        const endDate = document.getElementById('announcement-end-date').value;
         const published = document.getElementById('announcement-publish').checked;
         
         if (!title || !content) {
             Utils.showToast('Please fill all required fields', 'warning');
             return;
+        }
+
+        // Validate: hindi pwede past date ang start_date
+        if (date) {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            const selectedDate = new Date(date);
+            if (selectedDate < today) {
+                Utils.showToast('Event date cannot be a past date.', 'warning');
+                return;
+            }
         }
         
         try {
@@ -784,9 +791,7 @@ const Admin = (function() {
                     content,
                     announcement_type: type,
                     start_date: date,
-                    end_date: endDate,
                     location,
-                    form_link: formLink,
                     registration_status: registrationStatus,
                     is_published: published,
                     target_audience: 'all'
@@ -798,9 +803,7 @@ const Admin = (function() {
                     content,
                     announcement_type: type,
                     start_date: date,
-                    end_date: endDate,
                     location,
-                    form_link: formLink,
                     registration_status: registrationStatus,
                     is_published: published
                 });

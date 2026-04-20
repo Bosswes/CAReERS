@@ -2360,10 +2360,7 @@
                         <input type="text" id="announcement-location">
                     </div>
                     <div class="form-row">
-                        <div class="form-group">
-                            <label for="announcement-end-date">End Date (Optional)</label>
-                            <input type="date" id="announcement-end-date">
-                        </div>
+                        
                         <div class="form-group">
                             <label for="announcement-registration-status">Registration Status</label>
                             <select id="announcement-registration-status">

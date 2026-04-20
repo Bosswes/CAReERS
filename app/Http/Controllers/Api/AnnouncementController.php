@@ -235,7 +235,8 @@ class AnnouncementController extends Controller
         //   - pending  : hindi pa na-scan, ongoing/hindi pa tapos ang event
         // -------------------------------------------------------
         $event = DB::table('announcements')->where('announcement_id', $id)->first();
-        $eventEnded = $event && $event->end_date && now()->gt(\Carbon\Carbon::parse($event->end_date)->endOfDay());
+        $eventDate = $event->end_date ?? $event->start_date;
+        $eventEnded = $event && now()->timezone('Asia/Manila')->gt(\Carbon\Carbon::parse($eventDate)->timezone('Asia/Manila')->endOfDay());
 
         $registrantsWithStatus = $registrants->map(function ($r) use ($attendedNumbers, $eventEnded) {
             $scanned = in_array($r->student_number, $attendedNumbers);
