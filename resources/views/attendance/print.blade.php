@@ -54,7 +54,7 @@
                 <td>{{ $a->course }}</td>
                 <td>{{ $a->year_level }}</td>
                 <td>{{ $a->section }}</td>
-                <td>{{ \Carbon\Carbon::parse($a->attendance_time)->timezone('Asia/Manila')->format('h:i:s A') }}</td>
+                <td>{{ $a->attendance_time }}</td>
             </tr>
             @empty
             <tr><td colspan="9" style="text-align:center;">No attendance recorded yet.</td></tr>
