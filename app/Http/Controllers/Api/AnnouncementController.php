@@ -140,7 +140,7 @@ class AnnouncementController extends Controller
             return response()->json(['success' => false, 'message' => 'You are already registered for this event.']);
         }
 
-        $now = now()->timezone('Asia/Manila');
+        $now = now('Asia/Manila')->utc();
         $qrCode = 'EVT-' . $id . '-' . $studentNumber . '-' . time();
 
         DB::table('event_registrants')->insert([

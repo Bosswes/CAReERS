@@ -130,7 +130,7 @@ class AttendanceController extends Controller
 
         // Format attendance times to Philippines time
         $attendance = $attendance->map(function($record) {
-            $record->attendance_time = \Carbon\Carbon::parse($record->attendance_time)
+            $record->attendance_time = \Carbon\Carbon::parse($record->attendance_time, 'UTC')
                 ->timezone('Asia/Manila')
                 ->format('h:i:s A');
             return $record;
