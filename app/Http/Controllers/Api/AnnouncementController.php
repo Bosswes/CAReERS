@@ -285,22 +285,23 @@ class AnnouncementController extends Controller
             return response()->json(['success' => false, 'message' => 'Student already marked as attended.']);
         }
 
-        $now = now()->timezone('Asia/Manila');
+        $now = now('Asia/Manila');
+        $nowUtc = $now->utc();
 
         DB::table('event_attendance')->insert([
             'event_id'        => $id,
             'student_number'  => $registrant->student_number,
             'qr_code'         => $qrCode,
-            'attendance_time' => $now,
-            'created_at'      => $now,
-            'updated_at'      => $now,
+            'attendance_time' => $nowUtc,
+            'created_at'      => $nowUtc,
+            'updated_at'      => $nowUtc,
         ]);
 
         // I-update ang event_registrants para ma-track ang scan time
         DB::table('event_registrants')
             ->where('event_id', $id)
             ->where('student_number', $registrant->student_number)
-            ->update(['updated_at' => $now]);
+            ->update(['updated_at' => $nowUtc]);
 
         $student = DB::table('student_info')
             ->where('student_number', $registrant->student_number)

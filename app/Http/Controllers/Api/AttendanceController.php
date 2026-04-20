@@ -39,8 +39,9 @@ class AttendanceController extends Controller
         ]);
 
         // Get Philippines time (UTC+8)
-        $now = now()->timezone('Asia/Manila');
+        $now = now('Asia/Manila');
         $todayPH = $now->toDateString(); // e.g. 2026-03-31
+        $nowUtc = $now->utc(); // i-store as UTC sa DB para consistent
 
         // Check if today matches the event date
         $event = DB::table('announcements')->where('announcement_id', $request->event_id)->first();
@@ -89,9 +90,9 @@ class AttendanceController extends Controller
         DB::table('event_attendance')->insert([
             'event_id'        => $request->event_id,
             'student_number'  => $request->student_number,
-            'attendance_time' => $now,
-            'created_at'      => $now,
-            'updated_at'      => $now,
+            'attendance_time' => $nowUtc,
+            'created_at'      => $nowUtc,
+            'updated_at'      => $nowUtc,
         ]);
 
         return response()->json(['success' => true, 'message' => 'Attendance logged', 'student' => $student]);
