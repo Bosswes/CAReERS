@@ -2214,11 +2214,11 @@
     <!-- ========== MODALS ========== -->
     
     <!-- QR Code Modal -->
-    <div class="modal" id="qr-modal" style="display: none;">
+    <div class="modal" id="qr-modal" style="display: none;" onclick="if(event.target===this)this.style.display='none';">
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Event QR Code</h3>
-                <button class="close-modal" id="close-qr-modal">
+                <button class="close-modal" id="close-qr-modal" onclick="document.getElementById('qr-modal').style.display='none';">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -2226,7 +2226,7 @@
                 <div class="qr-code-container" id="qr-code"></div>
                 <p class="qr-instructions" id="qr-event-name"></p>
                 <div class="qr-actions">
-                    <button class="btn-primary btn-sm" id="download-qr">
+                    <button class="btn-primary btn-sm" id="download-qr" onclick="downloadQRCode()">
                         <i class="fas fa-download"></i> Download
                     </button>
                     <button class="btn-secondary btn-sm" id="print-qr">
@@ -3266,6 +3266,33 @@
         if (type === 'internship' && user.role === 'student') {
             navigateTo('ojt-offerings');
         }
+    }
+    </script>
+
+    <script>
+    // ===== QR Modal Fix =====
+    function downloadQRCode() {
+        const container = document.getElementById('qr-code');
+        if (!container) return;
+        // qrcodejs renders a <canvas> element
+        const canvas = container.querySelector('canvas');
+        if (canvas) {
+            const link = document.createElement('a');
+            link.download = 'event-qr-code.png';
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+            return;
+        }
+        // Fallback: img tag
+        const img = container.querySelector('img');
+        if (img) {
+            const link = document.createElement('a');
+            link.download = 'event-qr-code.png';
+            link.href = img.src;
+            link.click();
+            return;
+        }
+        alert('QR code not ready. Please try again.');
     }
     </script>
 
