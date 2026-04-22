@@ -2644,9 +2644,16 @@
         // Mobile-compatible download
         const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
         if (isMobile) {
-            // Open in new tab — user can long-press to save on mobile
             const win = window.open();
-            win.document.write('<img src="' + imgSrc + '" style="max-width:100%;display:block;margin:auto;" /><p style="text-align:center;font-family:sans-serif;color:#555;">Long-press the image, then tap <b>Save Image</b></p>');
+            win.document.write(`
+                <html><body style="margin:0;padding:20px;font-family:sans-serif;text-align:center;background:#f9f9f9;">
+                <p style="color:#2E7D32;font-weight:700;font-size:16px;">📥 Save your QR Code</p>
+                <img src="${imgSrc}" style="max-width:90%;display:block;margin:0 auto 16px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.15);" />
+                <p style="color:#555;font-size:14px;">If long-press doesn't work:</p>
+                <p style="color:#e65100;font-size:13px;font-weight:600;">⚠️ Open this page in Chrome or Safari<br>(not Messenger/Facebook browser)</p>
+                <p style="color:#777;font-size:12px;margin-top:8px;">Tap the 3 dots ⋮ → "Open in Chrome"<br>then long-press the image → Save Image</p>
+                </body></html>
+            `);
             win.document.close();
         } else {
             const link = document.createElement('a');
