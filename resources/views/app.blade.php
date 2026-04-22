@@ -844,7 +844,7 @@
                                     <div class="progress-fill" id="profile-progress" style="width: 0%;"></div>
                                 </div>
                                 <p class="completion-hint">Complete your profile to unlock personalized job recommendations</p>
-                                <a href="#student-profile" class="btn-primary btn-sm complete-profile-btn">Complete Profile</a>
+                                <a href="#student-profile" class="btn-primary btn-sm complete-profile-btn" onclick="event.preventDefault(); navigateTo('student-profile')">Complete Profile</a>
                             </div>
                             
                             <div class="stats-grid">
@@ -2218,7 +2218,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h3>Event QR Code</h3>
-                <button class="close-modal" id="close-qr-modal" onclick="document.getElementById('qr-modal').style.display='none';">
+               <button class="close-modal" id="close-qr-modal" onclick="document.getElementById('qr-modal').style.display='none';" style="cursor:pointer;z-index:9999;position:relative;"><i class="fas fa-times"></i></button>
                     <i class="fas fa-times"></i>
                 </button>
             </div>
@@ -3273,26 +3273,28 @@
     // ===== QR Modal Fix =====
     function downloadQRCode() {
         const container = document.getElementById('qr-code');
-        if (!container) return;
-        // qrcodejs renders a <canvas> element
+        if (!container) { alert('QR code not found.'); return; }
+
         const canvas = container.querySelector('canvas');
-        if (canvas) {
+        const imgSrc = canvas ? canvas.toDataURL('image/png') : (container.querySelector('img') ? container.querySelector('img').src : null);
+
+        if (!imgSrc) { alert('QR code not ready. Please try again.'); return; }
+
+        // Mobile-compatible download
+        const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+        if (isMobile) {
+            // Open in new tab — user can long-press to save on mobile
+            const win = window.open();
+            win.document.write('<img src="' + imgSrc + '" style="max-width:100%;display:block;margin:auto;" /><p style="text-align:center;font-family:sans-serif;color:#555;">Long-press the image, then tap <b>Save Image</b></p>');
+            win.document.close();
+        } else {
             const link = document.createElement('a');
             link.download = 'event-qr-code.png';
-            link.href = canvas.toDataURL('image/png');
+            link.href = imgSrc;
+            document.body.appendChild(link);
             link.click();
-            return;
+            document.body.removeChild(link);
         }
-        // Fallback: img tag
-        const img = container.querySelector('img');
-        if (img) {
-            const link = document.createElement('a');
-            link.download = 'event-qr-code.png';
-            link.href = img.src;
-            link.click();
-            return;
-        }
-        alert('QR code not ready. Please try again.');
     }
     </script>
 
