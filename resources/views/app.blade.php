@@ -882,13 +882,7 @@
                             </div>
                             
                             <div class="stats-grid">
-                                <div class="stat-card">
-                                    <div class="stat-icon"><i class="fas fa-briefcase"></i></div>
-                                    <div class="stat-content">
-                                        <h3 class="stat-number" id="available-jobs-count">0</h3>
-                                        <p class="stat-label">Available Jobs</p>
-                                    </div>
-                                </div>
+                                
                                 <div class="stat-card">
                                     <div class="stat-icon"><i class="fas fa-paper-plane"></i></div>
                                     <div class="stat-content">
@@ -903,13 +897,7 @@
                                         <p class="stat-label">Avg Match Score</p>
                                     </div>
                                 </div>
-                                <div class="stat-card">
-                                    <div class="stat-icon"><i class="fas fa-bullhorn"></i></div>
-                                    <div class="stat-content">
-                                        <h3 class="stat-number" id="announcements-count">0</h3>
-                                        <p class="stat-label">Announcements</p>
-                                    </div>
-                                </div>
+                                
                             </div>
                             
                             <div id="job-recommendations-section" style="display: none;">

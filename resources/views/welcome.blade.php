@@ -688,36 +688,7 @@
                                 <a href="#student-profile" class="btn-primary btn-sm complete-profile-btn" onclick="event.preventDefault(); navigateTo('student-profile')">Complete Profile</a>
                             </div>
                             
-                            <div class="stats-grid">
-                                <div class="stat-card">
-                                    <div class="stat-icon"><i class="fas fa-briefcase"></i></div>
-                                    <div class="stat-content">
-                                        <h3 class="stat-number" id="available-jobs-count">0</h3>
-                                        <p class="stat-label">Available Jobs</p>
-                                    </div>
-                                </div>
-                                <div class="stat-card">
-                                    <div class="stat-icon"><i class="fas fa-star"></i></div>
-                                    <div class="stat-content">
-                                        <h3 class="stat-number" id="recommendations-count">0</h3>
-                                        <p class="stat-label">Recommendations</p>
-                                    </div>
-                                </div>
-                                <div class="stat-card">
-                                    <div class="stat-icon"><i class="fas fa-bullhorn"></i></div>
-                                    <div class="stat-content">
-                                        <h3 class="stat-number" id="announcements-count">0</h3>
-                                        <p class="stat-label">Announcements</p>
-                                    </div>
-                                </div>
-                                <div class="stat-card">
-                                    <div class="stat-icon"><i class="fas fa-graduation-cap"></i></div>
-                                    <div class="stat-content">
-                                        <h3 class="stat-number" id="ojt-count">0</h3>
-                                        <p class="stat-label">OJT Openings</p>
-                                    </div>
-                                </div>
-                            </div>
+                            
                             
                             <div id="job-recommendations-section" style="display: none;">
                                 <div class="section-header">
