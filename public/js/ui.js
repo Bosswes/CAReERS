@@ -54,30 +54,14 @@ const UI = (function() {
         if (userName) userName.textContent = user.name;
         if (userRole) userRole.textContent = user.role === 'admin' ? 'Administrator' : 'Student';
 
-        // Make sidebar footer clickable to open Edit Profile (students only)
+        // Click sidebar footer to go to profile (students only)
         if (user.role === 'student') {
             const userInfo = document.querySelector('.sidebar-footer .user-info');
             if (userInfo) {
                 userInfo.style.cursor = 'pointer';
-                userInfo.title = 'Edit Profile';
                 userInfo.onclick = function() {
                     navigateTo('student-profile');
-                    // Show edit profile label briefly
-                    UI.updateActiveNav(document.querySelector('#sidebar-menu a[data-section="student-dashboard"]'));
                 };
-
-                // Add "Edit Profile" label on hover
-                if (!document.getElementById('edit-profile-tooltip')) {
-                    const tooltip = document.createElement('span');
-                    tooltip.id = 'edit-profile-tooltip';
-                    tooltip.textContent = 'Edit Profile';
-                    tooltip.style.cssText = 'display:none; font-size:11px; color:#a7f3d0; margin-top:2px; font-weight:500;';
-                    const userDetails = userInfo.querySelector('.user-details');
-                    if (userDetails) userDetails.appendChild(tooltip);
-
-                    userInfo.addEventListener('mouseenter', () => tooltip.style.display = 'block');
-                    userInfo.addEventListener('mouseleave', () => tooltip.style.display = 'none');
-                }
             }
         }
     }
