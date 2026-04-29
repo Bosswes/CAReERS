@@ -53,6 +53,33 @@ const UI = (function() {
         if (avatarInitials) avatarInitials.textContent = Utils.getInitials(user.name);
         if (userName) userName.textContent = user.name;
         if (userRole) userRole.textContent = user.role === 'admin' ? 'Administrator' : 'Student';
+
+        // Make sidebar footer clickable to open Edit Profile (students only)
+        if (user.role === 'student') {
+            const userInfo = document.querySelector('.sidebar-footer .user-info');
+            if (userInfo) {
+                userInfo.style.cursor = 'pointer';
+                userInfo.title = 'Edit Profile';
+                userInfo.onclick = function() {
+                    navigateTo('student-profile');
+                    // Show edit profile label briefly
+                    UI.updateActiveNav(document.querySelector('#sidebar-menu a[data-section="student-dashboard"]'));
+                };
+
+                // Add "Edit Profile" label on hover
+                if (!document.getElementById('edit-profile-tooltip')) {
+                    const tooltip = document.createElement('span');
+                    tooltip.id = 'edit-profile-tooltip';
+                    tooltip.textContent = 'Edit Profile';
+                    tooltip.style.cssText = 'display:none; font-size:11px; color:#a7f3d0; margin-top:2px; font-weight:500;';
+                    const userDetails = userInfo.querySelector('.user-details');
+                    if (userDetails) userDetails.appendChild(tooltip);
+
+                    userInfo.addEventListener('mouseenter', () => tooltip.style.display = 'block');
+                    userInfo.addEventListener('mouseleave', () => tooltip.style.display = 'none');
+                }
+            }
+        }
     }
     
     function setupSidebarNavigation(user) {
@@ -64,7 +91,6 @@ const UI = (function() {
         if (user.role === 'student') {
             navItems = [
                 { href: '#student-dashboard', text: 'Dashboard', icon: 'fas fa-home', section: 'student-dashboard' },
-                { href: '#student-profile', text: 'My Profile', icon: 'fas fa-user', section: 'student-profile' },
                 { href: '#job-recommendations', text: 'Job Recommendations', icon: 'fas fa-briefcase', section: 'job-recommendations' },
                 { href: '#ojt-offerings', text: 'OJT Offerings', icon: 'fas fa-graduation-cap', section: 'ojt-offerings' },
                 { href: '#announcements', text: 'Announcements', icon: 'fas fa-bullhorn', section: 'announcements' }
