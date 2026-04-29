@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\JobController;
 use App\Http\Controllers\Api\AdminController;
 use App\Http\Controllers\Api\AnnouncementController;
 use App\Http\Controllers\Api\RecommendationController;
+use App\Http\Controllers\Api\NotificationController;
 use App\Http\Controllers\TestController;
 
 // Public routes
@@ -102,8 +103,15 @@ Route::post('/announcements/{id}/scan', [AnnouncementController::class, 'scanQR'
         Route::get('/attendance/{eventId}', [AdminController::class, 'getEventAttendance']);
         Route::get('/announcements/{id}/registrants-attendance', [AdminController::class, 'getEventRegistrantsWithAttendance']);
         // Notifications
-Route::get('/student/notifications', [StudentController::class, 'getNotifications']);
-Route::post('/student/notifications/{id}/read', [StudentController::class, 'markNotificationRead']);
-Route::post('/student/notifications/read-all', [StudentController::class, 'markAllNotificationsRead']);
+        Route::get('/student/notifications', [StudentController::class, 'getNotifications']);
+        Route::post('/student/notifications/{id}/read', [StudentController::class, 'markNotificationRead']);
+        Route::post('/student/notifications/read-all', [StudentController::class, 'markAllNotificationsRead']);
     });
-});
+
+    // Notification routes (accessible by student)
+    Route::prefix('notifications')->group(function () {
+        Route::get('/{studentId}', [NotificationController::class, 'index']);
+        Route::put('/{id}/read', [NotificationController::class, 'markRead']);
+        Route::put('/{studentId}/read-all', [NotificationController::class, 'markAllRead']);
+    });
+    });

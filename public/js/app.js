@@ -11,18 +11,24 @@ const App = (function() {
             try {
                 const user = JSON.parse(savedUser);
                 API.getUser().then(response => {
-                    if (response && response.user) {
-                        document.getElementById('auth-container').style.display = 'none';
-                        document.getElementById('app-container').style.display = 'block';
-                        UI.updateSidebarUserInfo(user);
-                        UI.setupSidebarNavigation(user);
-                        UI.showDashboard();
-                    } else {
-                        sessionStorage.removeItem('currentUser');
-                    }
-                }).catch(() => {
-                    sessionStorage.removeItem('currentUser');
-                });
+            if (response && response.user) {
+                document.getElementById('auth-container').style.display = 'none';
+                document.getElementById('app-container').style.display = 'block';
+                UI.updateSidebarUserInfo(user);
+                UI.setupSidebarNavigation(user);
+                UI.showDashboard();
+
+                // Load notifications for students only
+                if (user.role === 'student') {
+                    Student.loadNotifications();
+                    setInterval(() => Student.loadNotifications(), 60000);
+                }
+            } else {
+                sessionStorage.removeItem('currentUser');
+            }
+        }).catch(() => {
+            sessionStorage.removeItem('currentUser');
+        });
             } catch (error) {
                 console.error('Error loading saved session:', error);
                 sessionStorage.removeItem('currentUser');

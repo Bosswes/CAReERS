@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Mail\NewJobNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class JobController extends Controller
 {
@@ -34,6 +37,79 @@ class JobController extends Controller
         ]);
     }
     
+    public function store(Request $request)
+    {
+        $request->validate([
+            'title'           => 'required|string',
+            'employer_name'   => 'required|string',
+            'job_type'        => 'required|string',
+            'location'        => 'required|string',
+            'min_gpa'         => 'nullable|numeric',
+            'min_year_level'  => 'nullable|string',
+            'required_skills' => 'nullable|string',
+            'deadline'        => 'nullable|date',
+        ]);
+
+        $jobId = DB::table('job_postings')->insertGetId([
+            'title'          => $request->title,
+            'employer_name'  => $request->employer_name,
+            'job_type'       => $request->job_type,
+            'location'       => $request->location,
+            'min_gpa'        => $request->min_gpa,
+            'min_year_level' => $request->min_year_level,
+            'deadline'       => $request->deadline,
+            'status'         => 'approved',
+            'posted_date'    => now(),
+            'created_at'     => now(),
+            'updated_at'     => now(),
+        ]);
+
+        if ($request->required_skills) {
+            $skills = explode(',', $request->required_skills);
+            foreach ($skills as $skill) {
+                DB::table('required_skills')->insert([
+                    'job_id'     => $jobId,
+                    'skill_name' => trim($skill),
+                ]);
+            }
+        }
+
+        $students = DB::table('students')
+                      ->whereNotNull('email')
+                      ->get();
+
+        foreach ($students as $student) {
+            try {
+                Mail::to($student->email)->send(new NewJobNotification(
+                    studentName:  $student->name ?? 'Student',
+                    jobTitle:     $request->title,
+                    employerName: $request->employer_name,
+                    jobType:      $request->job_type,
+                    location:     $request->location,
+                ));
+            } catch (\Exception $e) {
+                Log::error('Email failed for ' . $student->email . ': ' . $e->getMessage());
+            }
+
+            DB::table('student_notifications')->insert([
+                'student_id'   => $student->id,
+                'type'         => 'job',
+                'title'        => 'New Job: ' . $request->title,
+                'message'      => $request->employer_name . ' is hiring! Check the new job posting.',
+                'reference_id' => $jobId,
+                'is_read'      => false,
+                'created_at'   => now(),
+                'updated_at'   => now(),
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Job posted and students notified!',
+            'job_id'  => $jobId,
+        ]);
+    }
+
     public function show($id)
     {
         $job = DB::table('job_postings')
