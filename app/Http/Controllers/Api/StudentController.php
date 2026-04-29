@@ -505,4 +505,37 @@ class StudentController extends Controller
             'announcements' => $announcements
         ]);
     }
+    public function getNotifications()
+    {
+        if (!session('user_logged_in') || session('user_role') !== 'student') {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        $student = DB::table('student_info')->where('student_number', session('user_id'))->first();
+        $notifications = DB::table('student_notifications')
+            ->where('student_number', $student->student_number)
+            ->orderBy('created_at', 'desc')
+            ->limit(50)
+            ->get();
+        $unreadCount = DB::table('student_notifications')
+            ->where('student_number', $student->student_number)
+            ->where('is_read', false)
+            ->count();
+        return response()->json(['success' => true, 'notifications' => $notifications, 'unread_count' => $unreadCount]);
+    }
+
+    public function markNotificationRead($id)
+    {
+        DB::table('student_notifications')->where('id', $id)->update(['is_read' => true]);
+        return response()->json(['success' => true]);
+    }
+
+    public function markAllNotificationsRead()
+    {
+        if (!session('user_logged_in')) return response()->json(['error' => 'Unauthorized'], 401);
+        $student = DB::table('student_info')->where('student_number', session('user_id'))->first();
+        DB::table('student_notifications')
+            ->where('student_number', $student->student_number)
+            ->update(['is_read' => true]);
+        return response()->json(['success' => true]);
+    }
 }

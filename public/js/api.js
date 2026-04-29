@@ -170,6 +170,15 @@ const API = (function() {
         async getMyEventRegistration(eventId) {
             return request(`/announcements/${eventId}/registration-status`);
         },
+        async getNotifications() {
+            return request('/student/notifications');
+        },
+        async markNotificationRead(id) {
+            return request(`/student/notifications/${id}/read`, { method: 'POST' });
+        },
+        async markAllNotificationsRead() {
+            return request('/student/notifications/read-all', { method: 'POST' });
+        },
         async saveCharacterReferences(data) {
             return request('/student/references', { method: 'PUT', body: JSON.stringify(data) });
         },

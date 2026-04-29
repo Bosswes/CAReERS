@@ -304,6 +304,34 @@ class AdminController extends Controller
                 }
             }
             
+            // Notify all students
+            $students = DB::table('student_info')->get();
+            foreach ($students as $student) {
+                // In-app notification
+                DB::table('student_notifications')->insert([
+                    'student_number' => $student->student_number,
+                    'type'           => 'job',
+                    'title'          => 'New Job: ' . $request->title,
+                    'message'        => $request->employer_name . ' is hiring for ' . $request->title . ' (' . $request->job_type . ') in ' . $request->location,
+                    'reference_id'   => $jobId,
+                    'created_at'     => now(),
+                    'updated_at'     => now(),
+                ]);
+
+                // Email notification
+                try {
+                    \Mail::to($student->cvsu_email)->send(new \App\Mail\NewJobNotification(
+                        $student->first_name . ' ' . $student->last_name,
+                        $request->title,
+                        $request->employer_name,
+                        $request->job_type,
+                        $request->location
+                    ));
+                } catch (\Exception $mailErr) {
+                    \Log::warning('Email failed for ' . $student->cvsu_email . ': ' . $mailErr->getMessage());
+                }
+            }
+
             return response()->json(['success' => true, 'job_id' => $jobId, 'message' => 'Job posted successfully']);
         } catch (\Exception $e) {
             Log::error('Admin createJobPost error: ' . $e->getMessage());

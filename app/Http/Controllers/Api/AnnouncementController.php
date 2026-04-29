@@ -64,6 +64,33 @@ class AnnouncementController extends Controller
             'updated_at' => now()
         ]);
         
+        // Notify all students
+        $students = DB::table('student_info')->get();
+        foreach ($students as $student) {
+            // In-app notification
+            DB::table('student_notifications')->insert([
+                'student_number' => $student->student_number,
+                'type'           => 'announcement',
+                'title'          => 'New Announcement: ' . $request->title,
+                'message'        => \Str::limit($request->content, 120),
+                'reference_id'   => $id,
+                'created_at'     => now(),
+                'updated_at'     => now(),
+            ]);
+
+            // Email notification
+            try {
+                \Mail::to($student->cvsu_email)->send(new \App\Mail\NewAnnouncementNotification(
+                    $student->first_name . ' ' . $student->last_name,
+                    $request->title,
+                    \Str::limit($request->content, 200),
+                    $request->start_date
+                ));
+            } catch (\Exception $mailErr) {
+                \Log::warning('Email failed for ' . $student->cvsu_email . ': ' . $mailErr->getMessage());
+            }
+        }
+
         return response()->json([
             'success' => true,
             'announcement_id' => $id,

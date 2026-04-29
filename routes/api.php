@@ -101,5 +101,9 @@ Route::post('/announcements/{id}/scan', [AnnouncementController::class, 'scanQR'
         Route::post('/attendance', [AdminController::class, 'recordAttendance']);
         Route::get('/attendance/{eventId}', [AdminController::class, 'getEventAttendance']);
         Route::get('/announcements/{id}/registrants-attendance', [AdminController::class, 'getEventRegistrantsWithAttendance']);
+        // Notifications
+Route::get('/student/notifications', [StudentController::class, 'getNotifications']);
+Route::post('/student/notifications/{id}/read', [StudentController::class, 'markNotificationRead']);
+Route::post('/student/notifications/read-all', [StudentController::class, 'markAllNotificationsRead']);
     });
 });

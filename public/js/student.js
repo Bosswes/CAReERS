@@ -783,11 +783,80 @@ const Student = (function() {
         }
     }
     
+    async function loadNotifications() {
+        try {
+            const res = await API.getNotifications();
+            if (!res.success) return;
+
+            const badge = document.getElementById('bell-badge');
+            const bellWrapper = document.getElementById('bell-wrapper');
+            const list = document.getElementById('notif-list');
+
+            // Show bell only for students
+            if (bellWrapper) bellWrapper.style.display = 'block';
+
+            // Update badge
+            if (badge) {
+                if (res.unread_count > 0) {
+                    badge.textContent = res.unread_count > 99 ? '99+' : res.unread_count;
+                    badge.style.display = 'block';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+
+            // Populate dropdown
+            if (list) {
+                if (res.notifications.length === 0) {
+                    list.innerHTML = '<p style="text-align:center;padding:20px;color:#94a3b8;font-size:13px;">No notifications yet</p>';
+                } else {
+                    list.innerHTML = res.notifications.map(n => `
+                        <div class="notif-item ${n.is_read ? '' : 'unread'}" onclick="Student.readNotif(${n.id})">
+                            <div class="notif-title">
+                                <i class="fas ${n.type === 'job' ? 'fa-briefcase' : 'fa-bullhorn'}" style="color:#2E7D32;margin-right:6px;"></i>
+                                ${n.title}
+                            </div>
+                            <div class="notif-msg">${n.message}</div>
+                            <div class="notif-time">${new Date(n.created_at).toLocaleDateString('en-PH', {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'})}</div>
+                        </div>
+                    `).join('');
+                }
+            }
+
+            // Bell toggle
+            const bellBtn = document.getElementById('bell-btn');
+            const dropdown = document.getElementById('notif-dropdown');
+            if (bellBtn && dropdown) {
+                bellBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+                };
+                document.addEventListener('click', () => { dropdown.style.display = 'none'; }, { once: true });
+            }
+
+        } catch (err) {
+            console.error('Notification load error:', err);
+        }
+    }
+
+    async function markAllRead() {
+        await API.markAllNotificationsRead();
+        loadNotifications();
+    }
+
+    async function readNotif(id) {
+        await API.markNotificationRead(id);
+        loadNotifications();
+    }
+
     return {
         loadDashboard,
         showProfile,
         showRecommendations,
         showOjtOfferings,
-        showAnnouncements
+        showAnnouncements,
+        loadNotifications,
+        markAllRead,
+        readNotif
     };
 })();

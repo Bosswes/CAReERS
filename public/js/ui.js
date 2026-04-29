@@ -139,6 +139,7 @@ const UI = (function() {
             // Load section-specific data
             if (section === 'student-dashboard') {
                 Student.loadDashboard();
+                Student.loadNotifications();
             } else if (section === 'student-profile') {
                 Student.showProfile();
             } else if (section === 'job-recommendations') {
