@@ -790,6 +790,12 @@ const Student = (function() {
     }
     
     async function loadNotifications() {
+        // ✅ FIX: Ipakita agad ang bell icon bago pa mag-load ng API
+        const bellWrapperEarly = document.getElementById('bell-wrapper');
+        const bellWrapperDesktopEarly = document.getElementById('bell-wrapper-desktop');
+        if (bellWrapperEarly) bellWrapperEarly.classList.add('visible');
+        if (bellWrapperDesktopEarly) bellWrapperDesktopEarly.style.display = 'block';
+
         try {
             const res = await API.getNotifications();
             if (!res.success) return;
