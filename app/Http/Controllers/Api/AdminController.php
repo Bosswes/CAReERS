@@ -305,8 +305,8 @@ class AdminController extends Controller
             }
             
             // Notify all students
-            $students = DB::table('student_info')->get();
-            foreach ($students as $student) {
+$students = DB::table('student_info')->whereNotNull('cvsu_email')->get();
+foreach ($students as $student) {
                 // In-app notification
                 DB::table('student_notifications')->insert([
                     'student_number' => $student->student_number,
