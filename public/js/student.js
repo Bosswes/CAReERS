@@ -799,7 +799,7 @@ const Student = (function() {
             const list = document.getElementById('notif-list');
 
             // Show bell only for students
-            if (bellWrapper) bellWrapper.style.display = 'block';
+            if (bellWrapper) bellWrapper.classList.add('visible');
 
             // Update badge
             if (badge) {

@@ -502,6 +502,7 @@
         
         /* Bell Notification Styles */
         .bell-wrapper { display: none; align-items: center; }
+        .bell-wrapper.visible { display: flex !important; align-items: center; }
         #notif-dropdown .notif-item {
             padding: 12px 16px;
             border-bottom: 1px solid #f1f5f9;
