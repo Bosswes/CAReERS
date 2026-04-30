@@ -109,9 +109,9 @@ Route::post('/announcements/{id}/scan', [AnnouncementController::class, 'scanQR'
     });
 
     // Notification routes (accessible by student)
-    Route::prefix('notifications')->group(function () {
-        Route::get('/{studentId}', [NotificationController::class, 'index']);
-        Route::put('/{id}/read', [NotificationController::class, 'markRead']);
-        Route::put('/{studentId}/read-all', [NotificationController::class, 'markAllRead']);
+    Route::prefix('student')->group(function () {
+        Route::get('/notifications', [StudentController::class, 'getNotifications']);
+        Route::post('/notifications/{id}/read', [StudentController::class, 'markNotificationRead']);
+        Route::post('/notifications/read-all', [StudentController::class, 'markAllNotificationsRead']);
     });
     });
