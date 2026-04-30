@@ -318,6 +318,7 @@
         
         /* Bell Notification Styles */
         .bell-wrapper { display: none; align-items: center; }
+        .bell-wrapper.visible { display: flex !important; align-items: center; }
         #notif-dropdown .notif-item {
             padding: 12px 16px;
             border-bottom: 1px solid #f1f5f9;
@@ -647,7 +648,7 @@
                             <div class="mobile-logo">
                                 <h1>CAReERS</h1>
                             </div>
-                            <div class="bell-wrapper" id="bell-wrapper" style="display:none; position:relative; margin-left:auto;">
+                            <div class="bell-wrapper" id="bell-wrapper" style="display:flex; align-items:center; position:relative; margin-left:auto;">
                                 <button id="bell-btn" style="background:none;border:none;cursor:pointer;padding:4px 8px;position:relative;">
                                     <i class="fas fa-bell" style="font-size:20px;color:#2E7D32;"></i>
                                     <span id="bell-badge" style="display:none;position:absolute;top:0;right:0;background:#e11d48;color:white;font-size:10px;font-weight:700;border-radius:50%;width:18px;height:18px;line-height:18px;text-align:center;">0</span>
@@ -672,8 +673,25 @@
                         <!-- ========== STUDENT DASHBOARD ========== -->
                         <div id="student-dashboard" class="dashboard-section">
                             <div class="dashboard-header">
-                                <h2>Student Dashboard</h2>
-                                <p class="dashboard-subtitle">Welcome back! Track your job recommendations and opportunities.</p>
+                                <div style="display:flex;align-items:center;gap:12px;">
+                                    <h2>Student Dashboard</h2>
+                                    <div id="bell-wrapper-desktop" style="position:relative; display:inline-block;">
+                                        <button id="bell-btn-desktop" style="background:none;border:none;cursor:pointer;padding:4px 8px;position:relative;">
+                                            <i class="fas fa-bell" style="font-size:22px;color:#2E7D32;"></i>
+                                            <span id="bell-badge-desktop" style="display:none;position:absolute;top:0;right:0;background:#e11d48;color:white;font-size:10px;font-weight:700;border-radius:50%;width:18px;height:18px;line-height:18px;text-align:center;">0</span>
+                                        </button>
+                                        <div id="notif-dropdown-desktop" style="display:none;position:absolute;left:0;top:36px;width:320px;background:white;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,0.15);z-index:9999;overflow:hidden;">
+                                            <div style="padding:12px 16px;background:#f0fdf4;border-bottom:1px solid #d1fae5;display:flex;justify-content:space-between;align-items:center;">
+                                                <span style="font-weight:700;color:#1e293b;">Notifications</span>
+                                                <button onclick="Student.markAllRead()" style="background:none;border:none;font-size:12px;color:#2E7D32;cursor:pointer;font-weight:600;">Mark all read</button>
+                                            </div>
+                                            <div id="notif-list-desktop" style="max-height:320px;overflow-y:auto;">
+                                                <p style="text-align:center;padding:20px;color:#94a3b8;font-size:13px;">No notifications yet</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <p class="dashboard-subtitle">Welcome back! Track your job applications and recommendations.</p>
                             </div>
                             
                             <div class="profile-completion-card" id="profile-completion-card">

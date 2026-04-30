@@ -9,8 +9,10 @@ use Illuminate\Support\Facades\DB;
 class NotificationController extends Controller
 {
     // Kunin ang notifications ng student
-    public function index($studentId)
+    public function index(Request $request)
     {
+        $studentId = session('user_id');
+
         $notifications = DB::table('student_notifications')
             ->where('student_id', $studentId)
             ->orderBy('created_at', 'desc')
@@ -36,8 +38,10 @@ class NotificationController extends Controller
     }
 
     // Mark lahat as read
-    public function markAllRead($studentId)
+    public function markAllRead(Request $request)
     {
+        $studentId = session('user_id');
+
         DB::table('student_notifications')
             ->where('student_id', $studentId)
             ->update(['is_read' => true]);

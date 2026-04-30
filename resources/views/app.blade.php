@@ -841,7 +841,7 @@
                             <div class="mobile-logo">
                                 <h1>CAReERS</h1>
                             </div>
-                            <div class="bell-wrapper" id="bell-wrapper" style="display:none; position:relative; margin-left:auto;">
+                            <div class="bell-wrapper" id="bell-wrapper" style="display:flex; align-items:center; position:relative; margin-left:auto;">
                                 <button id="bell-btn" style="background:none;border:none;cursor:pointer;padding:4px 8px;position:relative;">
                                     <i class="fas fa-bell" style="font-size:20px;color:#2E7D32;"></i>
                                     <span id="bell-badge" style="display:none;position:absolute;top:0;right:0;background:#e11d48;color:white;font-size:10px;font-weight:700;border-radius:50%;width:18px;height:18px;line-height:18px;text-align:center;">0</span>
@@ -868,7 +868,7 @@
                             <div class="dashboard-header">
                                 <div style="display:flex;align-items:center;gap:12px;">
                                     <h2>Student Dashboard</h2>
-                                    <div id="bell-wrapper-desktop" style="position:relative;">
+                                    <div id="bell-wrapper-desktop" style="position:relative; display:inline-block;">
                                         <button id="bell-btn-desktop" style="background:none;border:none;cursor:pointer;padding:4px 8px;position:relative;">
                                             <i class="fas fa-bell" style="font-size:22px;color:#2E7D32;"></i>
                                             <span id="bell-badge-desktop" style="display:none;position:absolute;top:0;right:0;background:#e11d48;color:white;font-size:10px;font-weight:700;border-radius:50%;width:18px;height:18px;line-height:18px;text-align:center;">0</span>

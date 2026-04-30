@@ -790,11 +790,14 @@ const Student = (function() {
     }
     
     async function loadNotifications() {
-        // ✅ FIX: Ipakita agad ang bell icon bago pa mag-load ng API
+        // ✅ FIX: Ipakita agad ang bell icon - mobile at desktop
         const bellWrapperEarly = document.getElementById('bell-wrapper');
         const bellWrapperDesktopEarly = document.getElementById('bell-wrapper-desktop');
-        if (bellWrapperEarly) bellWrapperEarly.classList.add('visible');
-        if (bellWrapperDesktopEarly) bellWrapperDesktopEarly.style.display = 'block';
+        if (bellWrapperEarly) {
+            bellWrapperEarly.style.display = 'flex';
+            bellWrapperEarly.style.alignItems = 'center';
+        }
+        if (bellWrapperDesktopEarly) bellWrapperDesktopEarly.style.display = 'inline-block';
 
         try {
             const res = await API.getNotifications();
