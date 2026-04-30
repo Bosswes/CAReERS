@@ -789,7 +789,7 @@ const Student = (function() {
         }
     }
     
-    async function loadNotifications() {
+   async function loadNotifications() {
         try {
             const res = await API.getNotifications();
             if (!res.success) return;
@@ -798,8 +798,51 @@ const Student = (function() {
             const bellWrapper = document.getElementById('bell-wrapper');
             const list = document.getElementById('notif-list');
 
-            // Show bell only for students
+            // Show mobile bell
             if (bellWrapper) bellWrapper.classList.add('visible');
+
+            // Show desktop bell
+            const bellWrapperDesktop = document.getElementById('bell-wrapper-desktop');
+            const bellBadgeDesktop = document.getElementById('bell-badge-desktop');
+            const listDesktop = document.getElementById('notif-list-desktop');
+            const bellBtnDesktop = document.getElementById('bell-btn-desktop');
+            const dropdownDesktop = document.getElementById('notif-dropdown-desktop');
+
+            if (bellWrapperDesktop) bellWrapperDesktop.style.display = 'block';
+
+            if (bellBadgeDesktop) {
+                if (res.unread_count > 0) {
+                    bellBadgeDesktop.textContent = res.unread_count > 99 ? '99+' : res.unread_count;
+                    bellBadgeDesktop.style.display = 'block';
+                } else {
+                    bellBadgeDesktop.style.display = 'none';
+                }
+            }
+
+            if (listDesktop) {
+                if (res.notifications.length === 0) {
+                    listDesktop.innerHTML = '<p style="text-align:center;padding:20px;color:#94a3b8;font-size:13px;">No notifications yet</p>';
+                } else {
+                    listDesktop.innerHTML = res.notifications.map(n => `
+                        <div class="notif-item ${n.is_read ? '' : 'unread'}" onclick="Student.readNotif(${n.id})" style="padding:12px 16px;border-bottom:1px solid #f0f0f0;cursor:pointer;">
+                            <div style="font-weight:600;font-size:13px;">
+                                <i class="fas ${n.type === 'job' ? 'fa-briefcase' : 'fa-bullhorn'}" style="color:#2E7D32;margin-right:6px;"></i>
+                                ${n.title}
+                            </div>
+                            <div style="font-size:12px;color:#64748b;margin-top:2px;">${n.message}</div>
+                            <div style="font-size:11px;color:#94a3b8;margin-top:4px;">${new Date(n.created_at).toLocaleDateString('en-PH', {month:'short', day:'numeric', hour:'2-digit', minute:'2-digit'})}</div>
+                        </div>
+                    `).join('');
+                }
+            }
+
+            if (bellBtnDesktop && dropdownDesktop) {
+                bellBtnDesktop.onclick = (e) => {
+                    e.stopPropagation();
+                    dropdownDesktop.style.display = dropdownDesktop.style.display === 'none' ? 'block' : 'none';
+                };
+                document.addEventListener('click', () => { dropdownDesktop.style.display = 'none'; }, { once: true });
+            }
 
             // Desktop bell
             const bellWrapperDesktop = document.getElementById('bell-wrapper-desktop');
