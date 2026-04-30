@@ -793,11 +793,15 @@ const Student = (function() {
         // ✅ FIX: Ipakita agad ang bell icon - mobile at desktop
         const bellWrapperEarly = document.getElementById('bell-wrapper');
         const bellWrapperDesktopEarly = document.getElementById('bell-wrapper-desktop');
+        // Mobile bell — ipakita lang sa mobile via CSS class, JS hindi na mag-o-override
         if (bellWrapperEarly) {
-            bellWrapperEarly.style.display = 'flex';
-            bellWrapperEarly.style.alignItems = 'center';
+            bellWrapperEarly.classList.add('visible');
+            // CSS ang bahala sa display depende sa screen size
         }
-        if (bellWrapperDesktopEarly) bellWrapperDesktopEarly.style.display = 'inline-block';
+        // Desktop bell — CSS din ang bahala
+        if (bellWrapperDesktopEarly) {
+            bellWrapperDesktopEarly.classList.add('visible');
+        }
 
         try {
             const res = await API.getNotifications();
