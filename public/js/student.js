@@ -12,29 +12,35 @@ const Student = (function() {
                 if (profile.profile.program) completion += 25;
                 if (profile.profile.skills && profile.profile.skills.length > 0) completion += 25;
                 
-                document.getElementById('completion-percentage').textContent = completion + '%';
-                document.getElementById('profile-progress').style.width = completion + '%';
+                const pct = document.getElementById('completion-percentage');
+                const bar = document.getElementById('profile-progress');
+                if (pct) pct.textContent = completion + '%';
+                if (bar) bar.style.width = completion + '%';
             }
             
             const jobs = await API.getJobs();
             if (jobs.success) {
-                document.getElementById('available-jobs-count').textContent = jobs.jobs.length;
+                const el = document.getElementById('available-jobs-count');
+                if (el) el.textContent = jobs.jobs.length;
             }
             
             const recommendations = await API.getStudentRecommendations();
             if (recommendations.success && recommendations.recommendations) {
-                document.getElementById('recommendations-count').textContent = recommendations.recommendations.length;
+                const el = document.getElementById('recommendations-count');
+                if (el) el.textContent = recommendations.recommendations.length;
                 loadRecommendedJobs(recommendations.recommendations);
             }
             
             const announcements = await API.getStudentAnnouncements();
             if (announcements.success) {
-                document.getElementById('announcements-count').textContent = announcements.announcements.length;
+                const el = document.getElementById('announcements-count');
+                if (el) el.textContent = announcements.announcements.length;
             }
             
             const ojtOfferings = await API.getStudentOjtOfferings();
             if (ojtOfferings.success) {
-                document.getElementById('ojt-count').textContent = ojtOfferings.offerings.length;
+                const el = document.getElementById('ojt-count');
+                if (el) el.textContent = ojtOfferings.offerings.length;
             }
             
         } catch (error) {
