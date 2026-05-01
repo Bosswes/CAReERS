@@ -60,6 +60,11 @@ Route::get('/admin/login', function () {
 })->name('admin.login');
 
 Route::post('/admin/login', [LoginController::class, 'adminLogin']);
+
+use App\Http\Controllers\Auth\ForgotPasswordController;
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink']);
+Route::post('/reset-password', [ForgotPasswordController::class, 'resetPassword']);
+Route::get('/reset-password', function () { return view('welcome'); });
 // ────────────────────────────────────────────────────────────────────────────
 
 // Attendance routes

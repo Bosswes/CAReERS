@@ -16,6 +16,10 @@ Route::post('/logout', [LoginController::class, 'logout']);
 Route::get('/user', [LoginController::class, 'user']);
 Route::get('/test', [TestController::class, 'testConnection']);
 
+use App\Http\Controllers\Auth\ForgotPasswordController;
+Route::post('/forgot-password', [ForgotPasswordController::class, 'sendResetLink']);
+Route::post('/reset-password', [ForgotPasswordController::class, 'resetPassword']);
+
 // Protected routes
 Route::middleware(['auth.session'])->group(function () {
     
