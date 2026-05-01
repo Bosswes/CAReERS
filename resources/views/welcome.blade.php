@@ -2687,6 +2687,48 @@
             document.body.removeChild(link);
         }
     }
+    // ========== FORGOT PASSWORD ==========
+const forgotLink = document.getElementById('forgot-password-link');
+const forgotModal = document.getElementById('forgot-password-modal');
+const closeForgotModal = document.getElementById('close-forgot-modal');
+const cancelForgot = document.getElementById('cancel-forgot');
+const forgotForm = document.getElementById('forgot-password-form');
+
+if (forgotLink) {
+    forgotLink.addEventListener('click', function(e) {
+        e.preventDefault();
+        forgotModal.style.display = 'flex';
+    });
+}
+
+if (closeForgotModal) closeForgotModal.addEventListener('click', () => forgotModal.style.display = 'none');
+if (cancelForgot) cancelForgot.addEventListener('click', () => forgotModal.style.display = 'none');
+
+if (forgotForm) {
+    forgotForm.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        const email = document.getElementById('forgot-email').value;
+        const btn = this.querySelector('button[type="submit"]');
+        btn.disabled = true;
+        btn.textContent = 'Sending...';
+
+        try {
+            const res = await fetch('/api/forgot-password', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ email })
+            });
+            const data = await res.json();
+            alert(data.message);
+            if (data.success) forgotModal.style.display = 'none';
+        } catch (err) {
+            alert('Something went wrong. Please try again.');
+        }
+
+        btn.disabled = false;
+        btn.textContent = 'Send Reset Link';
+    });
+}
     </script>
 
     <!-- JavaScript Modules -->
