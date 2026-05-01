@@ -307,7 +307,8 @@ class AdminController extends Controller
             }
             
             // Notify all students
-$students = DB::table('student_info')->whereNotNull('cvsu_email')->get();
+$students = DB::table('student_info')->whereNotNull('cvsu_email')->where('cvsu_email', '!=', '')->get();
+Log::info('Job notification: Found ' . $students->count() . ' students with email');
 foreach ($students as $student) {
                 // In-app notification
                 DB::table('student_notifications')->insert([
