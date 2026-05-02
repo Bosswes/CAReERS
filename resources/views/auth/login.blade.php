@@ -282,5 +282,72 @@ forgotForm.addEventListener('submit', async function(e) {
     btn.textContent = 'Send Reset Link';
 });
 </script>
+<!-- Reset Password Modal -->
+<div id="reset-password-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;justify-content:center;align-items:center;">
+    <div style="background:#fff;border-radius:12px;padding:32px;width:90%;max-width:400px;">
+        <h3 style="margin:0 0 8px;color:#2d6a2d;">Set New Password</h3>
+        <p style="color:#666;margin:0 0 20px;font-size:14px;">Enter your new password below.</p>
+        <form id="reset-password-form">
+            <input type="hidden" id="reset-token">
+            <input type="hidden" id="reset-email">
+            <input type="password" id="new-password" placeholder="New password (min 8 characters)" required minlength="8"
+                style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;margin-bottom:12px;box-sizing:border-box;">
+            <input type="password" id="confirm-password" placeholder="Confirm new password" required minlength="8"
+                style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;margin-bottom:16px;box-sizing:border-box;">
+            <button type="submit" style="width:100%;background:#2d6a2d;color:#fff;border:none;padding:12px;border-radius:8px;cursor:pointer;font-size:14px;">
+                Reset Password
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+window.addEventListener('DOMContentLoaded', function() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    const email = urlParams.get('email');
+    if (token && email) {
+        document.getElementById('reset-password-modal').style.display = 'flex';
+        document.getElementById('reset-email').value = email;
+        document.getElementById('reset-token').value = token;
+    }
+});
+
+document.getElementById('reset-password-form').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const password = document.getElementById('new-password').value;
+    const confirmation = document.getElementById('confirm-password').value;
+
+    if (password !== confirmation) {
+        alert('Passwords do not match!');
+        return;
+    }
+
+    const btn = this.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    btn.textContent = 'Resetting...';
+
+    try {
+        const res = await fetch('/api/reset-password', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({
+                token: document.getElementById('reset-token').value,
+                email: document.getElementById('reset-email').value,
+                password: password,
+                password_confirmation: confirmation
+            })
+        });
+        const data = await res.json();
+        alert(data.message);
+        if (data.success) window.location.href = '/login';
+    } catch (err) {
+        alert('Something went wrong. Please try again.');
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Reset Password';
+});
+</script>
 </body>
 </html>
