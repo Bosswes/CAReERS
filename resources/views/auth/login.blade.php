@@ -290,10 +290,20 @@ forgotForm.addEventListener('submit', async function(e) {
         <form id="reset-password-form">
             <input type="hidden" id="reset-token">
             <input type="hidden" id="reset-email">
-            <input type="password" id="new-password" placeholder="New password (min 8 characters)" required minlength="8"
-                style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;margin-bottom:12px;box-sizing:border-box;">
-            <input type="password" id="confirm-password" placeholder="Confirm new password" required minlength="8"
-                style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;margin-bottom:16px;box-sizing:border-box;">
+            <div style="position:relative;margin-bottom:12px;">
+    <input type="password" id="new-password" placeholder="New password (min 8 characters)" required minlength="8"
+        style="width:100%;padding:12px;padding-right:40px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
+    <span onclick="toggleResetPassword('new-password', this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:#888;">
+        <span class="material-symbols-outlined" style="font-size:20px;">visibility_off</span>
+    </span>
+</div>
+<div style="position:relative;margin-bottom:16px;">
+    <input type="password" id="confirm-password" placeholder="Confirm new password" required minlength="8"
+        style="width:100%;padding:12px;padding-right:40px;border:1px solid #ddd;border-radius:8px;font-size:14px;box-sizing:border-box;">
+    <span onclick="toggleResetPassword('confirm-password', this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);cursor:pointer;color:#888;">
+        <span class="material-symbols-outlined" style="font-size:20px;">visibility_off</span>
+    </span>
+</div>
             <button type="submit" style="width:100%;background:#2d6a2d;color:#fff;border:none;padding:12px;border-radius:8px;cursor:pointer;font-size:14px;">
                 Reset Password
             </button>
@@ -312,6 +322,18 @@ window.addEventListener('DOMContentLoaded', function() {
         document.getElementById('reset-token').value = token;
     }
 });
+
+function toggleResetPassword(fieldId, btn) {
+    const field = document.getElementById(fieldId);
+    const icon = btn.querySelector('.material-symbols-outlined');
+    if (field.type === 'password') {
+        field.type = 'text';
+        icon.textContent = 'visibility';
+    } else {
+        field.type = 'password';
+        icon.textContent = 'visibility_off';
+    }
+}
 
 document.getElementById('reset-password-form').addEventListener('submit', async function(e) {
     e.preventDefault();
