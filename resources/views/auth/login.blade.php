@@ -130,7 +130,7 @@ FULL PATH: resources/views/auth/login.blade.php
                             <input type="checkbox" id="rememberMe">
                             <span>Remember me</span>
                         </label>
-                        <a href="#" class="forgot-password">Forgot Password?</a>
+                        <a href="#" class="forgot-password" id="forgot-password-link">Forgot Password?</a>
                     </div>
 
                     <button type="submit" class="btn-login">
@@ -229,5 +229,58 @@ FULL PATH: resources/views/auth/login.blade.php
             });
         }
     </script>
+    <!-- Forgot Password Modal -->
+<div id="forgot-password-modal" style="display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:9999;justify-content:center;align-items:center;">
+    <div style="background:#fff;border-radius:12px;padding:32px;width:90%;max-width:400px;">
+        <h3 style="margin:0 0 8px;color:#2d6a2d;">Reset Password</h3>
+        <p style="color:#666;margin:0 0 20px;font-size:14px;">Enter your email and we'll send you a reset link.</p>
+        <form id="forgot-password-form">
+            <input type="email" id="forgot-email" placeholder="Enter your CvSU email" required
+                style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;margin-bottom:16px;box-sizing:border-box;">
+            <div style="display:flex;gap:10px;">
+                <button type="submit" style="flex:1;background:#2d6a2d;color:#fff;border:none;padding:12px;border-radius:8px;cursor:pointer;font-size:14px;">Send Reset Link</button>
+                <button type="button" id="cancel-forgot" style="flex:1;background:#eee;color:#333;border:none;padding:12px;border-radius:8px;cursor:pointer;font-size:14px;">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+const forgotLink = document.getElementById('forgot-password-link');
+const forgotModal = document.getElementById('forgot-password-modal');
+const cancelForgot = document.getElementById('cancel-forgot');
+const forgotForm = document.getElementById('forgot-password-form');
+
+forgotLink.addEventListener('click', function(e) {
+    e.preventDefault();
+    forgotModal.style.display = 'flex';
+});
+
+cancelForgot.addEventListener('click', () => forgotModal.style.display = 'none');
+
+forgotForm.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const email = document.getElementById('forgot-email').value;
+    const btn = this.querySelector('button[type="submit"]');
+    btn.disabled = true;
+    btn.textContent = 'Sending...';
+
+    try {
+        const res = await fetch('/api/forgot-password', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({ email })
+        });
+        const data = await res.json();
+        alert(data.message);
+        if (data.success) forgotModal.style.display = 'none';
+    } catch (err) {
+        alert('Something went wrong. Please try again.');
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Send Reset Link';
+});
+</script>
 </body>
 </html>
