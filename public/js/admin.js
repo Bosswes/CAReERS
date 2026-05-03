@@ -163,8 +163,8 @@ const Admin = (function() {
             document.getElementById('modal-student-name').value = '';
             document.getElementById('modal-student-email').value = '';
             document.getElementById('modal-student-degree').value = '';
-            document.getElementById('modal-student-gwa').value = '';
-            document.getElementById('modal-student-skills').value = '';
+            document.getElementById('modal-student-password').value = '';
+            document.getElementById('modal-student-password-confirm').value = '';
             document.getElementById('modal-user-id').value = '';
         } else if (mode === 'edit' && userId) {
             title.textContent = 'Edit Student';
@@ -194,8 +194,8 @@ const Admin = (function() {
                 document.getElementById('modal-student-name').value = user.name || '';
                 document.getElementById('modal-student-email').value = user.email || '';
                 document.getElementById('modal-student-degree').value = user.program || '';
-                document.getElementById('modal-student-gwa').value = user.gwa || '';
-                document.getElementById('modal-student-skills').value = user.skills || '';
+                document.getElementById('modal-student-password').value = '';
+                document.getElementById('modal-student-password-confirm').value = '';
             }
         } catch (error) {
             console.error('Error loading user data:', error);
@@ -208,14 +208,25 @@ const Admin = (function() {
         const name = document.getElementById('modal-student-name').value;
         const email = document.getElementById('modal-student-email').value;
         const degree = document.getElementById('modal-student-degree').value;
-        const gwa = document.getElementById('modal-student-gwa').value;
-        const skills = document.getElementById('modal-student-skills').value;
+        const password = document.getElementById('modal-student-password').value;
+        const passwordConfirm = document.getElementById('modal-student-password-confirm').value;
         
+        if (mode === 'add') {
+            if (!password) {
+                Utils.showToast('Please enter a password', 'error');
+                return;
+            }
+            if (password !== passwordConfirm) {
+                Utils.showToast('Passwords do not match', 'error');
+                return;
+            }
+        }
+
         const nameParts = name.split(' ');
         const firstName = nameParts[0] || '';
         const lastName = nameParts.slice(1).join(' ') || '';
         
-        try {
+       try {
             if (mode === 'add') {
                 await API.createUser({
                     role: 'student',
@@ -223,10 +234,8 @@ const Admin = (function() {
                     first_name: firstName,
                     last_name: lastName,
                     email: email,
-                    password: 'student123',
+                    password: password,
                     program: degree,
-                    general_weighted_average: gwa,
-                    skills: skills
                 });
                 Utils.showToast('Student added successfully', 'success');
             } else {
@@ -234,8 +243,8 @@ const Admin = (function() {
                     role: 'student',
                     first_name: firstName,
                     last_name: lastName,
+                    email: email,
                     program: degree,
-                    general_weighted_average: gwa
                 });
                 Utils.showToast('Student updated successfully', 'success');
             }

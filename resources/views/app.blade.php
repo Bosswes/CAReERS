@@ -2327,12 +2327,22 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="modal-student-gwa">GWA</label>
-                            <input type="number" id="modal-student-gwa" step="0.01" min="1.0" max="5.0">
+                            <label for="modal-student-password">PASSWORD</label>
+                            <div style="position:relative;">
+                                <input type="password" id="modal-student-password" placeholder="Enter password">
+                                <button type="button" onclick="togglePass('modal-student-password','eye1')" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;">
+                                    <i class="fas fa-eye" id="eye1"></i>
+                                </button>
+                            </div>
                         </div>
                         <div class="form-group">
-                            <label for="modal-student-skills">Skills</label>
-                            <textarea id="modal-student-skills" rows="3"></textarea>
+                            <label for="modal-student-password-confirm">RE-ENTER PASSWORD</label>
+                            <div style="position:relative;">
+                                <input type="password" id="modal-student-password-confirm" placeholder="Re-enter password">
+                                <button type="button" onclick="togglePass('modal-student-password-confirm','eye2')" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;">
+                                    <i class="fas fa-eye" id="eye2"></i>
+                                </button>
+                            </div>
                         </div>
                     </div>
                     
